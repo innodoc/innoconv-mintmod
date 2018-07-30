@@ -1,3 +1,5 @@
+[![build status](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/badges/master/build.svg)](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/commits/master) [![coverage report](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/badges/master/coverage.svg)](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/commits/master)
+
 # innoConv (for mintmod)
 
 Converter for interactive educational content.
@@ -16,10 +18,10 @@ $ python3 -m venv /path/to/virtual/environment
 # Activate venv
 $ source /path/to/virtual/environment/bin/activate
 # Install using pip
-$ pip install --process-dependency-links -e git+https://gitlab.tubit.tu-berlin.de/innodoc/innoconv.git#egg=innoconv
+$ pip install --process-dependency-links -e git+https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod.git#egg=innoconv-mintmod
 ```
 
-The ``innoconv`` command is now available.
+The ``innoconv-mintmod`` command is now available.
 
 ## Usage
 
@@ -46,13 +48,13 @@ Get the content source code and convert it to JSON.
 
 ```sh
 $ git clone -b innoconv git@gitlab.tubit.tu-berlin.de:innodoc/tub_base
-$ innoconv tub_base
+$ innoconv-mintmod tub_base
 ```
 
 ##### HTML (for debugging/development)
 
 ```
-$ innoconv -d tub_base
+$ innoconv-mintmod -d tub_base
 ```
 
 #### Linting
