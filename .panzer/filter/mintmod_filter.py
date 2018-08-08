@@ -4,8 +4,8 @@
 
 import os
 from panflute import run_filter
-from innoconv.mintmod_filter.filter_action import MintmodFilterAction
-from innoconv.utils import remove_empty_paragraphs
+from innoconv_mintmod.mintmod_filter.filter_action import MintmodFilterAction
+from innoconv_mintmod.utils import remove_empty_paragraphs
 
 
 def main():

@@ -16,14 +16,14 @@ from setuptools import setup
 ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
 PANZER_SUPPORT_DIR = os.path.join(ROOT_DIR, '.panzer')
 LINT_DIRS = [
-    os.path.join(ROOT_DIR, 'innoconv'),
+    os.path.join(ROOT_DIR, 'innoconv_mintmod'),
     os.path.join(ROOT_DIR, 'setup.py'),
     os.path.join(PANZER_SUPPORT_DIR, 'filter')
 ]
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-METADATA_PATH = os.path.join(ROOT_DIR, 'innoconv', 'metadata.py')
+METADATA_PATH = os.path.join(ROOT_DIR, 'innoconv_mintmod', 'metadata.py')
 with open(METADATA_PATH, 'r') as metadata_file:
     METADATA = dict(
         re.findall(r"__([a-z_]+)__\s*=\s*['\"]([^'\"]+)['\"]",
@@ -84,7 +84,7 @@ class TestCommand(BaseCommand):
     ]
 
     def initialize_options(self):
-        self.test_target = os.path.join(ROOT_DIR, 'innoconv')
+        self.test_target = os.path.join(ROOT_DIR, 'innoconv_mintmod')
 
     def run(self):
         self._run(['green', '-r', self.test_target])
@@ -125,7 +125,7 @@ def setup_package():
         ],
         entry_points={
             'console_scripts': [
-                'innoconv-mintmod = innoconv.__main__:main',
+                'innoconv-mintmod = innoconv_mintmod.__main__:main',
             ],
         },
         include_package_data=True,
@@ -135,7 +135,7 @@ def setup_package():
             'python-slugify',
         ],
         packages=[
-            'innoconv',
+            'innoconv_mintmod',
         ],
         keywords=['pandoc'],
         license=METADATA['license'],

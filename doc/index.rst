@@ -1,10 +1,10 @@
-innoConv API documentation
-==========================
+innoConv (mintmod) API documentation
+====================================
 
-What is innoConv?
------------------
+What is innoConv (mintmod)?
+---------------------------
 
-.. automodule:: innoconv
+.. automodule:: innoconv_mintmod
 
 Table of contents
 -----------------

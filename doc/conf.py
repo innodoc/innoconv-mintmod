@@ -53,7 +53,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'innoconv'
+project = 'innoconv-mintmod'
 copyright = '2018, innoCampus, TU Berlin'
 author = 'innoCampus, TU Berlin'
 
@@ -150,7 +150,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'innoconv.tex', 'innoconv Documentation',
+    (master_doc, 'innoconv-mintmod.tex', 'innoconv-mintmod Documentation',
      'Innocampus', 'manual'),
 ]
 
@@ -160,7 +160,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'innoconv', 'innoconv Documentation',
+    (master_doc, 'innoconv-mintmod', 'innoconv-mintmod Documentation',
      [author], 1)
 ]
 
@@ -171,7 +171,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'innoconv', 'innoconv Documentation',
-     author, 'innoconv', 'One line description of project.',
+    (master_doc, 'innoconv-mintmod', 'innoconv-mintmod Documentation',
+     author, 'innoconv-mintmod', 'One line description of project.',
      'Miscellaneous'),
 ]

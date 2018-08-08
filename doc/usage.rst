@@ -1,6 +1,6 @@
-How to use innoConv
-===================
+How to use innoConv (mintmod)
+=============================
 
-innoConv comes with a command ``innoconv``.
+innoConv (mintmod) comes with a command ``innoconv-mintmod``.
 
-Type ``innoconv --help`` to see all command line arguments.
+Type ``innoconv-mintmod --help`` to see all command line arguments.

@@ -4,8 +4,8 @@ Module overview
 .. toctree::
   :maxdepth: 4
 
-  innoconv.constants
-  innoconv.errors
-  innoconv.mintmod_filter
-  innoconv.runner
-  innoconv.utils
+  innoconv_mintmod.constants
+  innoconv_mintmod.errors
+  innoconv_mintmod.mintmod_filter
+  innoconv_mintmod.runner
+  innoconv_mintmod.utils
