@@ -10,8 +10,10 @@ Handle mintmod LaTeX environments.
     ``\begin{MXContent}…\end{MXContent}`` environment.
 """
 
-from innoconv_mintmod.constants import ELEMENT_CLASSES, REGEX_PATTERNS, TRANSLATIONS
-from innoconv_mintmod.mintmod_filter.elements import create_content_box, create_header
+from innoconv_mintmod.constants import (
+    ELEMENT_CLASSES, REGEX_PATTERNS, TRANSLATIONS)
+from innoconv_mintmod.mintmod_filter.elements import (
+    create_content_box, create_header)
 from innoconv_mintmod.utils import parse_fragment, extract_identifier
 
 

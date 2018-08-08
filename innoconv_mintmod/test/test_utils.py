@@ -7,10 +7,10 @@ from mock import patch
 import panflute as pf
 
 from innoconv_mintmod.errors import ParseError
-from innoconv_mintmod.utils import (parse_fragment, destringify, parse_cmd,
-                            parse_nested_args, remove_empty_paragraphs,
-                            remember_element, get_remembered_element,
-                            to_inline)
+from innoconv_mintmod.utils import (
+    parse_fragment, destringify, parse_cmd, parse_nested_args,
+    remove_empty_paragraphs, remember_element, get_remembered_element,
+    to_inline)
 from innoconv_mintmod.test.utils import captured_output
 
 CONTENT = r"""
@@ -96,7 +96,7 @@ class TestParseFragment(unittest.TestCase):
             err_out = out[1].getvalue()
         self.assertTrue('Could not handle command unknownfoobar' in err_out)
 
-    @patch('innoconv.utils.log')
+    @patch('innoconv_mintmod.utils.log')
     def test_parse_fragment_log_is_called(self, log_mock):
         """parse_fragment() calls log function on warning"""
         parse_fragment(r'\unknowncommandfoobar')
@@ -107,7 +107,7 @@ class TestParseFragment(unittest.TestCase):
         ret = parse_fragment('')
         self.assertEqual(ret, [])
 
-    @patch('innoconv.utils.which', return_value=None)
+    @patch('innoconv_mintmod.utils.which', return_value=None)
     def test_parse_fragment_not_in_path(self, mock_func):
         # pylint: disable=unused-argument
         """parse_fragment() raises OSError if panzer not in PATH"""

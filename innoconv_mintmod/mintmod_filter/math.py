@@ -1,8 +1,8 @@
 """Handle mintmod math commands."""
 
 import re
-from innoconv_mintmod.constants import (REGEX_PATTERNS, COMMANDS_IRREGULAR,
-                                MATH_SUBSTITUTIONS)
+from innoconv_mintmod.constants import (
+    REGEX_PATTERNS, COMMANDS_IRREGULAR, MATH_SUBSTITUTIONS)
 from innoconv_mintmod.utils import parse_nested_args, log
 
 

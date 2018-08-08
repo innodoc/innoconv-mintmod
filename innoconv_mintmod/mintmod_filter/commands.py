@@ -11,12 +11,13 @@ Handle mintmod LaTeX commands.
 
 import panflute as pf
 from slugify import slugify
-from innoconv_mintmod.constants import (ELEMENT_CLASSES, MINTMOD_SUBJECTS,
-                                REGEX_PATTERNS, INDEX_LABEL_PREFIX)
-from innoconv_mintmod.utils import (block_wrap, destringify, parse_fragment, log,
-                            get_remembered_element, to_inline)
-from innoconv_mintmod.mintmod_filter.elements import (Exercise, create_header,
-                                              create_image)
+from innoconv_mintmod.constants import (
+    ELEMENT_CLASSES, MINTMOD_SUBJECTS, REGEX_PATTERNS, INDEX_LABEL_PREFIX)
+from innoconv_mintmod.utils import (
+    block_wrap, destringify, parse_fragment, log, get_remembered_element,
+    to_inline)
+from innoconv_mintmod.mintmod_filter.elements import (
+    Exercise, create_header, create_image)
 
 
 class Commands():

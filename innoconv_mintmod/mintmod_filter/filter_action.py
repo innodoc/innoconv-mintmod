@@ -5,9 +5,10 @@ import panflute as pf
 from slugify import slugify
 
 from innoconv_mintmod.errors import ParseError
-from innoconv_mintmod.constants import (REGEX_PATTERNS, ELEMENT_CLASSES,
-                                EXERCISE_CMDS_ENVS)
-from innoconv_mintmod.utils import log, destringify, parse_cmd, parse_nested_args
+from innoconv_mintmod.constants import (
+    REGEX_PATTERNS, ELEMENT_CLASSES, EXERCISE_CMDS_ENVS)
+from innoconv_mintmod.utils import (
+    log, destringify, parse_cmd, parse_nested_args)
 from innoconv_mintmod.mintmod_filter.environments import Environments
 from innoconv_mintmod.mintmod_filter.commands import Commands
 from innoconv_mintmod.mintmod_filter.math import handle_math

@@ -3,8 +3,8 @@
 import unittest
 import panflute as pf
 
-from innoconv_mintmod.constants import (ELEMENT_CLASSES, INDEX_LABEL_PREFIX,
-                                QUESTION_TYPES)
+from innoconv_mintmod.constants import (
+    ELEMENT_CLASSES, INDEX_LABEL_PREFIX, QUESTION_TYPES)
 from innoconv_mintmod.mintmod_filter.commands import Commands
 from innoconv_mintmod.utils import remember_element
 

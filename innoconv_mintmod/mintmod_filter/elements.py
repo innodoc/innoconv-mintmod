@@ -3,8 +3,8 @@
 from textwrap import shorten
 import panflute as pf
 from innoconv_mintmod.constants import ELEMENT_CLASSES, QUESTION_TYPES
-from innoconv_mintmod.utils import (destringify, parse_fragment, extract_identifier,
-                            remember_element, log)
+from innoconv_mintmod.utils import (
+    destringify, parse_fragment, extract_identifier, remember_element, log)
 
 
 class Exercise(pf.Element):
