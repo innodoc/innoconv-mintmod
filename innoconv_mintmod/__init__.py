@@ -1,9 +1,11 @@
 """
-This package converts mintmod-flavoured LaTeX into other formats.
+This package converts mintmod-flavoured LaTeX into Markdown.
 
-It can be seen as a shim for ``mintmod.tex``. It handles important mintmod
-commands translating them to regular Pandoc elements. The central part in
-this package is
-:class:`MintmodFilterAction
-<innoconv_mintmod.mintmod_filter.filter_action.MintmodFilterAction>`.
+It can be seen as a shim for ``mintmod.tex`` and handles important mintmod
+commands by translating them to regular Pandoc elements.
+
+Technically spoken it's essentially a wrapper to
+`Pandoc <https://pandoc.org/>`_.
+
+Read more about innoconv-mintmods :ref:`architecture <architecture>`.
 """

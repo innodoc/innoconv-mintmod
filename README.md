@@ -8,7 +8,7 @@ Converter for interactive educational content.
 
 **If you don't know what mintmod is you probably don't need it.**
 
-## Installation
+## Quick installation
 
 It is recommended to install innoConv in a [virtual environment](https://docs.python.org/3/library/venv.html).
 
@@ -23,9 +23,12 @@ $ pip install --process-dependency-links -e git+https://gitlab.tubit.tu-berlin.d
 
 The ``innoconv-mintmod`` command is now available.
 
-## Usage
+## Documentation
 
-Please [build the documentation](#documentation) and read the section *Usage*.
+You can read it up online or [build it yourself](#generate-documentation).
+
+- [HTML](https://innoconv-for-mintmod.readthedocs.io/en/latest/index.html)
+- [PDF](https://media.readthedocs.org/pdf/innoconv-for-mintmod/latest/innoconv-for-mintmod.pdf)
 
 ## Development
 
@@ -59,8 +62,7 @@ $ innoconv-mintmod -d tub_base
 
 #### Linting
 
-Adhere to [PEP8](https://www.python.org/dev/peps/pep-0008/). Before pushing
-code please run lint and fix **all** problems.
+Adhere to [PEP8](https://www.python.org/dev/peps/pep-0008/). Before pushing code please run lint and fix **all** problems.
 
 ```sh
 $ ./setup.py lint
@@ -80,7 +82,7 @@ Do this after calling `./setup.py test`.
 $ ./setup.py coverage
 ```
 
-#### Documentation
+#### Generate documentation
 
 ```sh
 $ ./setup.py build_doc

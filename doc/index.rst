@@ -12,8 +12,10 @@ Table of contents
 .. toctree::
   :maxdepth: 4
 
+  installation
   usage
   mintmod_conversion
+  architecture
   modules
 
 Indices and tables

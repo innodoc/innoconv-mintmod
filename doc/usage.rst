@@ -1,6 +1,22 @@
-How to use innoConv (mintmod)
-=============================
+.. _usage:
 
-innoConv (mintmod) comes with a command ``innoconv-mintmod``.
+How to use ``innoconv-mintmod``
+===============================
 
-Type ``innoconv-mintmod --help`` to see all command line arguments.
+You can run the converter in your content directory.
+
+.. code-block:: console
+
+  $ innoconv-mintmod .
+
+This will trigger the conversion for this folder.
+
+Command line arguments
+----------------------
+
+.. argparse::
+   :module: innoconv_mintmod.__main__
+   :func: get_arg_parser
+   :prog: innoconv_mintmod
+   :nodescription:
+   :noepilog:

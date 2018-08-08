@@ -1,14 +1,28 @@
 Converting legacy mintmod content
 =================================
 
-Steps needed to adjust content sources to be used with innoConv.
+In this chapter some findings are documented on how to prepare content so it
+can be read by the :ref:`innoconv-mintmod command <usage>`.
 
-All content needs to be UTF-8 encoded.
+.. note::
+
+  It's not a complete list and there might be things missing that need to be
+  done in your specific case.
+
+First of all make sure all content is `UTF-8 encoded`. If not, tools like
+`iconv <https://www.gnu.org/savannah-checkouts/gnu/libiconv/documentation/libiconv-1.15/iconv.1.html>`_
+can be helpful.
+
+Adjust commands
+---------------
+
+There are some mintmod commands Pandoc is not able to parse. You need to
+manually replace them throughout your project.
 
 Remove ``\ifttm…\else…\fi`` commands
-------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-``mintmod_ifttm`` gets rid of all ``\ifttm`` commands.
+``mintmod_ifttm`` can get rid of all ``\ifttm`` commands.
 
 Usage:
 
@@ -22,15 +36,49 @@ Automate on many files:
 
     $ find . -name '*.tex' | xargs -I % sh -c 'mintmod_ifttm < % > %_changed && mv %_changed %'
 
-The script will only cares about ``\ifttm…\else…\fi`` with an ``\else``
-command. There may be occurences of ``\ifttm…\fi`` (without ``\else``!).
-Remove them manually.
+.. warning::
+
+  The script cares only about ``\ifttm…\else…\fi`` with an ``\else`` command.
+  There may be occurences of ``\ifttm…\fi`` (without ``\else``). You need to
+  remove them manually!
+
+Unwanted LaTeX commands
+~~~~~~~~~~~~~~~~~~~~~~~
+
+A couple of commands are superflous or doesn't make sense in a web-first
+content publishing platform like innoDoc. So remove any occurences of the
+following commands.
+
+- ``\input{mintmod.tex}``
+- ``\input{english.tex}``
+- ``\begin{document}`` ``\begin{document}``
+- ``\MPragma{MathSkip}``
+- ``\Mtikzexternalize``
+- ``\relax``
+- ``\-`` (hyphenation)
+- ``\pagebreak``
+- ``\newpage``
+- ``\MPrintIndex``
+- ``\relax``
+
+Automate:
+
+.. code:: shell
+
+  find . -type f -name '*.tex' -or -name '*.rtex' | xargs perl -i -pe 's/\\input{mintmod(.tex|)}\w*\n//igs'
+
+Including other modules
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Pandoc doesn't understand ``\IncludeModule``. Change these statements to proper
+LaTeX commands.
+
+``\IncludeModule{folder}{file.tex}`` → ``\input{folder/file.tex}``.
 
 Replace strings
 ---------------
 
-Special characters
-~~~~~~~~~~~~~~~~~~
+There are a couple of special characters you need to replace yourself.
 
 -  ``\"a`` → ``ä``
 -  ``\"o`` → ``ö``
@@ -77,34 +125,8 @@ Automate:
 
     find . -type f -name '*.tex' -or -name '*.rtex' | xargs sed -i 's/\\"a/ä/g'
 
-Unwanted LaTeX
-~~~~~~~~~~~~~~~~~~
-
-Remove
-
-- ``\input{mintmod.tex}``
-- ``\input{english.tex}``
-- ``\begin{document}`` ``\begin{document}``
-- ``\MPragma{MathSkip}``
-- ``\Mtikzexternalize``
-- ``\relax`` commands
-- ``\-`` (remove all occurences of hyphenation)
-- ``\pagebreak`` commands
-- ``\newpage`` commands
-- ``\MPrintIndex`` commands
-- ``\relax`` commands
-
-.. code:: shell
-
-    find . -type f -name '*.tex' -or -name '*.rtex' | xargs perl -i -pe 's/\\input{mintmod(.tex|)}\w*\n//igs'
-
-``\IncludeModule``
-~~~~~~~~~~~~~~~~~~
-
-``\IncludeModule{VBKM01}{vbkm01.tex}`` becomes
-``\input{VBKM01/vbkm01.tex}``.
-
 Clean up code
-~~~~~~~~~~~~~
+-------------
 
-Remove unused files.
+Remove unused files from your project and keep track of your changes using
+a VCS.
