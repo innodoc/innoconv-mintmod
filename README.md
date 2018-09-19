@@ -1,4 +1,4 @@
-[![build status](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/badges/master/build.svg)](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/commits/master) [![coverage report](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/badges/master/coverage.svg)](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/commits/master)
+[![build status](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/badges/master/build.svg)](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/commits/master) [![coverage report](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/badges/master/coverage.svg)](https://gitlab.tubit.tu-berlin.de/innodoc/innoconv-mintmod/commits/master) [![Documentation Status](https://readthedocs.org/projects/innoconv-for-mintmod/badge/?version=latest)](https://innoconv-for-mintmod.readthedocs.io/en/latest/?badge=latest)
 
 # innoConv (for mintmod)
 
