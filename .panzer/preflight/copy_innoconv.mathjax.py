@@ -6,11 +6,9 @@ Copy innoconv.mathjax.js to build directory.
 import os
 import shutil
 import sys
-sys.path.append(os.path.join(os.environ['PANZER_SHARED'], 'python'))
-try:
-    import panzertools  # pylint: disable=import-error
-except Exception:
-    raise
+sys.path.append(os.path.join(os.environ['PANZER_SHARED'], 'panzerhelper'))
+# pylint: disable=import-error,wrong-import-position
+import panzertools  # noqa: E402
 
 
 def main():

@@ -18,7 +18,10 @@ PANZER_SUPPORT_DIR = os.path.join(ROOT_DIR, '.panzer')
 LINT_DIRS = [
     os.path.join(ROOT_DIR, 'innoconv_mintmod'),
     os.path.join(ROOT_DIR, 'setup.py'),
-    os.path.join(PANZER_SUPPORT_DIR, 'filter')
+    os.path.join(PANZER_SUPPORT_DIR, 'filter'),
+    os.path.join(PANZER_SUPPORT_DIR, 'preflight'),
+    os.path.join(PANZER_SUPPORT_DIR, 'postflight'),
+    os.path.join(PANZER_SUPPORT_DIR, 'shared', 'panzerhelper'),
 ]
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
