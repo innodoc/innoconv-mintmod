@@ -53,7 +53,7 @@ class InnoconvRunner():
         os.makedirs(output_dir, exist_ok=True)
 
         # output filename
-        filename_path = os.path.join(output_dir, filename)
+        filename_path = os.path.abspath(os.path.join(output_dir, filename))
 
         # set debug mode
         env = os.environ.copy()
