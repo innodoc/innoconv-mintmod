@@ -16,7 +16,8 @@ class InnoconvRunner():
     def __init__(self, source, output_dir_base, language_code,
                  ignore_exercises=False, remove_exercises=False,
                  split_sections=False, input_format=DEFAULT_INPUT_FORMAT,
-                 output_format=DEFAULT_OUTPUT_FORMAT, debug=False):
+                 output_format=DEFAULT_OUTPUT_FORMAT,
+                 split_sections_markdown=False, debug=False):
         # pylint: disable=too-many-arguments
         self.source = source
         self.output_dir_base = output_dir_base
@@ -26,6 +27,7 @@ class InnoconvRunner():
         self.split_sections = split_sections
         self.input_format = input_format
         self.output_format = output_format
+        self.split_sections_markdown = split_sections_markdown
         self.debug = debug
 
     def run(self):
@@ -73,6 +75,9 @@ class InnoconvRunner():
 
         if self.remove_exercises:
             env['INNOCONV_REMOVE_EXERCISES'] = '1'
+
+        if self.split_sections_markdown:
+            env['INNOCONV_SPLIT_SECTIONS_MARKDOWN'] = '1'
 
         cmd = [
             'panzer',

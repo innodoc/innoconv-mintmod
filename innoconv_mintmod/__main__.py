@@ -2,6 +2,7 @@
 
 """Main entry for the innoconv document converter."""
 
+import sys
 import argparse
 from panflute import debug
 
@@ -98,14 +99,23 @@ def main():
     """innoConv (mintmod) main entry point."""
     args = parse_cli_args()
 
+    split_sections_markdown = False
+
     if args['remove_exercises'] and not args['ignore_exercises']:
         debug(
             "Warning: Setting --remove-exercises implies --ignore-exercises.")
         args['ignore_exercises'] = True
 
-    if args['split_sections'] and args['output_format'] != 'json':
-        debug("Warning: Setting output format to 'json' when splitting.")
-        args['output_format'] = 'json'
+    if args['split_sections']:
+        if args['output_format'] not in ('json', 'markdown'):
+            debug("Error: Output format needs to be either 'json' or "
+                  "'markdown' when splitting.")
+            sys.exit(-1)
+        # in case of markdown with split sections final transform will happen
+        # in split_sections.py
+        if args['output_format'] == 'markdown':
+            args['output_format'] = 'json'
+            split_sections_markdown = True
 
     runner = InnoconvRunner(
         args['source'], args['output_dir_base'], args['language_code'],
@@ -114,6 +124,7 @@ def main():
         split_sections=args['split_sections'],
         input_format=args['input_format'],
         output_format=args['output_format'],
+        split_sections_markdown=split_sections_markdown,
         debug=args['debug'])
     filename_out = runner.run()
     debug('Build finished: {}'.format(filename_out))

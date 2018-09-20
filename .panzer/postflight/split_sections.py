@@ -6,16 +6,17 @@ import os
 import sys
 import json
 import re
+from subprocess import Popen, PIPE
 from base64 import urlsafe_b64encode
 from slugify import slugify
 
-sys.path.append(os.path.join(os.environ['PANZER_SHARED'], 'python'))
-try:
-    import panzertools  # pylint: disable=import-error
-except Exception:
-    raise
+from innoconv_mintmod.constants import ENCODING, OUTPUT_FORMAT_EXT_MAP
+sys.path.append(os.path.join(os.environ['PANZER_SHARED'], 'panzerhelper'))
+# pylint: disable=import-error,wrong-import-position
+import panzertools  # noqa: E402
 
 MAX_LEVELS = 3
+PANDOC_TIMEOUT = 120
 
 
 def concatenate_strings(elems):
@@ -82,28 +83,74 @@ def create_doc_tree(tree, level):
     return sections, content
 
 
-def write_sections(sections, outdir_base):
+def write_sections(sections, outdir_base, output_format):
     """Write sections to individual files and remove content from TOC tree."""
 
-    def write_section(section, outdir, depth):
+    def convert_section_to_markdown(content, title):
+        """Convert JSON section to markdown format."""
+        # TODO: ensure atx-headers are used
+        pandoc_cmd = [
+            'pandoc',
+            '--standalone',
+            '--from=json',
+            '--to=markdown+yaml_metadata_block',
+        ]
+        section_json = json.dumps({
+            'blocks': content,
+            'pandoc-api-version': [1, 17, 5, 1],
+            'meta': {'title': {
+                't': 'MetaInlines',
+                'c': title,
+            }},
+        }).encode(ENCODING)
+        proc = Popen(pandoc_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        out, err = proc.communicate(input=section_json, timeout=PANDOC_TIMEOUT)
+        out = out.decode(ENCODING)
+        err = err.decode(ENCODING)
+        if proc.returncode != 0:
+            panzertools.log('ERROR', err)
+            raise RuntimeError(
+                "pandoc process exited with non-zero return code.")
+        return out
+
+    def write_section(section, outdir, depth, root=False):
         """Write a single section to a JSON file."""
         if depth > MAX_LEVELS:
             return
-        outdir_section = os.path.join(outdir, section['id'])
+
+        if root:
+            outdir_section = outdir
+        else:
+            outdir_section = os.path.join(outdir, section['id'])
         os.makedirs(outdir_section, exist_ok=True)
-        if 'content' in section:
-            filename = os.path.join(outdir_section, 'content.json')
-            with open(filename, 'w') as sfile:
-                json.dump(section['content'], sfile)
+
+        try:
+            content = section['content']
             del section['content']
+        except KeyError:
+            content = []
+
+        filename = 'content.{}'.format(
+            OUTPUT_FORMAT_EXT_MAP[output_format])
+        filepath = os.path.join(outdir_section, filename)
+
+        if output_format == 'markdown':
+            output = convert_section_to_markdown(content, section['title'])
+            with open(filepath, 'w') as sfile:
+                sfile.write(output)
+        elif output_format == 'json':
+            with open(filepath, 'w') as sfile:
+                json.dump(content, sfile)
+        panzertools.log('INFO', 'Wrote section {}'.format(section['id']))
+
         try:
             for subsection in section['children']:
                 write_section(subsection, outdir_section, depth + 1)
         except KeyError:
             pass
 
-    for section in sections:
-        write_section(section, outdir_base, 1)
+    for idx, section in enumerate(sections):
+        write_section(section, outdir_base, 1, idx == 0)
 
     return sections
 
@@ -134,10 +181,17 @@ def main(debug=False):
     """main entry point"""
     options = panzertools.read_options()
     filepath = options['pandoc']['output']
+    convert_to = 'json'
+
+    if os.environ.get('INNOCONV_SPLIT_SECTIONS_MARKDOWN'):
+        panzertools.log('INFO', 'Converting to Markdown.')
+        convert_to = 'markdown'
 
     if options['pandoc']['write'] != 'json':
         panzertools.log(
-            'WARNING', 'skipping split_sections for non-json output')
+            'ERROR',
+            'split_sections output should be json!')
+        sys.exit(0)
 
     # extract lang
     lang = None
@@ -147,6 +201,7 @@ def main(debug=False):
             lang = match.group(1)
     if not lang:
         raise RuntimeError('Error: Unable to extract lang key from metadata!')
+    panzertools.log('INFO', 'Found lang key={}'.format(lang))
 
     # load pandoc output
     with open(filepath, 'r') as doc_file:
@@ -163,7 +218,7 @@ def main(debug=False):
     os.makedirs(outdir, exist_ok=True)
 
     # write sections to file
-    sections = write_sections(sections, outdir)
+    sections = write_sections(sections, outdir, convert_to)
 
     # write metadata toc file
     tocpath = os.path.join(outdir, 'toc.json')
