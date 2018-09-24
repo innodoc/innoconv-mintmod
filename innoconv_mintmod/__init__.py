@@ -7,5 +7,5 @@ commands by translating them to regular Pandoc elements.
 Technically spoken it's essentially a wrapper to
 `Pandoc <https://pandoc.org/>`_.
 
-Read more about innoconv-mintmods :ref:`architecture <architecture>`.
+Read more about innoconv-mintmods :ref:`architecture`.
 """

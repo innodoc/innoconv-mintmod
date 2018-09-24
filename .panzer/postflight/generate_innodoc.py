@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
-Split JSON doc into separate files according to header structure.
+This is the final step to generate innoDoc content from Mintmod input.
+
+ - Loads pandoc output from single JSON file.
+ - Extract section tree.
+ - Save individual sections to course directory structure.
+ - Generate a ``manifest.yaml``.
+ - Removes single JSON file.
 """
+
 import os
 import sys
 import json
@@ -15,7 +22,10 @@ sys.path.append(os.path.join(os.environ['PANZER_SHARED'], 'panzerhelper'))
 # pylint: disable=import-error,wrong-import-position
 import panzertools  # noqa: E402
 
+#: Max. depth of headers to consider when splitting sections
 MAX_LEVELS = 3
+
+#: Timeout for pandoc process
 PANDOC_TIMEOUT = 120
 
 
@@ -87,7 +97,7 @@ def write_sections(sections, outdir_base, output_format):
     """Write sections to individual files and remove content from TOC tree."""
 
     def convert_section_to_markdown(content, title):
-        """Convert JSON section to markdown format."""
+        """Convert JSON section to markdown format using pandoc."""
         # TODO: ensure atx-headers are used
         pandoc_cmd = [
             'pandoc',
@@ -155,11 +165,9 @@ def write_sections(sections, outdir_base, output_format):
     return sections
 
 
-def print_sections(sections):
-    """Debug print TOC tree."""
+def _print_sections(sections):
 
-    def print_section(section, depth):
-        """Print a single section."""
+    def _print_section(section, depth):
         if depth > MAX_LEVELS:
             return
         title = concatenate_strings(section['title'])
@@ -168,29 +176,27 @@ def print_sections(sections):
         panzertools.log('INFO', msg)
         try:
             for subsection in section['children']:
-                print_section(subsection, depth + 1)
+                _print_section(subsection, depth + 1)
         except KeyError:
             pass
 
     panzertools.log('INFO', 'TOC TREE:')
     for section in sections:
-        print_section(section, 1)
+        _print_section(section, 1)
 
 
 def main(debug=False):
-    """main entry point"""
+    """Post-flight script entry point."""
     options = panzertools.read_options()
     filepath = options['pandoc']['output']
     convert_to = 'json'
 
-    if os.environ.get('INNOCONV_SPLIT_SECTIONS_MARKDOWN'):
+    if os.environ.get('INNOCONV_GENERATE_INNODOC_MARKDOWN'):
         panzertools.log('INFO', 'Converting to Markdown.')
         convert_to = 'markdown'
 
     if options['pandoc']['write'] != 'json':
-        panzertools.log(
-            'ERROR',
-            'split_sections output should be json!')
+        panzertools.log('ERROR', 'Output is expected to be JSON!')
         sys.exit(0)
 
     # extract lang
@@ -228,7 +234,7 @@ def main(debug=False):
 
     # print toc tree
     if debug:
-        print_sections(sections)
+        _print_sections(sections)
 
     # removing pandoc output file
     os.unlink(filepath)

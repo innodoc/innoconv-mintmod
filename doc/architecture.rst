@@ -1,5 +1,3 @@
-.. _architecture:
-
 Architecture
 ============
 
@@ -10,7 +8,7 @@ The command line interface
 
 The entry point is the command line tool ``innoconv-mintmod``.
 
-It calls panzer which is a Pandoc wrapper tool with the correct parameters.
+It calls panzer with the correct parameters.
 
 Most of the magic happens in the package :class:`MintmodFilterAction
 <innoconv_mintmod.mintmod_filter.filter_action.MintmodFilterAction>`.
@@ -27,6 +25,10 @@ The result of the ``MintmodFilterAction`` is a regular Pandoc AST that can
 be further processed by Pandoc output modules, thus be translated to Markdown,
 LaTeX, HTML and so forth.
 
+The Pandoc JSON output is processed by
+:ref:`generate_innodoc.py<generate_innodoc>`. It's implemented as a
+post-flight panzer script.
+
 panzer
 ------
 
@@ -40,8 +42,3 @@ that can already define parameters on how to run Pandoc.
 Furthermore it can manage applied filters, run pre- and postprocessors etc.
 
 You can find its configuration in the sub-directory ``.panzer``.
-
-A conversion run in a nutshell
-------------------------------
-
-TDB

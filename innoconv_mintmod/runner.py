@@ -15,19 +15,19 @@ class InnoconvRunner():
 
     def __init__(self, source, output_dir_base, language_code,
                  ignore_exercises=False, remove_exercises=False,
-                 split_sections=False, input_format=DEFAULT_INPUT_FORMAT,
+                 generate_innodoc=False, input_format=DEFAULT_INPUT_FORMAT,
                  output_format=DEFAULT_OUTPUT_FORMAT,
-                 split_sections_markdown=False, debug=False):
+                 generate_innodoc_markdown=False, debug=False):
         # pylint: disable=too-many-arguments
         self.source = source
         self.output_dir_base = output_dir_base
         self.language_code = language_code
         self.ignore_exercises = ignore_exercises
         self.remove_exercises = remove_exercises
-        self.split_sections = split_sections
+        self.generate_innodoc = generate_innodoc
         self.input_format = input_format
         self.output_format = output_format
-        self.split_sections_markdown = split_sections_markdown
+        self.generate_innodoc_markdown = generate_innodoc_markdown
         self.debug = debug
 
     def run(self):
@@ -59,14 +59,14 @@ class InnoconvRunner():
 
         # set debug mode
         env = os.environ.copy()
-        if self.debug and self.split_sections:
+        if self.debug and self.generate_innodoc:
             env['INNOCONV_DEBUG'] = '1'
-            style = 'innoconv-debug-split'
+            style = 'innoconv-debug-generate-innodoc'
         elif self.debug:
             env['INNOCONV_DEBUG'] = '1'
             style = 'innoconv-debug'
-        elif self.split_sections:
-            style = 'innoconv-split'
+        elif self.generate_innodoc:
+            style = 'innoconv-generate-innodoc'
         else:
             style = 'innoconv'
 
@@ -76,8 +76,8 @@ class InnoconvRunner():
         if self.remove_exercises:
             env['INNOCONV_REMOVE_EXERCISES'] = '1'
 
-        if self.split_sections_markdown:
-            env['INNOCONV_SPLIT_SECTIONS_MARKDOWN'] = '1'
+        if self.generate_innodoc_markdown:
+            env['INNOCONV_GENERATE_INNODOC_MARKDOWN'] = '1'
 
         cmd = [
             'panzer',

@@ -18,13 +18,13 @@ innoconv-debug:
     template: debug.html
     preflight:
       - run: copy_innoconv.mathjax.py
-innoconv-split:
+innoconv-generate-innodoc:
   parent: innoconv
   json:
     postflight:
-      - run: split_sections.py
-innoconv-debug-split:
+      - run: generate_innodoc.py
+innoconv-debug-generate-innodoc:
   parent: innoconv-debug
   json:
     postflight:
-      - run: split_sections.py
+      - run: generate_innodoc.py

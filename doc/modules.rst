@@ -9,3 +9,4 @@ Module overview
   innoconv_mintmod.mintmod_filter
   innoconv_mintmod.runner
   innoconv_mintmod.utils
+  generate_innodoc

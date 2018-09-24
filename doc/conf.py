@@ -24,6 +24,11 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
+# make generate_innodoc importable
+PANZER_DIR = os.path.abspath(os.path.join('..', '.panzer'))
+os.environ['PANZER_SHARED'] = os.path.join(PANZER_DIR, 'shared')
+sys.path.insert(0, os.path.join(PANZER_DIR, 'postflight'))
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -35,6 +40,7 @@ sys.path.insert(0, os.path.abspath('..'))
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.autosummary',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',

@@ -47,7 +47,7 @@ subsubsection-text-hier.
                 with tempfile.TemporaryDirectory() as tmpdir:
                     pandoc_output = os.path.join(tmpdir, 'output.json')
                     get_doc_from_markup(tex,
-                                        style='innoconv-split',
+                                        style='innoconv-generate-innodoc',
                                         output=pandoc_output,
                                         lang=lang_code)
 

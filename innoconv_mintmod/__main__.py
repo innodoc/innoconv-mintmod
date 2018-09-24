@@ -81,11 +81,11 @@ def get_arg_parser():
                                     action='store_true',
                                     help=rem_exercises_help)
 
-    split_sections_help = "split sections"
-    innoconv_argparser.add_argument('-s', '--split-sections',
+    generate_innodoc_help = "split sections and generate manifest.yaml"
+    innoconv_argparser.add_argument('-g', '--generate-innodoc',
                                     action='store_true',
                                     default=True,
-                                    help=split_sections_help)
+                                    help=generate_innodoc_help)
 
     return innoconv_argparser
 
@@ -99,32 +99,32 @@ def main():
     """innoConv (mintmod) main entry point."""
     args = parse_cli_args()
 
-    split_sections_markdown = False
+    generate_innodoc_markdown = False
 
     if args['remove_exercises'] and not args['ignore_exercises']:
         debug(
             "Warning: Setting --remove-exercises implies --ignore-exercises.")
         args['ignore_exercises'] = True
 
-    if args['split_sections']:
+    if args['generate_innodoc']:
         if args['output_format'] not in ('json', 'markdown'):
             debug("Error: Output format needs to be either 'json' or "
                   "'markdown' when splitting.")
             sys.exit(-1)
         # in case of markdown with split sections final transform will happen
-        # in split_sections.py
+        # in generate_innodoc.py
         if args['output_format'] == 'markdown':
             args['output_format'] = 'json'
-            split_sections_markdown = True
+            generate_innodoc_markdown = True
 
     runner = InnoconvRunner(
         args['source'], args['output_dir_base'], args['language_code'],
         ignore_exercises=args['ignore_exercises'],
         remove_exercises=args['remove_exercises'],
-        split_sections=args['split_sections'],
+        generate_innodoc=args['generate_innodoc'],
         input_format=args['input_format'],
         output_format=args['output_format'],
-        split_sections_markdown=split_sections_markdown,
+        generate_innodoc_markdown=generate_innodoc_markdown,
         debug=args['debug'])
     filename_out = runner.run()
     debug('Build finished: {}'.format(filename_out))

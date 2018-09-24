@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
 Copy innoconv.mathjax.js to build directory.
+
+This script is only needed for the debug HTML build.
 """
 
 import os
