@@ -15,6 +15,7 @@ import json
 import re
 from subprocess import Popen, PIPE
 from base64 import urlsafe_b64encode
+import yaml
 from slugify import slugify
 
 from innoconv_mintmod.constants import ENCODING, OUTPUT_FORMAT_EXT_MAP
@@ -165,6 +166,28 @@ def write_sections(sections, outdir_base, output_format):
     return sections
 
 
+def update_manifest(lang, outdir):
+    """Update ``manifest.yaml`` file.
+
+    If it doesn't exist it will be created.
+    """
+    manifest_path = os.path.abspath(
+        os.path.join(outdir, '..', 'manifest.yaml'))
+
+    try:
+        with open(manifest_path) as manifest_file:
+            manifest = yaml.load(manifest_file)
+    except FileNotFoundError:
+        manifest = {'langs': []}
+
+    if lang not in manifest['langs']:
+        manifest['langs'].append(lang)
+
+    with open(manifest_path, 'w') as manifest_file:
+        yaml.dump(manifest, manifest_file, default_flow_style=False)
+    panzertools.log('INFO', 'Wrote: {}'.format(manifest_path))
+
+
 def _print_sections(sections):
 
     def _print_section(section, depth):
@@ -226,11 +249,15 @@ def main(debug=False):
     # write sections to file
     sections = write_sections(sections, outdir, convert_to)
 
-    # write metadata toc file
-    tocpath = os.path.join(outdir, 'toc.json')
-    with open(tocpath, 'w') as toc_file:
-        json.dump(sections, toc_file)
-    panzertools.log('INFO', 'Wrote: {}'.format(tocpath))
+    if os.environ.get('INNOCONV_GENERATE_INNODOC_MARKDOWN'):
+        # write metadata file
+        update_manifest(lang, outdir)
+    else:
+        # write TOC
+        tocpath = os.path.join(outdir, 'toc.json')
+        with open(tocpath, 'w') as toc_file:
+            json.dump(sections, toc_file)
+        panzertools.log('INFO', 'Wrote: {}'.format(tocpath))
 
     # print toc tree
     if debug:
