@@ -145,7 +145,7 @@ def create_content_box(elem_content, elem_classes):
     return div
 
 
-def create_header(title_str, doc, level=0, parse_text=False):
+def create_header(title_str, doc, level=0, parse_text=False, identifier=''):
     """
     Create a header element.
 
@@ -159,7 +159,7 @@ def create_header(title_str, doc, level=0, parse_text=False):
         title = parse_fragment(title_str)[0].content
     else:
         title = destringify(title_str)
-    header = pf.Header(*title, level=level)
+    header = pf.Header(*title, level=level, identifier=identifier)
     remember_element(doc, header)
     return header
 

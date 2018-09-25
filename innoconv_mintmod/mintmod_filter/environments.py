@@ -64,7 +64,8 @@ class Environments():
         content = parse_fragment(elem_content)
         lang = elem.doc.metadata['lang'].text
         header = create_header(
-            TRANSLATIONS['introduction'][lang], elem.doc, level=3)
+            TRANSLATIONS['introduction'][lang], elem.doc, level=3,
+            identifier='introduction')
         # pylint: disable=no-member
         header.classes.extend(ELEMENT_CLASSES['MINTRO'])
         content.insert(0, header)
