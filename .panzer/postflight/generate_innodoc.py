@@ -49,6 +49,7 @@ def generate_id(content):
     return slugify(string)
 
 
+# TODO: make sure each language generates the same section IDs
 def create_doc_tree(tree, level):
     """Generate section tree from a flat document structure."""
     sections = []
@@ -69,6 +70,7 @@ def create_doc_tree(tree, level):
             section['content'] = children
         sections.append(section)
 
+    section_idx = 0
     for node in tree:
         if node['t'] == 'Header' and node['c'][0] == level:
             await_header = False
@@ -81,7 +83,9 @@ def create_doc_tree(tree, level):
             # auto-generate section ID if necessary
             if not section_id:
                 section_id = generate_id(section['title'])
-            section['id'] = section_id
+            # number sections so they are in consistent order
+            section['id'] = '{:03}-{}'.format(section_idx, section_id)
+            section_idx += 1
         else:
             if await_header:
                 content.append(node)
