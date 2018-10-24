@@ -38,12 +38,12 @@ subsection-text-hier.
 subsubsection-text-hier.
 """
         langs = (
-            ('de', 'Einführung', 'einfuhrung'),
-            ('en', 'Introduction', 'introduction'),
+            ('de', 'Einführung'),
+            ('en', 'Introduction'),
         )
         for lang in langs:
-            with self.subTest(lang=lang):
-                lang_code, intro_title, intro_id = lang
+            with self.subTest(lang=lang[0]):
+                lang_code, intro_title = lang
                 with tempfile.TemporaryDirectory() as tmpdir:
                     pandoc_output = os.path.join(tmpdir, 'output.json')
                     get_doc_from_markup(tex,
@@ -56,22 +56,22 @@ subsubsection-text-hier.
                         toc = json.load(toc_file)
 
                         sec_1 = toc[0]
-                        self.assertEqual(sec_1['id'], 'LABEL_1')
+                        self.assertEqual(sec_1['id'], '000-LABEL_1')
                         self.assertEqual(sec_1['title'][0]['c'], '1')
 
                         sec_1_1 = sec_1['children'][0]
-                        self.assertEqual(sec_1_1['id'], 'LABEL_1_1')
+                        self.assertEqual(sec_1_1['id'], '000-LABEL_1_1')
                         self.assertEqual(sec_1_1['title'][0]['c'], '1-1')
 
                         sec_1_1_1 = sec_1_1['children'][0]
-                        self.assertEqual(sec_1_1_1['id'], intro_id)
+                        self.assertEqual(sec_1_1_1['id'], '000-introduction')
                         self.assertEqual(
                             sec_1_1_1['title'][0]['c'], intro_title)
 
                         sec_1_2 = sec_1['children'][1]
-                        self.assertEqual(sec_1_2['id'], 'LABEL_1_2')
+                        self.assertEqual(sec_1_2['id'], '001-LABEL_1_2')
                         self.assertEqual(sec_1_2['title'][0]['c'], '1-2')
 
                         sec_1_2_1 = sec_1_2['children'][0]
-                        self.assertEqual(sec_1_2_1['id'], 'LABEL_1_2_1')
+                        self.assertEqual(sec_1_2_1['id'], '000-LABEL_1_2_1')
                         self.assertEqual(sec_1_2_1['title'][0]['c'], '1-2-1')
