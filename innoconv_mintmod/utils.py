@@ -113,12 +113,12 @@ def to_inline(elem, classes=[], attributes={}):
 
     if isinstance(elem, pf.Inline):
         return elem
-    elif isinstance(elem, pf.CodeBlock):
+    if isinstance(elem, pf.CodeBlock):
         return pf.Code(elem.text, classes=classes, attributes=attributes)
-    elif isinstance(elem, pf.RawBlock):
+    if isinstance(elem, pf.RawBlock):
         return pf.RawInline(elem.text, format=elem.format)
 
-    elif isinstance(elem, pf.Block):
+    if isinstance(elem, pf.Block):
         elems = elem.content
     elif isinstance(elem, list):
         elems = elem

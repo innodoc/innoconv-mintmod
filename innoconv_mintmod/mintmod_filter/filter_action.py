@@ -46,7 +46,7 @@ class MintmodFilterAction:
         if isinstance(elem, pf.Math):
             return handle_math(elem)
 
-        elif hasattr(elem, 'format') and elem.format == 'latex':
+        if hasattr(elem, 'format') and elem.format == 'latex':
             # block commands and environments
             if isinstance(elem, pf.RawBlock):
                 cmd_name, cmd_args = parse_cmd(elem.text)

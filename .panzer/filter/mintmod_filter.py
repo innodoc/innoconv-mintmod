@@ -10,7 +10,7 @@ from innoconv_mintmod.utils import remove_empty_paragraphs
 
 def main():
     """Execute filter and remove empty paragraphs."""
-    debug = True if os.environ.get('INNOCONV_DEBUG') else False
+    debug = bool(os.environ.get('INNOCONV_DEBUG'))
     filter_action = MintmodFilterAction(debug=debug)
     run_filter(filter_action.filter, finalize=remove_empty_paragraphs)
 

@@ -274,4 +274,4 @@ def main(debug=False):
 
 
 if __name__ == '__main__':
-    main(debug=True if os.environ.get('INNOCONV_DEBUG') else False)
+    main(debug=bool(os.environ.get('INNOCONV_DEBUG')))
