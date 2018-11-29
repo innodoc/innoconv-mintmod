@@ -180,7 +180,7 @@ def update_manifest(lang, outdir):
 
     try:
         with open(manifest_path) as manifest_file:
-            manifest = yaml.load(manifest_file)
+            manifest = yaml.safe_load(manifest_file)
     except FileNotFoundError:
         manifest = {'langs': []}
 
