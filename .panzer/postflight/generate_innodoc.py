@@ -31,6 +31,7 @@ PANDOC_TIMEOUT = 120
 
 #: Languages key in manifest.yml
 LANGKEY = 'languages'
+TITLEKEY = 'title'
 
 
 def concatenate_strings(elems):
@@ -172,7 +173,7 @@ def write_sections(sections, outdir_base, output_format):
     return sections
 
 
-def update_manifest(lang, outdir):
+def update_manifest(lang, title, outdir):
     """Update ``manifest.yml`` file.
 
     If it doesn't exist it will be created.
@@ -184,15 +185,15 @@ def update_manifest(lang, outdir):
         with open(manifest_path) as manifest_file:
             manifest = yaml.safe_load(manifest_file)
     except FileNotFoundError:
-        manifest = {LANGKEY: []}
+        manifest = {LANGKEY: [], TITLEKEY: {}}
 
     if lang not in manifest[LANGKEY]:
         manifest[LANGKEY].append(lang)
-
-    # TODO: add course title
+    manifest[TITLEKEY][lang] = title
 
     with open(manifest_path, 'w') as manifest_file:
-        yaml.dump(manifest, manifest_file, default_flow_style=False)
+        yaml.dump(manifest, manifest_file, default_flow_style=False,
+                  allow_unicode=True)
     panzertools.log('INFO', 'Wrote: {}'.format(manifest_path))
 
 
@@ -259,7 +260,11 @@ def main(debug=False):
 
     if os.environ.get('INNOCONV_GENERATE_INNODOC_MARKDOWN'):
         # write metadata file
-        update_manifest(lang, outdir)
+        try:
+            title = doc['meta']['title']['c']
+        except AttributeError:
+            title = 'UNKNOWN COURSE'
+        update_manifest(lang, title, outdir)
     else:
         # write TOC
         tocpath = os.path.join(outdir, 'toc.json')
