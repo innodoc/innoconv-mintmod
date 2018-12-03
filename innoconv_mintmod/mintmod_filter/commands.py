@@ -12,7 +12,8 @@ Handle mintmod LaTeX commands.
 import panflute as pf
 from slugify import slugify
 from innoconv_mintmod.constants import (
-    ELEMENT_CLASSES, MINTMOD_SUBJECTS, REGEX_PATTERNS, INDEX_LABEL_PREFIX)
+    ELEMENT_CLASSES, MINTMOD_SUBJECTS, REGEX_PATTERNS, INDEX_LABEL_PREFIX,
+    SITE_UXID_PREFIX)
 from innoconv_mintmod.utils import (
     block_wrap, destringify, parse_fragment, log, get_remembered_element,
     to_inline)
@@ -98,19 +99,38 @@ class Commands():
     ###########################################################################
     # Links/labels
 
+    def handle_mdeclaresiteuxid(self, cmd_args, elem):
+        r"""Handle ``\MDeclareSiteUXID`` command.
+
+        The command can occur in an environment that is parsed by a
+        subprocess. In this case there's no last header element. The process
+        can't set the ID because it can't access the doc tree. Instead it
+        replaces the ``\MDeclareSiteUXID`` by an element that is found by the
+        parent process using function
+        :py:func:`innoconv.utils.extract_identifier`.
+        """
+        identifier = cmd_args[0]
+
+        # otherwise return a div/span with ID that is parsed in the parent
+        # process
+        if isinstance(elem, pf.Block):
+            ret = pf.Div()
+        else:
+            ret = pf.Span()
+        ret.identifier = '{}-{}'.format(SITE_UXID_PREFIX, identifier)
+        ret.classes = [SITE_UXID_PREFIX]
+        ret.attributes = {'hidden': 'hidden'}
+        return ret
+
     def handle_mlabel(self, cmd_args, elem):
         r"""Handle ``\MLabel`` command.
 
         Will search for the previous header element and update its ID to the
         ID defined in the ``\MLabel`` command.
 
-        The command can occur in an environment that is parsed by a
-        subprocess. In this case there's no last header element. The process
-        can't set the ID because it can't access the doc tree. Instead it
-        replaces the ``\MLabel`` by an element that is found by the parent
-        process using function :py:func:`innoconv.utils.extract_identifier`.
+        Hides identifier in fake element like
+        (:py:func:`innoconv_mintmod.mintmod_filter.commands.Commands.handle_mdeclaresiteuxid`).
         """
-
         identifier = cmd_args[0]
 
         # attach identifier to previous element
@@ -467,14 +487,6 @@ class Commands():
 
     ###########################################################################
     # No-ops
-
-    def handle_mdeclaresiteuxid(self, cmd_args, elem):
-        r"""Handle ``\MDeclareSiteUXID`` command.
-
-        This command is used to embed IDs. This is not relevant anymore and
-        becomes a no-op.
-        """
-        return self._noop()
 
     def handle_mmodstartbox(self, cmd_args, elem):
         r"""Handle ``\MModStartBox`` command.

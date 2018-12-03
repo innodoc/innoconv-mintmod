@@ -10,7 +10,8 @@ import panflute as pf
 from panflute.elements import from_json
 
 from innoconv_mintmod.constants import (
-    REGEX_PATTERNS, ENCODING, INDEX_LABEL_PREFIX, PANZER_TIMEOUT)
+    REGEX_PATTERNS, ENCODING, INDEX_LABEL_PREFIX, SITE_UXID_PREFIX,
+    PANZER_TIMEOUT)
 from innoconv_mintmod.errors import ParseError
 
 
@@ -215,9 +216,9 @@ def parse_nested_args(to_parse):
 def extract_identifier(content):
     r"""Extract identifier from content and remove annotation element.
 
-    ``\MLabel`` commands that occur within environments are parsed in a
-    child process
-    (:py:func:`innoconv_mintmod.mintmod_filter.commands.handle_mlabel`).
+    ``\MLabel``/``MDeclareSiteUXID`` commands that occur within environments
+    are parsed in a child process (e.g.
+    :py:func:`innoconv_mintmod.mintmod_filter.commands.handle_mlabel`).
     The id attribute can't be set directly as they can't access the whole doc
     tree. As a workaround they create a fake element and add the identifier.
     This function extracts the identifier and removes the annotation element.
@@ -228,17 +229,23 @@ def extract_identifier(content):
     :rtype: (list, str)
     :returns: updated content list and identifier (might be ``None``)
     """
-    first_child = content[0]
     identifier = None
-    try:
-        if INDEX_LABEL_PREFIX in first_child.classes:
-            match = REGEX_PATTERNS['LABEL'].match(
-                first_child.identifier)
-            if match:
-                identifier = match.groups()[0]
-                del content[0]  # remove id annotation element
-    except AttributeError:
-        pass
+    for _ in range(2):
+        try:
+            first_child = content[0]
+        except IndexError:
+            break
+        for prefix in (SITE_UXID_PREFIX, INDEX_LABEL_PREFIX):
+            try:
+                if prefix in first_child.classes:
+                    match = REGEX_PATTERNS['EXTRACT_ID'](prefix).match(
+                        first_child.identifier)
+                    if match:
+                        identifier = match.groups()[0]
+                        del content[0]  # remove id annotation element
+                        break
+            except AttributeError:
+                pass
     return content, identifier
 
 

@@ -3,7 +3,8 @@
 import unittest
 import panflute as pf
 from innoconv_mintmod.test.utils import get_doc_from_markup
-from innoconv_mintmod.constants import ELEMENT_CLASSES, INDEX_LABEL_PREFIX
+from innoconv_mintmod.constants import (
+    ELEMENT_CLASSES, INDEX_LABEL_PREFIX, SITE_UXID_PREFIX)
 
 
 class TestInnoconvIntegrationMlabel(unittest.TestCase):
@@ -29,7 +30,12 @@ class TestInnoconvIntegrationMlabel(unittest.TestCase):
         self.assertIsInstance(header.content[2], pf.Str)
         self.assertEqual(header.content[2].text, 'Rechnen')
         self.assertEqual(header.identifier, 'VBKM01')
-        para = doc.content[1]
+        div = doc.content[1]
+        self.assertIsInstance(div, pf.Div)
+        self.assertEqual(
+            div.identifier, '{}-VBKM01_START'.format(SITE_UXID_PREFIX))
+        self.assertIn(SITE_UXID_PREFIX, div.classes)
+        para = doc.content[2]
         self.assertIsInstance(para, pf.Para)
         self.assertIsInstance(para.content[0], pf.Str)
         self.assertEqual(para.content[0].text, 'foo')

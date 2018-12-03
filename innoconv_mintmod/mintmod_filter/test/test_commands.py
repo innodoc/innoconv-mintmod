@@ -257,10 +257,6 @@ class TestCommands(unittest.TestCase):
         """Test no-op commands."""
         noops = (
             (
-                self.commands.handle_mdeclaresiteuxid,
-                ['FOO'], r'\MDeclareSiteUXID{FOO}',
-            ),
-            (
                 self.commands.handle_mmodstartbox,
                 [], r'\MModstartBox',
             ),

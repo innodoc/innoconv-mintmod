@@ -52,7 +52,6 @@ def generate_id(content):
     return slugify(string)
 
 
-# TODO: make sure each language generates the same section IDs
 def create_doc_tree(tree, level):
     """Generate section tree from a flat document structure."""
     sections = []

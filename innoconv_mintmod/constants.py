@@ -8,6 +8,9 @@ import os
 #: Element class for index labels
 INDEX_LABEL_PREFIX = 'index-label'
 
+#: Element class for SiteUXID
+SITE_UXID_PREFIX = 'site-uxid'
+
 #: Don't show this unknown commands/envs in error log
 EXERCISE_CMDS_ENVS = (
     'MLParsedQuestion', 'MLSimplifyQuestion', 'MLFunctionQuestion',
@@ -147,7 +150,7 @@ REGEX_PATTERNS = {
     'ENV': re.compile(r'\A\\begin{(?P<env_name>[^}]+)}(.+)'
                       r'\\end{(?P=env_name)}\Z', re.DOTALL),
 
-    'LABEL': re.compile(r'^{}-(.+)$'.format(INDEX_LABEL_PREFIX)),
+    'EXTRACT_ID': lambda x: re.compile(r'^{}-(.+)$'.format(x)),
     'STRIP_HASH_LINE': re.compile(r'^\%(\r\n|\r|\n)'),
 
     # panzer output parsing
