@@ -29,7 +29,7 @@ class MintmodFilterAction:
 
         This method receives document elements from Pandoc and delegates
         handling of simple subtitutions, mintmod commands and
-        .ments.
+        environments.
 
         :param elem: Element to handle
         :type elem: :class:`panflute.base.Element`
