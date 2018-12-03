@@ -5,7 +5,7 @@ This is the final step to generate innoDoc content from Mintmod input.
  - Loads pandoc output from single JSON file.
  - Extract section tree.
  - Save individual sections to course directory structure.
- - Generate a ``manifest.yaml``.
+ - Generate a ``manifest.yml``.
  - Removes single JSON file.
 """
 
@@ -28,6 +28,9 @@ MAX_LEVELS = 3
 
 #: Timeout for pandoc process
 PANDOC_TIMEOUT = 120
+
+#: Languages key in manifest.yml
+LANGKEY = 'languages'
 
 
 def concatenate_strings(elems):
@@ -171,21 +174,23 @@ def write_sections(sections, outdir_base, output_format):
 
 
 def update_manifest(lang, outdir):
-    """Update ``manifest.yaml`` file.
+    """Update ``manifest.yml`` file.
 
     If it doesn't exist it will be created.
     """
     manifest_path = os.path.abspath(
-        os.path.join(outdir, '..', 'manifest.yaml'))
+        os.path.join(outdir, '..', 'manifest.yml'))
 
     try:
         with open(manifest_path) as manifest_file:
             manifest = yaml.safe_load(manifest_file)
     except FileNotFoundError:
-        manifest = {'langs': []}
+        manifest = {LANGKEY: []}
 
-    if lang not in manifest['langs']:
-        manifest['langs'].append(lang)
+    if lang not in manifest[LANGKEY]:
+        manifest[LANGKEY].append(lang)
+
+    # TODO: add course title
 
     with open(manifest_path, 'w') as manifest_file:
         yaml.dump(manifest, manifest_file, default_flow_style=False)
