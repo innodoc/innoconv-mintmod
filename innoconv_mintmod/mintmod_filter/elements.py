@@ -136,8 +136,8 @@ def create_content_box(elem_content, elem_classes):
     div = pf.Div(classes=elem_classes)
     content = parse_fragment(elem_content)
 
-    # Check if environment had an \MLabel identifier
-    content, identifier = extract_identifier(content)
+    # Check if environment had an \MLabel/SiteUXID identifier
+    identifier = extract_identifier(content)
     if identifier:
         div.identifier = identifier
 

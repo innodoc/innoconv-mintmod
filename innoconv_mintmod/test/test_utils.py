@@ -10,8 +10,9 @@ from innoconv_mintmod.errors import ParseError
 from innoconv_mintmod.utils import (
     parse_fragment, destringify, parse_cmd, parse_nested_args,
     remove_empty_paragraphs, remember_element, get_remembered_element,
-    to_inline)
+    to_inline, extract_identifier)
 from innoconv_mintmod.test.utils import captured_output
+from innoconv_mintmod.constants import INDEX_LABEL_PREFIX, SITE_UXID_PREFIX
 
 CONTENT = r"""
 \documentclass[12pt]{article}
@@ -347,3 +348,36 @@ class TestToInline(unittest.TestCase):
             il_content3.content[0].content[1].classes,
             ['2nd-span-class']
         )
+
+
+class TestExtractIdentifier(unittest.TestCase):
+    def test_only_uxid(self):
+        annot = pf.Div(identifier='{}-foo'.format(SITE_UXID_PREFIX),
+                       classes=(SITE_UXID_PREFIX,))
+        identifier = extract_identifier([annot])
+        self.assertEqual(identifier, 'foo')
+
+    def test_uxid_para(self):
+        annot = pf.Div(identifier='{}-foo'.format(SITE_UXID_PREFIX),
+                       classes=(SITE_UXID_PREFIX,))
+        para = pf.Para(pf.Str('bar'))
+        identifier = extract_identifier([annot, para])
+        self.assertEqual(identifier, 'foo')
+
+    def test_uxid_label_para(self):
+        uxid = pf.Div(identifier='{}-foo'.format(SITE_UXID_PREFIX),
+                      classes=(SITE_UXID_PREFIX,))
+        mlabel = pf.Div(identifier='{}-foo'.format(INDEX_LABEL_PREFIX),
+                        classes=(INDEX_LABEL_PREFIX,))
+        para = pf.Para(pf.Str('bar'))
+
+        tests = (
+            ('foo', [mlabel, uxid, para]),
+            ('foo', [uxid, mlabel, para]),
+            (None, [para]),
+        )
+
+        for exp_id, test in tests:
+            with self.subTest(test):
+                identifier = extract_identifier(test)
+                self.assertEqual(identifier, exp_id)

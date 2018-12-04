@@ -64,7 +64,7 @@ subsubsection-text-hier.
                         self.assertEqual(sec_1_1['title'][0]['c'], '1-1')
 
                         sec_1_1_1 = sec_1_1['children'][0]
-                        self.assertEqual(sec_1_1_1['id'], '000-introduction')
+                        self.assertEqual(sec_1_1_1['id'], '000-LABEL_1_1_1')
                         self.assertEqual(
                             sec_1_1_1['title'][0]['c'], intro_title)
 

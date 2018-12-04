@@ -221,32 +221,55 @@ def extract_identifier(content):
     :py:func:`innoconv_mintmod.mintmod_filter.commands.handle_mlabel`).
     The id attribute can't be set directly as they can't access the whole doc
     tree. As a workaround they create a fake element and add the identifier.
-    This function extracts the identifier and removes the annotation element.
 
     :param content: List of elements
     :type content: list
 
-    :rtype: (list, str)
-    :returns: updated content list and identifier (might be ``None``)
+    :rtype: str
+    :returns: identifier (might be ``None``)
     """
     identifier = None
-    for _ in range(2):
+
+    def _extract_id(prefix, child):
+        if prefix in child.classes:
+            match = REGEX_PATTERNS['EXTRACT_ID'](prefix).match(
+                child.identifier)
+            if match:
+                return match.groups()[0]
+        raise ValueError()
+
+    # extract ID
+    for prefix in (INDEX_LABEL_PREFIX, SITE_UXID_PREFIX):
         try:
-            first_child = content[0]
+            # check first 3 elements
+            for idx in range(3):
+                child = content[idx]
+                try:
+                    identifier = _extract_id(prefix, child)
+                except (AttributeError, ValueError):
+                    pass
         except IndexError:
-            break
-        for prefix in (SITE_UXID_PREFIX, INDEX_LABEL_PREFIX):
-            try:
-                if prefix in first_child.classes:
-                    match = REGEX_PATTERNS['EXTRACT_ID'](prefix).match(
-                        first_child.identifier)
-                    if match:
-                        identifier = match.groups()[0]
-                        del content[0]  # remove id annotation element
-                        break
-            except AttributeError:
-                pass
-    return content, identifier
+            pass
+
+    return identifier
+
+
+def remove_annotations(doc):
+    """Remove left-over annotation elements from document.
+
+    :param doc: Document
+    :type doc: :py:class:`panflute.elements.Doc`
+    """
+    def _rem_para(elem, _):
+        try:
+            if (isinstance(elem, pf.Div) and
+                    (INDEX_LABEL_PREFIX in elem.classes or
+                     SITE_UXID_PREFIX in elem.classes)):
+                return []  # delete element
+        except AttributeError:
+            pass
+        return None
+    doc.walk(_rem_para)
 
 
 def remove_empty_paragraphs(doc):
@@ -255,12 +278,11 @@ def remove_empty_paragraphs(doc):
     :param doc: Document
     :type doc: :py:class:`panflute.elements.Doc`
     """
-    # pylint: disable=unused-argument,missing-docstring
-    def rem_para(elem, doc):
+    def _rem_para(elem, _):
         if isinstance(elem, pf.Para) and not elem.content:
             return []  # delete element
         return None
-    doc.walk(rem_para)
+    doc.walk(_rem_para)
 
 
 def remember_element(doc, elem):

@@ -97,7 +97,7 @@ class Commands():
         return []
 
     ###########################################################################
-    # Links/labels
+    # ID commands
 
     def handle_mdeclaresiteuxid(self, cmd_args, elem):
         r"""Handle ``\MDeclareSiteUXID`` command.
@@ -126,7 +126,8 @@ class Commands():
         r"""Handle ``\MLabel`` command.
 
         Will search for the previous header element and update its ID to the
-        ID defined in the ``\MLabel`` command.
+        ID defined in the command. Otherwise proceed like
+        ``\MDeclareSiteUXID``.
 
         Hides identifier in fake element like
         (:py:func:`innoconv_mintmod.mintmod_filter.commands.Commands.handle_mdeclaresiteuxid`).
@@ -150,6 +151,24 @@ class Commands():
         ret.classes = [INDEX_LABEL_PREFIX]
         ret.attributes = {'hidden': 'hidden'}
         return ret
+
+    def handle_msetsectionid(self, cmd_args, elem):
+        r"""Handle ``\MSetSectionID`` command.
+
+        Will search for the previous header element and update its ID to the
+        ID defined in the command.
+        """
+        identifier = cmd_args[0]
+
+        # attach identifier to previous element
+        try:
+            get_remembered_element(elem.doc).identifier = identifier
+        except AttributeError:
+            pass
+        return []
+
+    ###########################################################################
+    # Links/labels
 
     def handle_mref(self, cmd_args, elem):
         r"""Handle ``\MRef`` command.
@@ -522,13 +541,6 @@ class Commands():
         r"""Handle ``\MPrintIndex`` command.
 
         Index will be printed automatically. It becomes a no-op.
-        """
-        return self._noop()
-
-    def handle_msetsectionid(self, cmd_args, elem):
-        r"""Handle ``\MSetSectionID`` command.
-
-        This command is used solely for tikz images. It becomes a no-op.
         """
         return self._noop()
 

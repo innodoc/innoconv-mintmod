@@ -14,9 +14,7 @@ import sys
 import json
 import re
 from subprocess import Popen, PIPE
-from base64 import urlsafe_b64encode
 import yaml
-from slugify import slugify
 
 from innoconv_mintmod.constants import ENCODING, OUTPUT_FORMAT_EXT_MAP
 sys.path.append(os.path.join(os.environ['PANZER_SHARED'], 'panzerhelper'))
@@ -43,14 +41,6 @@ def concatenate_strings(elems):
         elif elem['t'] == 'Space':
             string += ' '
     return string
-
-
-def generate_id(content):
-    """Generate ID from content. If there's no content, create random ID."""
-    string = concatenate_strings(content)
-    if not string:
-        string = urlsafe_b64encode(os.urandom(6))
-    return slugify(string)
 
 
 def create_doc_tree(tree, level):
@@ -83,11 +73,13 @@ def create_doc_tree(tree, level):
                 section = {}
             section['title'] = node['c'][2]
             section_id = node['c'][1][0]
-            # auto-generate section ID if necessary
-            if not section_id:
-                section_id = generate_id(section['title'])
-            # number sections so they are in consistent order
-            section['id'] = '{:03}-{}'.format(section_idx, section_id)
+            section_num = '{:03}'.format(section_idx)
+            if section_id:
+                # number sections so they are in consistent order
+                section['id'] = '{}-{}'.format(section_num, section_id)
+            else:
+                # if there's no section id for some reason just use number
+                section['id'] = section_num
             section_idx += 1
         else:
             if await_header:
@@ -262,7 +254,7 @@ def main(debug=False):
         # write metadata file
         try:
             title = doc['meta']['title']['c']
-        except AttributeError:
+        except KeyError:
             title = 'UNKNOWN COURSE'
         update_manifest(lang, title, outdir)
     else:

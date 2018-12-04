@@ -49,7 +49,7 @@ class Environments():
         r"""Handle ``\MXContent`` environment."""
         content = parse_fragment(elem_content)
         header = create_header(env_args[0], elem.doc, level=3)
-        content, identifier = extract_identifier(content)
+        identifier = extract_identifier(content)
         if identifier:
             header.identifier = identifier
         content.insert(0, header)
@@ -66,6 +66,9 @@ class Environments():
         header = create_header(
             TRANSLATIONS['introduction'][lang], elem.doc, level=3,
             identifier='introduction')
+        identifier = extract_identifier(content)
+        if identifier:
+            header.identifier = identifier
         # pylint: disable=no-member
         header.classes.extend(ELEMENT_CLASSES['MINTRO'])
         content.insert(0, header)
@@ -145,9 +148,8 @@ class Environments():
         title = REGEX_PATTERNS['FIX_MTEST'].sub('', env_args[0])
 
         header = create_header(title, elem.doc, level=3)
-        content, identifier = extract_identifier(div.content)
+        identifier = extract_identifier(div.content)
         if identifier:
-            div.content = content
             header.identifier = identifier
         div.content.insert(0, header)
         return div
