@@ -179,7 +179,6 @@ ELEMENT_CLASSES = {
     'MCOSHZUSATZ': ['secondary'],
     'MEXAMPLE': ['example'],
     'MEXERCISE': ['exercise'],
-    'MEXERCISES': ['exercises'],
     'MGROUPBUTTON': ['verify-input-button'],
     'MQUESTIONGROUP': ['question-group'],
     'MEXPERIMENT': ['experiment'],
@@ -255,5 +254,9 @@ TRANSLATIONS = {
     'introduction': {
         'de': 'Einführung',
         'en': 'Introduction',
+    },
+    'exercises': {
+        'de': 'Aufgaben',
+        'en': 'Exercises',
     },
 }

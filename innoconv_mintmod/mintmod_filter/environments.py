@@ -79,11 +79,19 @@ class Environments():
 
     def handle_mexercises(self, elem_content, env_args, elem):
         r"""Handle ``\MExercises`` environment."""
-        return create_content_box(elem_content, ELEMENT_CLASSES['MEXERCISES'])
+        content = parse_fragment(elem_content)
+        lang = elem.doc.metadata['lang'].text
+        header = create_header(
+            TRANSLATIONS['exercises'][lang], elem.doc, level=3)
+        identifier = extract_identifier(content)
+        if identifier:
+            header.identifier = identifier
+        content.insert(0, header)
+        return content
 
     def handle_mexercisecollection(self, elem_content, env_args, elem):
         r"""Handle ``\MExerciseCollection`` environment."""
-        return create_content_box(elem_content, ELEMENT_CLASSES['MEXERCISES'])
+        return parse_fragment(elem_content)
 
     def handle_mexercise(self, elem_content, env_args, elem):
         r"""Handle ``\MExercise`` environment."""

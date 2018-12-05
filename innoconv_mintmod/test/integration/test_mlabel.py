@@ -96,9 +96,9 @@ class TestInnoconvIntegrationMlabel(unittest.TestCase):
         Sie die Umformungstechniken an zahlreichen Aufgaben einüben.
         \end{MExercises}""")
         self.assertIsInstance(doc, pf.Doc)
-        info_box = doc.content[0]
-        self.assertIsInstance(info_box, pf.Div)
-        self.assertEqual(info_box.identifier, 'VBKM01_AufgabenUmformen')
+        header = doc.content[0]
+        self.assertIsInstance(header, pf.Header)
+        self.assertEqual(header.identifier, 'VBKM01_AufgabenUmformen')
 
     def test_mgraphics(self):
         r"""Test if \MGraphics gets ID from \MLabel."""

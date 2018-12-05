@@ -71,11 +71,6 @@ class TestBoxesWithoutTitle(unittest.TestCase):
         self.doc = pf.Doc()
         self.environments = Environments()
 
-    def test_handle_mexercises(self):
-        """MExercises"""
-        self._test_content_box(
-            self.environments.handle_mexercises, ELEMENT_CLASSES['MEXERCISES'])
-
     def test_handle_mexercise(self):
         """MExercise"""
         self._test_content_box(
