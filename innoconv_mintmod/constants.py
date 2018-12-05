@@ -211,7 +211,7 @@ LANGUAGE_CODES = (
 DEFAULT_LANGUAGE_CODE = LANGUAGE_CODES[0]
 
 #: Default innoconv output directory
-DEFAULT_OUTPUT_DIR_BASE = os.path.join('.', 'innoconv_output')
+DEFAULT_OUTPUT_DIR_BASE = os.path.join('.', 'innoconv_mintmod_output')
 
 #: Default innoconv output format
 DEFAULT_OUTPUT_FORMAT = 'markdown'
