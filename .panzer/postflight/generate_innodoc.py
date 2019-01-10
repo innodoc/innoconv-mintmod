@@ -101,6 +101,8 @@ def write_sections(sections, outdir_base, output_format):
         # TODO: ensure atx-headers are used
         pandoc_cmd = [
             'pandoc',
+            '--wrap=preserve',
+            '--columns=999',
             '--standalone',
             '--from=json',
             '--to=markdown+yaml_metadata_block',

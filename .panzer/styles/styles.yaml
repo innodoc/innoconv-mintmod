@@ -20,6 +20,9 @@ innoconv-debug:
       - run: copy_innoconv.mathjax.py
 innoconv-generate-innodoc:
   parent: innoconv
+  commandline:
+    columns: "`999`"
+    wrap: preserve
   json:
     postflight:
       - run: generate_innodoc.py
