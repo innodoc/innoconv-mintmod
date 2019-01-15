@@ -9,11 +9,13 @@ Handle mintmod LaTeX commands.
     Example: ``handle_msection`` method will receive the command ``\MSection``.
 """
 
+from os import linesep
+import re
 import panflute as pf
 from slugify import slugify
 from innoconv_mintmod.constants import (
     ELEMENT_CLASSES, MINTMOD_SUBJECTS, REGEX_PATTERNS, INDEX_LABEL_PREFIX,
-    SITE_UXID_PREFIX)
+    SITE_UXID_PREFIX, TIKZ_SUBSTITUTIONS)
 from innoconv_mintmod.utils import (
     block_wrap, destringify, parse_fragment, log, get_remembered_element,
     to_inline)
@@ -319,11 +321,15 @@ class Commands():
 
         Create a ``CodeBlock`` with TikZ code.
         """
-        tikz_code = REGEX_PATTERNS['STRIP_HASH_LINE'].sub('', cmd_args[0])
         if isinstance(elem, pf.Inline):
-            ret = pf.Code(tikz_code)
-        else:
-            ret = pf.CodeBlock(tikz_code)
+            raise ValueError(
+                r'\MTikzAuto should be block element!: {}'.format(cmd_args))
+        tikz_code = REGEX_PATTERNS['STRIP_HASH_LINE'].sub('', cmd_args[0])
+        for repl in TIKZ_SUBSTITUTIONS:
+            tikz_code = re.sub(repl[0], repl[1], tikz_code)
+        # remove empty lines
+        tikz_code = linesep.join([s for s in tikz_code.splitlines() if s])
+        ret = pf.CodeBlock(tikz_code)
         ret.classes = ELEMENT_CLASSES['MTIKZAUTO']
         return ret
 

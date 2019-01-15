@@ -143,6 +143,24 @@ COMMANDS_IRREGULAR = OrderedDict((
     ),
 ))
 
+#: Simple Regex substitutions for TikZ images
+TIKZ_SUBSTITUTIONS = (
+    (r'\\MEinheit{([^}]+?)}', r'\\unit{\1}'),
+    (r'\\MZahl{([0-9]+?)}{([0-9]*?)}', r'\\num{\1.\2}'),
+    (r'\\Mvarphi', r'\\varphi'),
+    (r'\\Mvarepsilon', r'\\varepsilon'),
+    (r'\\Mmeasuredangle', r'\\measuredangle'),
+    (r'\\MDVec', r'\\overrightarrow'),
+    (r'\\MVec{', r'\\vec{'),  # trailing '{' so it doesn't touch \MVector
+    (r'\\MZXYZhltrennzeichen', r'\\decmarker'),
+    (r'\\MVector{', r'\\colvector{'),
+    (r'\\MGrad', r'\\degree'),
+    (r'\\MPointTwo', r'\\pointtwo'),
+    (r'\\MPointThree', r'\\pointthree'),
+    (r'\\jccolorfktareahell', r'\\funccolorareabright'),
+    (r'\\jccolorfkt', r'\\funccolor'),
+)
+
 #: Regular expressions
 REGEX_PATTERNS = {
     # latex parsing
