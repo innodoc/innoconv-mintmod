@@ -49,14 +49,13 @@ MATH_SUBSTITUTIONS = (
     (r'\\MIntvlSep', ';'),
     (r'\\MEU', 'e'),
     (r'\\MDwSp', r'\,d'),
-    (r'\\ML', ' L'),
+    (r'\\ML', 'L'),
     (r'\\MEmptyset', r'\emptyset'),
     (r'\\MUnderset', r'\underset'),
     (r'\\MBinom', r'\\binom'),
     (r'\\MTextSF', r'\\textsf'),
     (r'\\MHDots', r'\\dots'),
     (r'\\Mvarphi', r'\\varphi'),
-    (r'\\MDFPeriod', r'\, .'),
     (r'\\Mmeasuredangle', r'\\measuredangle'),
     (r'\\lto', r'\\longrightarrow'),
     (r'\\null', r''),
@@ -82,7 +81,7 @@ MATH_SUBSTITUTIONS = (
 
     # handled by innoconv.mathjax.js
     (r'\\MZahl{([0-9]+?)}{([0-9]*?)}', r'\\num{\1.\2}'),
-    (r'\\MZXYZhltrennzeichen}', r'\decmarker'),
+    (r'\\MZXYZhltrennzeichen', r'\decmarker'),
 
     # intervals (#17)
     (r'\\MoIl\[\\left\]', r'\left]'),
