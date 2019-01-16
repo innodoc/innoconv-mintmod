@@ -329,8 +329,9 @@ class Commands():
             tikz_code = re.sub(repl[0], repl[1], tikz_code)
         # remove empty lines
         tikz_code = linesep.join([s for s in tikz_code.splitlines() if s])
-        ret = pf.CodeBlock(tikz_code)
-        ret.classes = ELEMENT_CLASSES['MTIKZAUTO']
+        codeblock = pf.CodeBlock(tikz_code)
+        codeblock.classes = ELEMENT_CLASSES['MTIKZAUTO']
+        ret = pf.Div(codeblock, classes=['figure'])
         return ret
 
     ###########################################################################
