@@ -2,12 +2,16 @@
 
 from textwrap import shorten
 import panflute as pf
-from innoconv_mintmod.constants import ELEMENT_CLASSES, QUESTION_TYPES
+from innoconv_mintmod.constants import (
+    DEFAULT_EXERCISE_POINTS,
+    ELEMENT_CLASSES,
+    QUESTION_TYPES,
+)
 from innoconv_mintmod.utils import (
     destringify,
     parse_fragment,
     extract_identifier,
-    remember_element,
+    remember,
     log,
 )
 
@@ -29,6 +33,9 @@ class Exercise(pf.Element):
         mintmod_class = kwargs.get("mintmod_class", None)
         oktypes = kwargs.get("oktypes", None)
         cmd_args = args[0]
+        points = kwargs.get("points", None)
+        if points is None:
+            points = DEFAULT_EXERCISE_POINTS
 
         if mintmod_class is None:
             raise ValueError(
@@ -107,6 +114,8 @@ class Exercise(pf.Element):
                 ["questionType", QUESTION_TYPES["MATH_INTERVAL"]]
             )
 
+        attributes.append(["points", points])
+
         if oktypes == pf.Block:
             return pf.Div(classes=classes, attributes=attributes)
 
@@ -162,7 +171,7 @@ def create_header(title_str, doc, level=0, parse_text=False, identifier=""):
     else:
         title = destringify(title_str)
     header = pf.Header(*title, level=level, identifier=identifier)
-    remember_element(doc, header)
+    remember(doc, "label", header)
     return header
 
 
@@ -181,11 +190,11 @@ def create_image(filename, descr, elem, add_descr=True, block=True):
 
     if block:
         ret = pf.Div(pf.Plain(img), classes=ELEMENT_CLASSES["FIGURE"])
-        remember_element(elem.doc, ret)
+        remember(elem.doc, "label", ret)
         if add_descr:
             ret.content.append(descr.content[0])
     else:
-        remember_element(elem.doc, img)
+        remember(elem.doc, "label", img)
         ret = img
 
     return ret

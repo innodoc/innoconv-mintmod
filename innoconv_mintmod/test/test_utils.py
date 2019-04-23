@@ -13,8 +13,8 @@ from innoconv_mintmod.utils import (
     parse_cmd,
     parse_nested_args,
     remove_empty_paragraphs,
-    remember_element,
-    get_remembered_element,
+    remember,
+    get_remembered,
     to_inline,
     extract_identifier,
 )
@@ -274,24 +274,24 @@ class TestRemoveEmptyParagraphs(unittest.TestCase):
         self.assertEqual(para2.content[2].text, "Baz")
 
 
-class TestRememberElement(unittest.TestCase):
-    def test_remember_element(self):
-        """It should remember and forget elements."""
+class TestRemember(unittest.TestCase):
+    def test_remember(self):
+        """It should remember and forget."""
         doc = pf.Doc()
 
-        self.assertIsNone(get_remembered_element(doc))
+        self.assertIsNone(get_remembered(doc, "somekey"))
 
         header = pf.Header()
-        remember_element(doc, header)
-        rememembered_el = get_remembered_element(doc)
+        remember(doc, "header", header)
+        rememembered_el = get_remembered(doc, "header")
         self.assertEqual(rememembered_el, header)
-        self.assertIsNone(get_remembered_element(doc))
+        self.assertIsNone(get_remembered(doc, "header"))
 
         img = pf.Image()
-        remember_element(doc, img)
-        rememembered_img = get_remembered_element(doc)
+        remember(doc, "img", img)
+        rememembered_img = get_remembered(doc, "img")
         self.assertEqual(rememembered_img, img)
-        self.assertIsNone(get_remembered_element(doc))
+        self.assertIsNone(get_remembered(doc, "img"))
 
 
 class TestToInline(unittest.TestCase):

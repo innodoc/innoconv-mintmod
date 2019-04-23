@@ -9,7 +9,7 @@ from innoconv_mintmod.constants import (
     QUESTION_TYPES,
 )
 from innoconv_mintmod.mintmod_filter.commands import Commands
-from innoconv_mintmod.utils import remember_element
+from innoconv_mintmod.utils import remember
 
 
 class TestCommands(unittest.TestCase):
@@ -90,7 +90,7 @@ class TestCommands(unittest.TestCase):
         header = pf.Header(pf.Str("headertext"))
         doc = pf.Doc(header, mlabel, format="latex")
         elem = doc.content[0]
-        remember_element(doc, elem)
+        remember(doc, "label", elem)
         ret = self.commands.handle_mlabel(["HEADER"], elem)
         self.assertFalse(ret)
         # pylint: disable=no-member
@@ -413,9 +413,10 @@ class TestExercises(unittest.TestCase):
         self.commands = Commands()
 
     def test_handle_mquestion(self):
-        """MQuestion command inline"""
+        """MQuestion command inline."""
         content = r"\MLParsedQuestion{10}{5}{3}{ER1}"
         doc = pf.Doc(pf.RawBlock(content), format="latex")
+        remember(doc, "points", "8")
         elem = doc.content[0]  # this sets up elem.parent
         elem_args = ["10", "5", "3", "ER1"]
         ret = self.commands.handle_mlparsedquestion(elem_args, elem)
@@ -425,6 +426,7 @@ class TestExercises(unittest.TestCase):
         self.assertEqual(ret.attributes["solution"], "5")
         self.assertEqual(ret.attributes["precision"], "3")
         self.assertEqual(ret.attributes["uxid"], "ER1")
+        self.assertEqual(ret.attributes["points"], "8")
         self.assertEqual(
             ret.attributes["questionType"], QUESTION_TYPES["MATH_EXPRESSION"]
         )

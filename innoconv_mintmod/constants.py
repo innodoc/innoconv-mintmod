@@ -11,6 +11,12 @@ INDEX_LABEL_PREFIX = "index-label"
 #: Element class for SiteUXID
 SITE_UXID_PREFIX = "site-uxid"
 
+#: Element class for exercise set points
+POINTS_CLASS = "exercise-points"
+
+#: Default points for exercises
+DEFAULT_EXERCISE_POINTS = "4"
+
 #: Don't show this unknown commands/envs in error log
 EXERCISE_CMDS_ENVS = (
     "MLParsedQuestion",

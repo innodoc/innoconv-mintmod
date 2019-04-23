@@ -298,35 +298,45 @@ def remove_empty_paragraphs(doc):
     doc.walk(_rem_para)
 
 
-def remember_element(doc, elem):
+def remember(doc, key, elem):
     """Rememember an element in the document for later.
 
-    To retrieve remembered elements use :py:func:`get_remembered_element`.
+    To retrieve remembered elements use :py:func:`get_remembered`.
 
     :param doc: Document where to store the memory
     :type doc: :py:class:`panflute.elements.Doc`
+    :param key: Key under which element is stored
+    :type key: str
     :param elem: Element to remember
     :type elem: :py:class:`panflute.base.Element`
     """
-    doc.remembered_element = elem
+    try:
+        doc.remembered_element[key] = elem
+    except AttributeError:
+        doc.remembered_element = {key: elem}
 
 
-def get_remembered_element(doc):
+def get_remembered(doc, key, keep=False):
     """Retrieve rememembered element from the document and forget it.
 
-    To remember elements use :py:func:`remember_element`.
+    To remember elements use :py:func:`remember`.
 
     :param doc: Document where the element is stored
     :type doc: :py:class:`panflute.elements.Doc`
+    :param key: Key under which element is stored
+    :type key: str
+    :param keep: If value should be kept after retrieving (default=False)
+    :type keep: bool
 
     :rtype: :py:class:`panflute.base.Element`
     :returns: The remembered element or `None`
     """
     try:
-        elem = doc.remembered_element
-    except AttributeError:
+        elem = doc.remembered_element[key]
+    except (AttributeError, KeyError):
         return None
-    del doc.remembered_element
+    if not keep:
+        del doc.remembered_element[key]
     return elem
 
 

@@ -26,8 +26,9 @@ from innoconv_mintmod.utils import (
     destringify,
     parse_fragment,
     log,
-    get_remembered_element,
+    get_remembered,
     to_inline,
+    remember,
 )
 from innoconv_mintmod.mintmod_filter.elements import (
     Exercise,
@@ -152,7 +153,7 @@ class Commands:
 
         # attach identifier to previous element
         try:
-            get_remembered_element(elem.doc).identifier = identifier
+            get_remembered(elem.doc, "label").identifier = identifier
             return []
         except AttributeError:
             pass
@@ -178,7 +179,7 @@ class Commands:
 
         # attach identifier to previous element
         try:
-            get_remembered_element(elem.doc).identifier = identifier
+            get_remembered(elem.doc, "label").identifier = identifier
         except AttributeError:
             pass
         return []
@@ -356,6 +357,7 @@ class Commands:
             cmd_args,
             mintmod_class="MLQuestion",
             oktypes=elem.parent.content.oktypes,
+            points=get_remembered(elem.doc, "points", keep=True),
         )
 
     def handle_mlparsedquestion(self, cmd_args, elem):
@@ -364,6 +366,7 @@ class Commands:
             cmd_args,
             mintmod_class="MLParsedQuestion",
             oktypes=elem.parent.content.oktypes,
+            points=get_remembered(elem.doc, "points", keep=True),
         )
 
     def handle_mlfunctionquestion(self, cmd_args, elem):
@@ -372,6 +375,7 @@ class Commands:
             cmd_args,
             mintmod_class="MLFunctionQuestion",
             oktypes=elem.parent.content.oktypes,
+            points=get_remembered(elem.doc, "points", keep=True),
         )
 
     def handle_mlspecialquestion(self, cmd_args, elem):
@@ -380,6 +384,7 @@ class Commands:
             cmd_args,
             mintmod_class="MLSpecialQuestion",
             oktypes=elem.parent.content.oktypes,
+            points=get_remembered(elem.doc, "points", keep=True),
         )
 
     def handle_mlsimplifyquestion(self, cmd_args, elem):
@@ -388,6 +393,7 @@ class Commands:
             cmd_args,
             mintmod_class="MLSimplifyQuestion",
             oktypes=elem.parent.content.oktypes,
+            points=get_remembered(elem.doc, "points", keep=True),
         )
 
     def handle_mlcheckbox(self, cmd_args, elem):
@@ -396,6 +402,7 @@ class Commands:
             cmd_args,
             mintmod_class="MLCheckbox",
             oktypes=elem.parent.content.oktypes,
+            points=get_remembered(elem.doc, "points", keep=True),
         )
 
     def handle_mlintervalquestion(self, cmd_args, elem):
@@ -404,6 +411,7 @@ class Commands:
             cmd_args,
             mintmod_class="MLIntervalQuestion",
             oktypes=elem.parent.content.oktypes,
+            points=get_remembered(elem.doc, "points", keep=True),
         )
 
     def handle_mgroupbutton(self, cmd_args, elem):
@@ -417,7 +425,17 @@ class Commands:
         div = pf.Div(text, classes=ELEMENT_CLASSES["MGROUPBUTTON"])
         return div
 
-    # TODO: MSetPoints
+    def handle_msetpoints(self, cmd_args, elem):
+        r"""Handle ``\MSetPoints`` command.
+
+        Remember points for next exercise.
+        """
+        points_value = cmd_args[0]
+
+        # remember points for next exercise to pick them up
+        remember(elem.doc, "points", points_value)
+
+        return []
 
     # TODO: MDirectRouletteExercises
     # filename.rtex is a pool of MExercise envs. In the content
