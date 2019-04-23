@@ -14,16 +14,29 @@ import re
 import panflute as pf
 from slugify import slugify
 from innoconv_mintmod.constants import (
-    ELEMENT_CLASSES, MINTMOD_SUBJECTS, REGEX_PATTERNS, INDEX_LABEL_PREFIX,
-    SITE_UXID_PREFIX, TIKZ_SUBSTITUTIONS)
+    ELEMENT_CLASSES,
+    MINTMOD_SUBJECTS,
+    REGEX_PATTERNS,
+    INDEX_LABEL_PREFIX,
+    SITE_UXID_PREFIX,
+    TIKZ_SUBSTITUTIONS,
+)
 from innoconv_mintmod.utils import (
-    block_wrap, destringify, parse_fragment, log, get_remembered_element,
-    to_inline)
+    block_wrap,
+    destringify,
+    parse_fragment,
+    log,
+    get_remembered_element,
+    to_inline,
+)
 from innoconv_mintmod.mintmod_filter.elements import (
-    Exercise, create_header, create_image)
+    Exercise,
+    create_header,
+    create_image,
+)
 
 
-class Commands():
+class Commands:
 
     r"""
     Handlers for commands are defined here.
@@ -85,8 +98,8 @@ class Commands():
 
         Command defines the document title.
         """
-        if not hasattr(elem.doc.metadata, 'title'):
-            elem.doc.metadata['title'] = pf.MetaString(cmd_args[0])
+        if not hasattr(elem.doc.metadata, "title"):
+            elem.doc.metadata["title"] = pf.MetaString(cmd_args[0])
         return create_header(cmd_args[0], level=1, doc=elem.doc)
 
     def handle_msetsubject(self, cmd_args, elem):
@@ -94,8 +107,9 @@ class Commands():
 
         Command defines the category.
         """
-        elem.doc.metadata['subject'] = pf.MetaString(
-            MINTMOD_SUBJECTS[cmd_args[0]])
+        elem.doc.metadata["subject"] = pf.MetaString(
+            MINTMOD_SUBJECTS[cmd_args[0]]
+        )
         return []
 
     ###########################################################################
@@ -119,9 +133,9 @@ class Commands():
             ret = pf.Div()
         else:
             ret = pf.Span()
-        ret.identifier = '{}-{}'.format(SITE_UXID_PREFIX, identifier)
+        ret.identifier = "{}-{}".format(SITE_UXID_PREFIX, identifier)
         ret.classes = [SITE_UXID_PREFIX]
-        ret.attributes = {'hidden': 'hidden'}
+        ret.attributes = {"hidden": "hidden"}
         return ret
 
     def handle_mlabel(self, cmd_args, elem):
@@ -149,9 +163,9 @@ class Commands():
             ret = pf.Div()
         else:
             ret = pf.Span()
-        ret.identifier = '{}-{}'.format(INDEX_LABEL_PREFIX, identifier)
+        ret.identifier = "{}-{}".format(INDEX_LABEL_PREFIX, identifier)
         ret.classes = [INDEX_LABEL_PREFIX]
-        ret.attributes = {'hidden': 'hidden'}
+        ret.attributes = {"hidden": "hidden"}
         return ret
 
     def handle_msetsectionid(self, cmd_args, elem):
@@ -177,15 +191,15 @@ class Commands():
 
         This command translates to ``\vref``.
         """
-        url = '#%s' % cmd_args[0]
-        return block_wrap(pf.Link(pf.Str('PLACEHOLDER'), url=url), elem)
+        url = "#%s" % cmd_args[0]
+        return block_wrap(pf.Link(pf.Str("PLACEHOLDER"), url=url), elem)
 
     def handle_msref(self, cmd_args, elem):
         r"""Handle ``\MSRef`` command.
 
         This command inserts a fragment-style link.
         """
-        url = '#%s' % cmd_args[0]
+        url = "#%s" % cmd_args[0]
         description = destringify(cmd_args[1])
         return block_wrap(pf.Link(*description, url=url), elem)
 
@@ -196,7 +210,7 @@ class Commands():
         """
         identifier = cmd_args[0]
         span = pf.Span()
-        span.attributes = {'data-link-section': identifier}
+        span.attributes = {"data-link-section": identifier}
         span.content = [pf.Str(identifier)]
         return block_wrap(span, elem)
 
@@ -228,8 +242,8 @@ class Commands():
 
         strong.content.extend(parse_fragment(text)[0].content)
         span = pf.Span()
-        span.identifier = 'index-{}'.format(slugify(concept))
-        span.attributes = {'data-index-concept': concept}
+        span.identifier = "index-{}".format(slugify(concept))
+        span.attributes = {"data-index-concept": concept}
         span.content = [strong]
         return block_wrap(span, elem)
 
@@ -244,11 +258,8 @@ class Commands():
 
         concept = cmd_args[0]
         span = pf.Span()
-        span.identifier = 'index-{}'.format(slugify(concept))
-        span.attributes = {
-            'data-index-concept': concept,
-            'hidden': 'hidden',
-        }
+        span.identifier = "index-{}".format(slugify(concept))
+        span.attributes = {"data-index-concept": concept, "hidden": "hidden"}
         return block_wrap(span, elem)
 
     ###########################################################################
@@ -270,8 +281,9 @@ class Commands():
         Embed an image without title. Uses filename as image title.
         """
         is_block = isinstance(elem, pf.Block)
-        return create_image(cmd_args[0], cmd_args[0], elem, block=is_block,
-                            add_descr=False)
+        return create_image(
+            cmd_args[0], cmd_args[0], elem, block=is_block, add_descr=False
+        )
 
     def handle_mugraphics(self, cmd_args, elem):
         r"""Handle ``\MUGraphics``.
@@ -297,7 +309,7 @@ class Commands():
             *destringify(title),
             url=url,
             title=title,
-            classes=ELEMENT_CLASSES['MYOUTUBE_VIDEO']
+            classes=ELEMENT_CLASSES["MYOUTUBE_VIDEO"]
         )
         return block_wrap(link, elem)
 
@@ -306,13 +318,13 @@ class Commands():
 
         Just return a Link Element.
         """
-        filename = '{}.mp4'.format(cmd_args[0])
+        filename = "{}.mp4".format(cmd_args[0])
         title = cmd_args[1]
         link = pf.Link(
             *destringify(title),
             url=filename,
             title=title,
-            classes=ELEMENT_CLASSES['MVIDEO']
+            classes=ELEMENT_CLASSES["MVIDEO"]
         )
         return block_wrap(link, elem)
 
@@ -323,15 +335,16 @@ class Commands():
         """
         if isinstance(elem, pf.Inline):
             raise ValueError(
-                r'\MTikzAuto should be block element!: {}'.format(cmd_args))
-        tikz_code = REGEX_PATTERNS['STRIP_HASH_LINE'].sub('', cmd_args[0])
+                r"\MTikzAuto should be block element!: {}".format(cmd_args)
+            )
+        tikz_code = REGEX_PATTERNS["STRIP_HASH_LINE"].sub("", cmd_args[0])
         for repl in TIKZ_SUBSTITUTIONS:
             tikz_code = re.sub(repl[0], repl[1], tikz_code)
         # remove empty lines
         tikz_code = linesep.join([s for s in tikz_code.splitlines() if s])
         codeblock = pf.CodeBlock(tikz_code)
-        codeblock.classes = ELEMENT_CLASSES['MTIKZAUTO']
-        ret = pf.Div(codeblock, classes=['figure'])
+        codeblock.classes = ELEMENT_CLASSES["MTIKZAUTO"]
+        ret = pf.Div(codeblock, classes=["figure"])
         return ret
 
     ###########################################################################
@@ -339,52 +352,72 @@ class Commands():
 
     def handle_mlquestion(self, cmd_args, elem):
         r"""Handle exercises defined by ``\MLQuestion`` command"""
-        return Exercise(cmd_args, mintmod_class='MLQuestion',
-                        oktypes=elem.parent.content.oktypes)
+        return Exercise(
+            cmd_args,
+            mintmod_class="MLQuestion",
+            oktypes=elem.parent.content.oktypes,
+        )
 
     def handle_mlparsedquestion(self, cmd_args, elem):
         r"""Handle exercises defined by ``\MLParsedQuestion`` command"""
-        return Exercise(cmd_args, mintmod_class='MLParsedQuestion',
-                        oktypes=elem.parent.content.oktypes)
+        return Exercise(
+            cmd_args,
+            mintmod_class="MLParsedQuestion",
+            oktypes=elem.parent.content.oktypes,
+        )
 
     def handle_mlfunctionquestion(self, cmd_args, elem):
         r"""Handle exercises defined by ``\MLFunctionQuestion`` command"""
-        return Exercise(cmd_args, mintmod_class='MLFunctionQuestion',
-                        oktypes=elem.parent.content.oktypes)
+        return Exercise(
+            cmd_args,
+            mintmod_class="MLFunctionQuestion",
+            oktypes=elem.parent.content.oktypes,
+        )
 
     def handle_mlspecialquestion(self, cmd_args, elem):
         r"""Handle exercises defined by ``\MLSpecialquestion`` command"""
-        return Exercise(cmd_args, mintmod_class='MLSpecialQuestion',
-                        oktypes=elem.parent.content.oktypes)
+        return Exercise(
+            cmd_args,
+            mintmod_class="MLSpecialQuestion",
+            oktypes=elem.parent.content.oktypes,
+        )
 
     def handle_mlsimplifyquestion(self, cmd_args, elem):
         r"""Handle exercises defined by ``\MLSimplifyQuestion`` command"""
-        return Exercise(cmd_args, mintmod_class='MLSimplifyQuestion',
-                        oktypes=elem.parent.content.oktypes)
+        return Exercise(
+            cmd_args,
+            mintmod_class="MLSimplifyQuestion",
+            oktypes=elem.parent.content.oktypes,
+        )
 
     def handle_mlcheckbox(self, cmd_args, elem):
         r"""Handle exercises defined by ``\MLCheckbox`` command"""
-        return Exercise(cmd_args, mintmod_class='MLCheckbox',
-                        oktypes=elem.parent.content.oktypes)
+        return Exercise(
+            cmd_args,
+            mintmod_class="MLCheckbox",
+            oktypes=elem.parent.content.oktypes,
+        )
 
     def handle_mlintervalquestion(self, cmd_args, elem):
         r"""Handle exercises defined by ``\MLIntervalQuestion`` command"""
-        return Exercise(cmd_args, mintmod_class='MLIntervalQuestion',
-                        oktypes=elem.parent.content.oktypes)
+        return Exercise(
+            cmd_args,
+            mintmod_class="MLIntervalQuestion",
+            oktypes=elem.parent.content.oktypes,
+        )
 
     def handle_mgroupbutton(self, cmd_args, elem):
         r"""Handle ``\MGroupButton`` command"""
         if isinstance(elem, pf.Inline):
             raise ValueError(
-                r'\MGroupButton should be block element!: {}'.format(
-                    cmd_args))
+                r"\MGroupButton should be block element!: {}".format(cmd_args)
+            )
 
         text = pf.Plain(*destringify(cmd_args[0]))
-        div = pf.Div(text, classes=ELEMENT_CLASSES['MGROUPBUTTON'])
+        div = pf.Div(text, classes=ELEMENT_CLASSES["MGROUPBUTTON"])
         return div
 
-    # TODO MSetPoints: seems to be used per exercise, should probably be passed
-    #      up to exercise env and encoded as class property or similar
+    # TODO: MSetPoints
 
     # TODO: MDirectRouletteExercises
     # filename.rtex is a pool of MExercise envs. In the content
@@ -401,18 +434,18 @@ class Commands():
 
         This command is used to embed HTML in LaTeX source.
         """
-        if cmd_args[0].startswith('html:'):
-            return pf.RawBlock(cmd_args[0][5:], format='html')
+        if cmd_args[0].startswith("html:"):
+            return pf.RawBlock(cmd_args[0][5:], format="html")
         return None
 
     def handle_minputhint(self, cmd_args, elem):
         r"""Handle ``\MInputHint`` command."""
         content = parse_fragment(cmd_args[0])
         if isinstance(elem, pf.Block):
-            div = pf.Div(classes=ELEMENT_CLASSES['MINPUTHINT'])
+            div = pf.Div(classes=ELEMENT_CLASSES["MINPUTHINT"])
             div.content.extend(content)
             return div
-        span = pf.Span(classes=ELEMENT_CLASSES['MINPUTHINT'])
+        span = pf.Span(classes=ELEMENT_CLASSES["MINPUTHINT"])
         if content and isinstance(content[0], pf.Para):
             span.content.extend(content[0].content)
         return span
@@ -422,8 +455,10 @@ class Commands():
 
         if len(cmd_args) != 2:
             raise ValueError(
-                r'\MEquationItem needs 2 arguments. Received: {}'.format(
-                    cmd_args))
+                r"\MEquationItem needs 2 arguments. Received: {}".format(
+                    cmd_args
+                )
+            )
 
         content_left = parse_fragment(cmd_args[0])
         content_right = parse_fragment(cmd_args[1])
@@ -431,7 +466,7 @@ class Commands():
         content = to_inline(
             [
                 content_left,
-                pf.Math(r'\;\;=\;', format='InlineMath'),
+                pf.Math(r"\;\;=\;", format="InlineMath"),
                 content_right,
             ]
         )
@@ -453,8 +488,9 @@ class Commands():
         """
         if isinstance(elem, pf.Block):
             raise ValueError(
-                r'Encountered \MZXYZhltrennzeichen as block element!')
-        return pf.Math(r'\decmarker', format='InlineMath')
+                r"Encountered \MZXYZhltrennzeichen as block element!"
+            )
+        return pf.Math(r"\decmarker", format="InlineMath")
 
     def handle_mzahl(self, cmd_args, elem):
         r"""Handle ``\MZahl`` command.
@@ -462,21 +498,22 @@ class Commands():
         This is a math command but in fact occurs also in text.
         """
         if isinstance(elem, pf.Block):
-            raise ValueError(
-                r'Encountered \MZahl as block element!')
-        return pf.Math(r'\num{{{}.{}}}'.format(cmd_args[0], cmd_args[1]),
-                       format='InlineMath')
+            raise ValueError(r"Encountered \MZahl as block element!")
+        return pf.Math(
+            r"\num{{{}.{}}}".format(cmd_args[0], cmd_args[1]),
+            format="InlineMath",
+        )
 
     ###########################################################################
     # Simple substitutions
 
     def handle_glqq(self, cmd_args, elem):
         r"""Handle ``\glqq`` command."""
-        return pf.Str('„')
+        return pf.Str("„")
 
     def handle_grqq(self, cmd_args, elem):
         r"""Handle ``\grqq`` command."""
-        return pf.Str('“')
+        return pf.Str("“")
 
     def handle_quad(self, cmd_args, elem):
         r"""Handle ``\quad`` command."""
@@ -504,8 +541,10 @@ class Commands():
         documentation and it does nothing in the mintmod code. We just keep
         the information here.
         """
-        return pf.Span(*parse_fragment(cmd_args[0])[0].content,
-                       classes=ELEMENT_CLASSES['HIGHLIGHT'])
+        return pf.Span(
+            *parse_fragment(cmd_args[0])[0].content,
+            classes=ELEMENT_CLASSES["HIGHLIGHT"]
+        )
 
     def handle_newline(self, cmd_args, elem):
         r"""Handle \newline command."""

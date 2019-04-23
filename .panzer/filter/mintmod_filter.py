@@ -10,16 +10,17 @@ from innoconv_mintmod.utils import remove_annotations, remove_empty_paragraphs
 
 def main():
     """Execute filter and remove empty paragraphs."""
-    debug = bool(os.environ.get('INNOCONV_DEBUG'))
+    debug = bool(os.environ.get("INNOCONV_DEBUG"))
     filter_action = MintmodFilterAction(debug=debug)
 
     def _finalize(doc):
         remove_empty_paragraphs(doc)
-        if not os.getenv('INNOCONV_RECURSION_DEPTH'):
+        if not os.getenv("INNOCONV_RECURSION_DEPTH"):
             # remove_annotations must not happen in subprocesses
             remove_annotations(doc)
+
     run_filter(filter_action.filter, finalize=_finalize)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -13,11 +13,15 @@ import re
 
 def main():
     """Main entry point."""
-    out = re.sub(r"\\ifttm(.*?)\\else.*?\\fi([%\s\\])", r"\1\2",
-                 sys.stdin.read(), flags=re.DOTALL)
+    out = re.sub(
+        r"\\ifttm(.*?)\\else.*?\\fi([%\s\\])",
+        r"\1\2",
+        sys.stdin.read(),
+        flags=re.DOTALL,
+    )
     sys.stdout.write(out)
     sys.stdout.flush()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

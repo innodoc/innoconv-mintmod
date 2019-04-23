@@ -4,7 +4,12 @@ from textwrap import shorten
 import panflute as pf
 from innoconv_mintmod.constants import ELEMENT_CLASSES, QUESTION_TYPES
 from innoconv_mintmod.utils import (
-    destringify, parse_fragment, extract_identifier, remember_element, log)
+    destringify,
+    parse_fragment,
+    extract_identifier,
+    remember_element,
+    log,
+)
 
 
 class Exercise(pf.Element):
@@ -13,98 +18,93 @@ class Exercise(pf.Element):
     instances, with special classes and attributes, depending on the given
     mintmod class.
     """
-    __slots__ = ['identifier', 'classes', 'attributes']
+
+    __slots__ = ["identifier", "classes", "attributes"]
 
     def __new__(cls, *args, **kwargs):
         """ The __new__ function expects a keyword argument with the key
         'mintmod_class' that specifies the type of exercise in the mintmod
         converter.
         """
-        mintmod_class = kwargs.get('mintmod_class', None)
-        oktypes = kwargs.get('oktypes', None)
+        mintmod_class = kwargs.get("mintmod_class", None)
+        oktypes = kwargs.get("oktypes", None)
         cmd_args = args[0]
 
         if mintmod_class is None:
-            raise ValueError("Expected named keyword arg "
-                             "mintmod_class in: {}".format(kwargs))
-
-        if mintmod_class == 'MLQuestion':
-            classes = ['exercise', 'text']
-            attributes = parse_ex_args(
-                cmd_args, 'length', 'solution', 'uxid')
-            attributes.append(['questionType', QUESTION_TYPES['EXACT']])
-
-        elif mintmod_class == 'MLParsedQuestion':
-            classes = ['exercise', 'text']
-            attributes = parse_ex_args(cmd_args, 'length', 'solution',
-                                       'precision', 'uxid')
-            attributes.append(
-                ['questionType', QUESTION_TYPES['MATH_EXPRESSION']]
+            raise ValueError(
+                "Expected named keyword arg "
+                "mintmod_class in: {}".format(kwargs)
             )
 
-        elif mintmod_class == 'MLFunctionQuestion':
-            classes = ['exercise', 'text']
-            attributes = parse_ex_args(
-                cmd_args,
-                'length',
-                'solution',
-                'supporting-points',
-                'variables',
-                'precision',
-                'uxid'
-            )
-            attributes.append(['questionType', QUESTION_TYPES['MATH_FORMULA']])
+        if mintmod_class == "MLQuestion":
+            classes = ["exercise", "text"]
+            attributes = parse_ex_args(cmd_args, "length", "solution", "uxid")
+            attributes.append(["questionType", QUESTION_TYPES["EXACT"]])
 
-        elif mintmod_class == 'MLSpecialQuestion':
-            classes = ['exercise', 'text']
+        elif mintmod_class == "MLParsedQuestion":
+            classes = ["exercise", "text"]
             attributes = parse_ex_args(
-                cmd_args,
-                'length',
-                'solution',
-                'supporting-points',
-                'variables',
-                'precision',
-                'special-type',
-                'uxid'
-            )
-            attributes.append(['questionType', QUESTION_TYPES['SPECIAL']])
-
-        elif mintmod_class == 'MLSimplifyQuestion':
-            classes = ['exercise', 'text']
-            attributes = parse_ex_args(
-                cmd_args,
-                'length',
-                'solution',
-                'supporting-points',
-                'variables',
-                'precision',
-                'simplification-code',
-                'uxid'
+                cmd_args, "length", "solution", "precision", "uxid"
             )
             attributes.append(
-                ['questionType', QUESTION_TYPES['MATH_SIMPLIFY']]
+                ["questionType", QUESTION_TYPES["MATH_EXPRESSION"]]
             )
 
-        elif mintmod_class == 'MLCheckbox':
-            classes = ['exercise', 'checkbox']
+        elif mintmod_class == "MLFunctionQuestion":
+            classes = ["exercise", "text"]
             attributes = parse_ex_args(
                 cmd_args,
-                'solution',
-                'uxid'
+                "length",
+                "solution",
+                "supporting-points",
+                "variables",
+                "precision",
+                "uxid",
             )
-            attributes.append(['questionType', QUESTION_TYPES['BOOLEAN']])
+            attributes.append(["questionType", QUESTION_TYPES["MATH_FORMULA"]])
 
-        elif mintmod_class == 'MLIntervalQuestion':
-            classes = ['exercise', 'text']
+        elif mintmod_class == "MLSpecialQuestion":
+            classes = ["exercise", "text"]
             attributes = parse_ex_args(
                 cmd_args,
-                'length',
-                'solution',
-                'precision',
-                'uxid'
+                "length",
+                "solution",
+                "supporting-points",
+                "variables",
+                "precision",
+                "special-type",
+                "uxid",
+            )
+            attributes.append(["questionType", QUESTION_TYPES["SPECIAL"]])
+
+        elif mintmod_class == "MLSimplifyQuestion":
+            classes = ["exercise", "text"]
+            attributes = parse_ex_args(
+                cmd_args,
+                "length",
+                "solution",
+                "supporting-points",
+                "variables",
+                "precision",
+                "simplification-code",
+                "uxid",
             )
             attributes.append(
-                ['questionType', QUESTION_TYPES['MATH_INTERVAL']]
+                ["questionType", QUESTION_TYPES["MATH_SIMPLIFY"]]
+            )
+
+        elif mintmod_class == "MLCheckbox":
+            classes = ["exercise", "checkbox"]
+            attributes = parse_ex_args(cmd_args, "solution", "uxid")
+            attributes.append(["questionType", QUESTION_TYPES["BOOLEAN"]])
+
+        elif mintmod_class == "MLIntervalQuestion":
+            classes = ["exercise", "text"]
+            attributes = parse_ex_args(
+                cmd_args, "length", "solution", "precision", "uxid"
+            )
+            attributes.append(
+                ["questionType", QUESTION_TYPES["MATH_INTERVAL"]]
             )
 
         if oktypes == pf.Block:
@@ -124,13 +124,15 @@ def create_content_box(elem_content, elem_classes):
     by having diffent content and classes.
     """
     if not elem_classes or elem_classes == []:
-        msg = 'create_content_box without element classes: {}'.format(
-            elem_classes)
+        msg = "create_content_box without element classes: {}".format(
+            elem_classes
+        )
         raise ValueError(msg)
 
-    if not elem_content or elem_content == '':
-        msg = 'create_content_box without element content: {}'.format(
-            elem_content)
+    if not elem_content or elem_content == "":
+        msg = "create_content_box without element content: {}".format(
+            elem_content
+        )
         raise ValueError(msg)
 
     div = pf.Div(classes=elem_classes)
@@ -145,7 +147,7 @@ def create_content_box(elem_content, elem_classes):
     return div
 
 
-def create_header(title_str, doc, level=0, parse_text=False, identifier=''):
+def create_header(title_str, doc, level=0, parse_text=False, identifier=""):
     """
     Create a header element.
 
@@ -153,7 +155,7 @@ def create_header(title_str, doc, level=0, parse_text=False, identifier=''):
     last found header is remembered.
     """
     if not isinstance(doc, pf.Doc):
-        raise ValueError('create_header without Doc element')
+        raise ValueError("create_header without Doc element")
 
     if parse_text:
         title = parse_fragment(title_str)[0].content
@@ -167,17 +169,18 @@ def create_header(title_str, doc, level=0, parse_text=False, identifier=''):
 def create_image(filename, descr, elem, add_descr=True, block=True):
     """Create an image element."""
 
-    img = pf.Image(url=filename, classes=ELEMENT_CLASSES['IMAGE'])
+    img = pf.Image(url=filename, classes=ELEMENT_CLASSES["IMAGE"])
 
     if add_descr:
         descr = parse_fragment(descr, as_doc=True)
         img.title = shorten(
-            pf.stringify(descr).strip(), width=125, placeholder="...")
+            pf.stringify(descr).strip(), width=125, placeholder="..."
+        )
     else:
         img.title = descr
 
     if block:
-        ret = pf.Div(pf.Plain(img), classes=ELEMENT_CLASSES['FIGURE'])
+        ret = pf.Div(pf.Plain(img), classes=ELEMENT_CLASSES["FIGURE"])
         remember_element(elem.doc, ret)
         if add_descr:
             ret.content.append(descr.content[0])
@@ -195,10 +198,10 @@ def parse_ex_args(cmd_args, *names):
     for easier referencing."""
 
     if len(names) != len(cmd_args):
-        log('invalid args: %s, args: %s'
-            % (names, cmd_args), 'ERROR')
-        raise ValueError("Warning: Expected different number of args: {}"
-                         .format(cmd_args))
+        log("invalid args: %s, args: %s" % (names, cmd_args), "ERROR")
+        raise ValueError(
+            "Warning: Expected different number of args: {}".format(cmd_args)
+        )
 
     ret = []
     for idx, name in enumerate(names):

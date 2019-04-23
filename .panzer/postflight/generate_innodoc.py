@@ -17,7 +17,8 @@ from subprocess import Popen, PIPE
 import yaml
 
 from innoconv_mintmod.constants import ENCODING, OUTPUT_FORMAT_EXT_MAP
-sys.path.append(os.path.join(os.environ['PANZER_SHARED'], 'panzerhelper'))
+
+sys.path.append(os.path.join(os.environ["PANZER_SHARED"], "panzerhelper"))
 # pylint: disable=import-error,wrong-import-position
 import panzertools  # noqa: E402
 
@@ -28,18 +29,18 @@ MAX_LEVELS = 3
 PANDOC_TIMEOUT = 120
 
 #: Languages key in manifest.yml
-LANGKEY = 'languages'
-TITLEKEY = 'title'
+LANGKEY = "languages"
+TITLEKEY = "title"
 
 
 def concatenate_strings(elems):
     """Concatenate Str and Space elements into a string."""
-    string = ''
+    string = ""
     for elem in elems:
-        if elem['t'] == 'Str':
-            string += elem['c']
-        elif elem['t'] == 'Space':
-            string += ' '
+        if elem["t"] == "Str":
+            string += elem["c"]
+        elif elem["t"] == "Space":
+            string += " "
     return string
 
 
@@ -56,30 +57,30 @@ def create_doc_tree(tree, level):
         if level <= MAX_LEVELS:
             subsections, subcontent = create_doc_tree(children, level + 1)
             if subsections:
-                section['children'] = subsections
+                section["children"] = subsections
             if subcontent:
-                section['content'] = subcontent
+                section["content"] = subcontent
         elif children:
-            section['content'] = children
+            section["content"] = children
         sections.append(section)
 
     section_idx = 0
     for node in tree:
-        if node['t'] == 'Header' and node['c'][0] == level:
+        if node["t"] == "Header" and node["c"][0] == level:
             await_header = False
-            if 'title' in section:
+            if "title" in section:
                 create_section(sections, section, children)
                 children = []
                 section = {}
-            section['title'] = node['c'][2]
-            section_id = node['c'][1][0]
-            section_num = '{:03}'.format(section_idx)
+            section["title"] = node["c"][2]
+            section_id = node["c"][1][0]
+            section_num = "{:03}".format(section_idx)
             if section_id:
                 # number sections so they are in consistent order
-                section['id'] = '{}-{}'.format(section_num, section_id)
+                section["id"] = "{}-{}".format(section_num, section_id)
             else:
                 # if there's no section id for some reason just use number
-                section['id'] = section_num
+                section["id"] = section_num
             section_idx += 1
         else:
             if await_header:
@@ -87,7 +88,7 @@ def create_doc_tree(tree, level):
             else:
                 children.append(node)
 
-    if 'title' in section:
+    if "title" in section:
         create_section(sections, section, children)
 
     return sections, content
@@ -100,29 +101,29 @@ def write_sections(sections, outdir_base, output_format):
         """Convert JSON section to markdown format using pandoc."""
         # TODO: ensure atx-headers are used
         pandoc_cmd = [
-            'pandoc',
-            '--wrap=preserve',
-            '--columns=999',
-            '--standalone',
-            '--from=json',
-            '--to=markdown+yaml_metadata_block',
+            "pandoc",
+            "--wrap=preserve",
+            "--columns=999",
+            "--standalone",
+            "--from=json",
+            "--to=markdown+yaml_metadata_block",
         ]
-        section_json = json.dumps({
-            'blocks': content,
-            'pandoc-api-version': [1, 17, 5, 1],
-            'meta': {'title': {
-                't': 'MetaInlines',
-                'c': title,
-            }},
-        }).encode(ENCODING)
+        section_json = json.dumps(
+            {
+                "blocks": content,
+                "pandoc-api-version": [1, 17, 5, 1],
+                "meta": {"title": {"t": "MetaInlines", "c": title}},
+            }
+        ).encode(ENCODING)
         proc = Popen(pandoc_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         out, err = proc.communicate(input=section_json, timeout=PANDOC_TIMEOUT)
         out = out.decode(ENCODING)
         err = err.decode(ENCODING)
         if proc.returncode != 0:
-            panzertools.log('ERROR', err)
+            panzertools.log("ERROR", err)
             raise RuntimeError(
-                "pandoc process exited with non-zero return code.")
+                "pandoc process exited with non-zero return code."
+            )
         return out
 
     def write_section(section, outdir, depth, root=False):
@@ -133,30 +134,29 @@ def write_sections(sections, outdir_base, output_format):
         if root:
             outdir_section = outdir
         else:
-            outdir_section = os.path.join(outdir, section['id'])
+            outdir_section = os.path.join(outdir, section["id"])
         os.makedirs(outdir_section, exist_ok=True)
 
         try:
-            content = section['content']
-            del section['content']
+            content = section["content"]
+            del section["content"]
         except KeyError:
             content = []
 
-        filename = 'content.{}'.format(
-            OUTPUT_FORMAT_EXT_MAP[output_format])
+        filename = "content.{}".format(OUTPUT_FORMAT_EXT_MAP[output_format])
         filepath = os.path.join(outdir_section, filename)
 
-        if output_format == 'markdown':
-            output = convert_section_to_markdown(content, section['title'])
-            with open(filepath, 'w') as sfile:
+        if output_format == "markdown":
+            output = convert_section_to_markdown(content, section["title"])
+            with open(filepath, "w") as sfile:
                 sfile.write(output)
-        elif output_format == 'json':
-            with open(filepath, 'w') as sfile:
+        elif output_format == "json":
+            with open(filepath, "w") as sfile:
                 json.dump(content, sfile)
-        panzertools.log('INFO', 'Wrote section {}'.format(section['id']))
+        panzertools.log("INFO", "Wrote section {}".format(section["id"]))
 
         try:
-            for subsection in section['children']:
+            for subsection in section["children"]:
                 write_section(subsection, outdir_section, depth + 1)
         except KeyError:
             pass
@@ -172,8 +172,7 @@ def update_manifest(lang, title, outdir):
 
     If it doesn't exist it will be created.
     """
-    manifest_path = os.path.abspath(
-        os.path.join(outdir, '..', 'manifest.yml'))
+    manifest_path = os.path.abspath(os.path.join(outdir, "..", "manifest.yml"))
 
     try:
         with open(manifest_path) as manifest_file:
@@ -185,28 +184,31 @@ def update_manifest(lang, title, outdir):
         manifest[LANGKEY].append(lang)
     manifest[TITLEKEY][lang] = title
 
-    with open(manifest_path, 'w') as manifest_file:
-        yaml.dump(manifest, manifest_file, default_flow_style=False,
-                  allow_unicode=True)
-    panzertools.log('INFO', 'Wrote: {}'.format(manifest_path))
+    with open(manifest_path, "w") as manifest_file:
+        yaml.dump(
+            manifest,
+            manifest_file,
+            default_flow_style=False,
+            allow_unicode=True,
+        )
+    panzertools.log("INFO", "Wrote: {}".format(manifest_path))
 
 
 def _print_sections(sections):
-
     def _print_section(section, depth):
         if depth > MAX_LEVELS:
             return
-        title = concatenate_strings(section['title'])
-        indent = ' ' * depth
-        msg = '{}{} ({})'.format(indent, title, section['id'])
-        panzertools.log('INFO', msg)
+        title = concatenate_strings(section["title"])
+        indent = " " * depth
+        msg = "{}{} ({})".format(indent, title, section["id"])
+        panzertools.log("INFO", msg)
         try:
-            for subsection in section['children']:
+            for subsection in section["children"]:
                 _print_section(subsection, depth + 1)
         except KeyError:
             pass
 
-    panzertools.log('INFO', 'TOC TREE:')
+    panzertools.log("INFO", "TOC TREE:")
     for section in sections:
         _print_section(section, 1)
 
@@ -214,34 +216,34 @@ def _print_sections(sections):
 def main(debug=False):
     """Post-flight script entry point."""
     options = panzertools.read_options()
-    filepath = options['pandoc']['output']
-    convert_to = 'json'
+    filepath = options["pandoc"]["output"]
+    convert_to = "json"
 
-    if os.environ.get('INNOCONV_GENERATE_INNODOC_MARKDOWN'):
-        panzertools.log('INFO', 'Converting to Markdown.')
-        convert_to = 'markdown'
+    if os.environ.get("INNOCONV_GENERATE_INNODOC_MARKDOWN"):
+        panzertools.log("INFO", "Converting to Markdown.")
+        convert_to = "markdown"
 
-    if options['pandoc']['write'] != 'json':
-        panzertools.log('ERROR', 'Output is expected to be JSON!')
+    if options["pandoc"]["write"] != "json":
+        panzertools.log("ERROR", "Output is expected to be JSON!")
         sys.exit(0)
 
     # extract lang
     lang = None
-    for key in options['pandoc']['options']['r']['metadata']:
-        match = re.match(r'^lang:([a-z]{2})$', key[0])
+    for key in options["pandoc"]["options"]["r"]["metadata"]:
+        match = re.match(r"^lang:([a-z]{2})$", key[0])
         if match:
             lang = match.group(1)
     if not lang:
-        raise RuntimeError('Error: Unable to extract lang key from metadata!')
-    panzertools.log('INFO', 'Found lang key={}'.format(lang))
+        raise RuntimeError("Error: Unable to extract lang key from metadata!")
+    panzertools.log("INFO", "Found lang key={}".format(lang))
 
     # load pandoc output
-    with open(filepath, 'r') as doc_file:
+    with open(filepath, "r") as doc_file:
         doc = json.load(doc_file)
 
     # extract sections from headers
-    sections, _ = create_doc_tree(doc['blocks'], level=1)
-    panzertools.log('INFO', 'Extracted table of contents.')
+    sections, _ = create_doc_tree(doc["blocks"], level=1)
+    panzertools.log("INFO", "Extracted table of contents.")
 
     # output directory
     outdir = os.path.normpath(os.path.dirname(filepath))
@@ -252,19 +254,19 @@ def main(debug=False):
     # write sections to file
     sections = write_sections(sections, outdir, convert_to)
 
-    if os.environ.get('INNOCONV_GENERATE_INNODOC_MARKDOWN'):
+    if os.environ.get("INNOCONV_GENERATE_INNODOC_MARKDOWN"):
         # write metadata file
         try:
-            title = doc['meta']['title']['c']
+            title = doc["meta"]["title"]["c"]
         except KeyError:
-            title = 'UNKNOWN COURSE'
+            title = "UNKNOWN COURSE"
         update_manifest(lang, title, outdir)
     else:
         # write TOC
-        tocpath = os.path.join(outdir, 'toc.json')
-        with open(tocpath, 'w') as toc_file:
+        tocpath = os.path.join(outdir, "toc.json")
+        with open(tocpath, "w") as toc_file:
             json.dump(sections, toc_file)
-        panzertools.log('INFO', 'Wrote: {}'.format(tocpath))
+        panzertools.log("INFO", "Wrote: {}".format(tocpath))
 
     # print toc tree
     if debug:
@@ -273,8 +275,9 @@ def main(debug=False):
     # removing pandoc output file
     os.unlink(filepath)
     panzertools.log(
-        'INFO', 'Removed original pandoc output: {}'.format(filepath))
+        "INFO", "Removed original pandoc output: {}".format(filepath)
+    )
 
 
-if __name__ == '__main__':
-    main(debug=bool(os.environ.get('INNOCONV_DEBUG')))
+if __name__ == "__main__":
+    main(debug=bool(os.environ.get("INNOCONV_DEBUG")))

@@ -10,12 +10,16 @@ import panflute as pf
 from panflute.elements import from_json
 
 from innoconv_mintmod.constants import (
-    REGEX_PATTERNS, ENCODING, INDEX_LABEL_PREFIX, SITE_UXID_PREFIX,
-    PANZER_TIMEOUT)
+    REGEX_PATTERNS,
+    ENCODING,
+    INDEX_LABEL_PREFIX,
+    SITE_UXID_PREFIX,
+    PANZER_TIMEOUT,
+)
 from innoconv_mintmod.errors import ParseError
 
 
-def log(msg_string, level='INFO'):
+def log(msg_string, level="INFO"):
     """Log messages when running as a panzer filter.
 
     :param msg_string: Message that is logged
@@ -23,9 +27,9 @@ def log(msg_string, level='INFO'):
     :param level: Log level (``INFO``, ``WARNING``, ``ERROR`` OR ``CRITICAL``)
     :type level: str
     """
-    outgoing = {'level': level, 'message': msg_string}
-    outgoing_json = json.dumps(outgoing) + '\n'
-    if hasattr(sys.stderr, 'buffer'):
+    outgoing = {"level": level, "message": msg_string}
+    outgoing_json = json.dumps(outgoing) + "\n"
+    if hasattr(sys.stderr, "buffer"):
         outgoing_bytes = outgoing_json.encode(ENCODING)
         sys.stderr.buffer.write(outgoing_bytes)
     else:
@@ -35,13 +39,13 @@ def log(msg_string, level='INFO'):
 
 def get_panzer_bin():
     """Get path of panzer binary."""
-    panzer_bin = which('panzer')
+    panzer_bin = which("panzer")
     if panzer_bin is None or not os.path.exists(panzer_bin):
-        raise OSError('panzer executable not found!')
+        raise OSError("panzer executable not found!")
     return panzer_bin
 
 
-def parse_fragment(parse_string, as_doc=False, from_format='latex+raw_tex'):
+def parse_fragment(parse_string, as_doc=False, from_format="latex+raw_tex"):
     """Parse a source fragment using panzer.
 
     :param parse_string: Source fragment
@@ -60,38 +64,40 @@ def parse_fragment(parse_string, as_doc=False, from_format='latex+raw_tex'):
     :raises RuntimeError: if panzer output could not be parsed
     """
 
-    root_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
+    root_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..")
     panzer_cmd = [
         get_panzer_bin(),
-        '---panzer-support', os.path.join(root_dir, '.panzer'),
-        '--from={}'.format(from_format),
-        '--to=json',
-        '--metadata=style:innoconv',
+        "---panzer-support",
+        os.path.join(root_dir, ".panzer"),
+        "--from={}".format(from_format),
+        "--to=json",
+        "--metadata=style:innoconv",
     ]
 
     # pass nesting depth as ENV var
-    recursion_depth = int(os.getenv('INNOCONV_RECURSION_DEPTH', '0'))
+    recursion_depth = int(os.getenv("INNOCONV_RECURSION_DEPTH", "0"))
     env = os.environ.copy()
-    env['INNOCONV_RECURSION_DEPTH'] = str(recursion_depth + 1)
+    env["INNOCONV_RECURSION_DEPTH"] = str(recursion_depth + 1)
 
     if recursion_depth > 10:
         raise RuntimeError("Panzer recursion depth exceeded!")
 
     proc = Popen(panzer_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, env=env)
     out, err = proc.communicate(
-        input=parse_string.encode(ENCODING), timeout=PANZER_TIMEOUT)
+        input=parse_string.encode(ENCODING), timeout=PANZER_TIMEOUT
+    )
     out = out.decode(ENCODING)
     err = err.decode(ENCODING)
 
     if proc.returncode != 0:
-        log(err, level='ERROR')
+        log(err, level="ERROR")
         raise RuntimeError("panzer process exited with non-zero return code.")
 
     # only print filter messages for better output log
-    match = REGEX_PATTERNS['PANZER_OUTPUT'].search(err)
+    match = REGEX_PATTERNS["PANZER_OUTPUT"].search(err)
     if match:
-        for line in match.group('messages').strip().splitlines():
-            log(u'↳ %s' % line.strip(), level='INFO')
+        for line in match.group("messages").strip().splitlines():
+            log(u"↳ %s" % line.strip(), level="INFO")
     else:
         raise RuntimeError("Unable to parse panzer output: {}".format(err))
 
@@ -108,9 +114,9 @@ def to_inline(elem, classes=[], attributes={}):
     may be lost."""
 
     if not classes:
-        classes = getattr(elem, 'classes', [])
+        classes = getattr(elem, "classes", [])
     if not attributes:
-        attributes = getattr(elem, 'attributes', {})
+        attributes = getattr(elem, "attributes", {})
 
     if isinstance(elem, pf.Inline):
         return elem
@@ -171,7 +177,7 @@ def parse_cmd(text):
     :rtype: (str, list)
     :returns: command name and list of command arguments
     """
-    match = REGEX_PATTERNS['CMD'].match(text)
+    match = REGEX_PATTERNS["CMD"].match(text)
     if not match:
         raise ParseError("Could not parse LaTeX command: '%s'" % text)
     groups = match.groups()
@@ -195,18 +201,19 @@ def parse_nested_args(to_parse):
     :returns: parsed arguments and rest string
     """
     pargs = []
-    if to_parse.startswith('{'):
+    if to_parse.startswith("{"):
         stack = []
         for i, cha in enumerate(to_parse):
-            if not stack and cha != '{':
+            if not stack and cha != "{":
                 break
-            elif cha == '{':
+            elif cha == "{":
                 stack.append(i)
-            elif cha == '}' and stack:
+            elif cha == "}" and stack:
                 start = stack.pop()
                 if not stack:
-                    pargs.append(to_parse[start + 1: i])
-        chars_to_remove = len(''.join(pargs)) + 2 * len(pargs)
+                    start_index = start + 1
+                    pargs.append(to_parse[start_index:i])
+        chars_to_remove = len("".join(pargs)) + 2 * len(pargs)
         to_parse = to_parse[chars_to_remove:]
     if not to_parse:
         to_parse = None
@@ -232,8 +239,9 @@ def extract_identifier(content):
 
     def _extract_id(prefix, child):
         if prefix in child.classes:
-            match = REGEX_PATTERNS['EXTRACT_ID'](prefix).match(
-                child.identifier)
+            match = REGEX_PATTERNS["EXTRACT_ID"](prefix).match(
+                child.identifier
+            )
             if match:
                 return match.groups()[0]
         raise ValueError()
@@ -260,15 +268,18 @@ def remove_annotations(doc):
     :param doc: Document
     :type doc: :py:class:`panflute.elements.Doc`
     """
+
     def _rem_para(elem, _):
         try:
-            if (isinstance(elem, pf.Div) and
-                    (INDEX_LABEL_PREFIX in elem.classes or
-                     SITE_UXID_PREFIX in elem.classes)):
+            if isinstance(elem, pf.Div) and (
+                INDEX_LABEL_PREFIX in elem.classes
+                or SITE_UXID_PREFIX in elem.classes
+            ):
                 return []  # delete element
         except AttributeError:
             pass
         return None
+
     doc.walk(_rem_para)
 
 
@@ -278,10 +289,12 @@ def remove_empty_paragraphs(doc):
     :param doc: Document
     :type doc: :py:class:`panflute.elements.Doc`
     """
+
     def _rem_para(elem, _):
         if isinstance(elem, pf.Para) and not elem.content:
             return []  # delete element
         return None
+
     doc.walk(_rem_para)
 
 

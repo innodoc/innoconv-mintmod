@@ -8,9 +8,16 @@ import panflute as pf
 
 from innoconv_mintmod.errors import ParseError
 from innoconv_mintmod.utils import (
-    parse_fragment, destringify, parse_cmd, parse_nested_args,
-    remove_empty_paragraphs, remember_element, get_remembered_element,
-    to_inline, extract_identifier)
+    parse_fragment,
+    destringify,
+    parse_cmd,
+    parse_nested_args,
+    remove_empty_paragraphs,
+    remember_element,
+    get_remembered_element,
+    to_inline,
+    extract_identifier,
+)
 from innoconv_mintmod.test.utils import captured_output
 from innoconv_mintmod.constants import INDEX_LABEL_PREFIX, SITE_UXID_PREFIX
 
@@ -44,7 +51,6 @@ vitae tellus. In quis viverra nibh.
 
 
 class TestParseFragment(unittest.TestCase):
-
     def test_parse_fragment(self):
         """parse_fragment() returns valid output if given test document"""
         doc = parse_fragment(CONTENT)
@@ -70,11 +76,11 @@ class TestParseFragment(unittest.TestCase):
 
         # test content
         content_tests = (
-            (h_1.content[0].text, 'Test'),
-            (h_1.content[2].text, 'heading'),
+            (h_1.content[0].text, "Test"),
+            (h_1.content[2].text, "heading"),
             (len(para_1.content), 121),
-            (h_2.content[0].text, 'Another'),
-            (h_2.content[2].text, 'heading'),
+            (h_2.content[0].text, "Another"),
+            (h_2.content[2].text, "heading"),
             (len(para_2.content), 149),
         )
         for elem in content_tests:
@@ -86,53 +92,52 @@ class TestParseFragment(unittest.TestCase):
         prints errors"""
         with captured_output() as out:
             with self.assertRaises(RuntimeError):
-                parse_fragment(r'\begin{fooenv}bla')
+                parse_fragment(r"\begin{fooenv}bla")
             err_out = out[1].getvalue()
-        self.assertTrue('ERROR' in err_out)
+        self.assertTrue("ERROR" in err_out)
 
     def test_parse_fragment_quiet(self):
         """parse_fragment() prints debug messages"""
         with captured_output() as out:
-            parse_fragment(r'\section{foo} \unknownfoobar')
+            parse_fragment(r"\section{foo} \unknownfoobar")
             err_out = out[1].getvalue()
-        self.assertTrue('Could not handle command unknownfoobar' in err_out)
+        self.assertTrue("Could not handle command unknownfoobar" in err_out)
 
-    @patch('innoconv_mintmod.utils.log')
+    @patch("innoconv_mintmod.utils.log")
     def test_parse_fragment_log_is_called(self, log_mock):
         """parse_fragment() calls log function on warning"""
-        parse_fragment(r'\unknowncommandfoobar')
+        parse_fragment(r"\unknowncommandfoobar")
         self.assertTrue(log_mock.called)
 
     def test_parse_fragment_empty(self):
         """parse_fragment() returns [] if given empty document"""
-        ret = parse_fragment('')
+        ret = parse_fragment("")
         self.assertEqual(ret, [])
 
-    @patch('innoconv_mintmod.utils.which', return_value=None)
+    @patch("innoconv_mintmod.utils.which", return_value=None)
     def test_parse_fragment_not_in_path(self, mock_func):
         # pylint: disable=unused-argument
         """parse_fragment() raises OSError if panzer not in PATH"""
         with self.assertRaises(OSError):
-            parse_fragment('foo bar')
+            parse_fragment("foo bar")
 
 
 class TestDestringify(unittest.TestCase):
-
     def test_regular(self):
         """Test destringify with a regular string"""
-        string = 'This is a  really\tnice    string.'
+        string = "This is a  really\tnice    string."
         comp = [
-            pf.Str('This'),
+            pf.Str("This"),
             pf.Space(),
-            pf.Str('is'),
+            pf.Str("is"),
             pf.Space(),
-            pf.Str('a'),
+            pf.Str("a"),
             pf.Space(),
-            pf.Str('really'),
+            pf.Str("really"),
             pf.Space(),
-            pf.Str('nice'),
+            pf.Str("nice"),
             pf.Space(),
-            pf.Str('string.'),
+            pf.Str("string."),
         ]
         ret = destringify(string)
         self.assertIsInstance(ret, list)
@@ -140,29 +145,29 @@ class TestDestringify(unittest.TestCase):
 
     def test_empty(self):
         """Test destringify with an empty string"""
-        string = ''
+        string = ""
         ret = destringify(string)
         self.assertIsInstance(ret, list)
         self.assertListEqual(ret, [])
 
     def test_empty_whitespace(self):
         """Test destringify with an whitespace string"""
-        string = '   '
+        string = "   "
         ret = destringify(string)
         self.assertIsInstance(ret, list)
         self.assertListEqual(ret, [])
 
     def test_one_word(self):
         """Test destringify with one word"""
-        string = 'foobar'
+        string = "foobar"
         ret = destringify(string)
         self.assertIsInstance(ret, list)
-        self._compare_list(ret, [pf.Str('foobar')])
+        self._compare_list(ret, [pf.Str("foobar")])
 
     def test_whitespace(self):
         """Test destringify with leading and trailing whitespace"""
-        string = '  foo bar  '
-        comp = [pf.Str('foo'), pf.Space(), pf.Str('bar')]
+        string = "  foo bar  "
+        comp = [pf.Str("foo"), pf.Space(), pf.Str("bar")]
         ret = destringify(string)
         self.assertIsInstance(ret, list)
         self._compare_list(ret, comp)
@@ -179,100 +184,97 @@ class TestDestringify(unittest.TestCase):
 
 
 class TestParseCmd(unittest.TestCase):
-
     def test_parse_cmd_with_args(self):
         """Parse ``foobar`` command with arguments"""
-        cmd_name, cmd_args = parse_cmd(r'\foobar{foo}{bar}{baz}')
-        self.assertEqual(cmd_name, 'foobar')
-        self.assertEqual(cmd_args, ['foo', 'bar', 'baz'])
+        cmd_name, cmd_args = parse_cmd(r"\foobar{foo}{bar}{baz}")
+        self.assertEqual(cmd_name, "foobar")
+        self.assertEqual(cmd_args, ["foo", "bar", "baz"])
 
     def test_parse_cmd_without_args(self):
         """Parse ``foobar`` command without arguments"""
-        cmd_name, cmd_args = parse_cmd(r'\foobar')
-        self.assertEqual(cmd_name, 'foobar')
+        cmd_name, cmd_args = parse_cmd(r"\foobar")
+        self.assertEqual(cmd_name, "foobar")
         self.assertEqual(cmd_args, [])
 
     def test_parse_cmd_colon(self):
         """Parse ``:`` command"""
-        cmd_name, cmd_args = parse_cmd(r'\:')
-        self.assertEqual(cmd_name, ':')
+        cmd_name, cmd_args = parse_cmd(r"\:")
+        self.assertEqual(cmd_name, ":")
         self.assertEqual(cmd_args, [])
 
     def test_parse_cmd_fail(self):
         """It should fail on invalid command"""
         with self.assertRaises(ParseError):
-            parse_cmd('not-a-valid-command')
+            parse_cmd("not-a-valid-command")
 
     def test_parse_cmd_nested(self):
         """It should parse nested commands"""
-        cmd_name, cmd_args = parse_cmd(r'\foobar{word\bar{two}bbb}{baz}')
-        self.assertEqual(cmd_name, 'foobar')
-        self.assertEqual(cmd_args, [r'word\bar{two}bbb', 'baz'])
+        cmd_name, cmd_args = parse_cmd(r"\foobar{word\bar{two}bbb}{baz}")
+        self.assertEqual(cmd_name, "foobar")
+        self.assertEqual(cmd_args, [r"word\bar{two}bbb", "baz"])
 
     def test_parse_cmd_mvector(self):
         r"""It should parse \MVector command"""
-        cmd_name, cmd_args = parse_cmd(r'\MVector{2\\-\Mtfrac{5}{2}\\-2}')
-        self.assertEqual(cmd_name, 'MVector')
-        self.assertEqual(cmd_args, [r'2\\-\Mtfrac{5}{2}\\-2'])
+        cmd_name, cmd_args = parse_cmd(r"\MVector{2\\-\Mtfrac{5}{2}\\-2}")
+        self.assertEqual(cmd_name, "MVector")
+        self.assertEqual(cmd_args, [r"2\\-\Mtfrac{5}{2}\\-2"])
 
 
 class TestParseNestedArgs(unittest.TestCase):
-
     def test_parse_nested_args_empty(self):
         """It should parse nested arguments: empty"""
-        ret = parse_nested_args('')
+        ret = parse_nested_args("")
         self.assertEqual(ret, ([], None))
 
     def test_parse_nested_args_simple(self):
         """It should parse nested arguments: simple"""
-        ret = parse_nested_args('{bbb}{baz}{foo}')
-        self.assertEqual(ret, (['bbb', 'baz', 'foo'], None))
+        ret = parse_nested_args("{bbb}{baz}{foo}")
+        self.assertEqual(ret, (["bbb", "baz", "foo"], None))
 
     def test_parse_nested_args_1(self):
         """It should parse nested arguments: nested 1"""
-        ret = parse_nested_args(r'{word\bar{two}bbb}{baz}')
-        self.assertEqual(ret, ([r'word\bar{two}bbb', 'baz'], None))
+        ret = parse_nested_args(r"{word\bar{two}bbb}{baz}")
+        self.assertEqual(ret, ([r"word\bar{two}bbb", "baz"], None))
 
     def test_parse_nested_args_2(self):
         """It should parse nested arguments: nested 2"""
-        ret = parse_nested_args(r'{cont}{}{\foo{\bla{\stop}}}{\baz{}{}{}}')
+        ret = parse_nested_args(r"{cont}{}{\foo{\bla{\stop}}}{\baz{}{}{}}")
         self.assertEqual(
-            ret,
-            (['cont', '', r'\foo{\bla{\stop}}', r'\baz{}{}{}'], None)
+            ret, (["cont", "", r"\foo{\bla{\stop}}", r"\baz{}{}{}"], None)
         )
 
     def test_parse_nested_args_rest(self):
         """It should parse nested arguments with rest"""
-        ret = parse_nested_args(r'''{word\bar{two}bbb}{baz}
+        ret = parse_nested_args(
+            r"""{word\bar{two}bbb}{baz}
 there is more
-stuff here''')
-        rest = '''
+stuff here"""
+        )
+        rest = """
 there is more
-stuff here'''
-        self.assertEqual(ret, ([r'word\bar{two}bbb', 'baz'], rest))
+stuff here"""
+        self.assertEqual(ret, ([r"word\bar{two}bbb", "baz"], rest))
 
 
 class TestRemoveEmptyParagraphs(unittest.TestCase):
-
     def test_remove_empty_paragraphs(self):
         """It should remove empty paras in document"""
         doc = pf.Doc(
-            pf.Para(pf.Str('Foo'), pf.Space(), pf.Str('Bar')),
+            pf.Para(pf.Str("Foo"), pf.Space(), pf.Str("Bar")),
             pf.Para(),
-            pf.Para(pf.Str('Bar'), pf.Space(), pf.Str('Baz')),
+            pf.Para(pf.Str("Bar"), pf.Space(), pf.Str("Baz")),
         )
         remove_empty_paragraphs(doc)
         self.assertEqual(len(doc.content), 2)
         para1 = doc.content[0]
-        self.assertEqual(para1.content[0].text, 'Foo')
-        self.assertEqual(para1.content[2].text, 'Bar')
+        self.assertEqual(para1.content[0].text, "Foo")
+        self.assertEqual(para1.content[2].text, "Bar")
         para2 = doc.content[1]
-        self.assertEqual(para2.content[0].text, 'Bar')
-        self.assertEqual(para2.content[2].text, 'Baz')
+        self.assertEqual(para2.content[0].text, "Bar")
+        self.assertEqual(para2.content[2].text, "Baz")
 
 
 class TestRememberElement(unittest.TestCase):
-
     def test_remember_element(self):
         """It should remember and forget elements."""
         doc = pf.Doc()
@@ -293,38 +295,30 @@ class TestRememberElement(unittest.TestCase):
 
 
 class TestToInline(unittest.TestCase):
-
     def test_to_inline(self):
         """It should convert different elements correctly to inline"""
 
-        content1 = pf.Para(
-            pf.Strong(pf.Str('just some text'))
-        )
+        content1 = pf.Para(pf.Strong(pf.Str("just some text")))
         transformed1 = content1.content[0]
 
         content2 = pf.Div(
             pf.Para(
-                pf.Strong(pf.Str('again')),
-                pf.Space,
-                pf.Emph(pf.Str('normal'))
+                pf.Strong(pf.Str("again")), pf.Space, pf.Emph(pf.Str("normal"))
             )
         )
 
         content3 = pf.Div(
             pf.Para(
-                pf.Span(
-                    pf.Str('foo'),
-                    classes=['1st-span-class']
-                ),
+                pf.Span(pf.Str("foo"), classes=["1st-span-class"]),
                 pf.Span(
                     pf.Strong(
-                        pf.Str('Unhandled'), pf.Space, pf.Str('command:')
+                        pf.Str("Unhandled"), pf.Space, pf.Str("command:")
                     ),
-                    classes=['2nd-span-class']
+                    classes=["2nd-span-class"],
                 ),
             ),
-            pf.CodeBlock(r'\MLFunctionQuestion{10}{sin(x)}{5}{x}{5}{DS2}'),
-            classes=['div-class']
+            pf.CodeBlock(r"\MLFunctionQuestion{10}{sin(x)}{5}{x}{5}{DS2}"),
+            classes=["div-class"],
         )
 
         self.assertEqual(to_inline(content1), transformed1)
@@ -332,48 +326,54 @@ class TestToInline(unittest.TestCase):
         # test if nested inlining works
         il_content2 = to_inline(content2)
         self.assertIsInstance(il_content2.content[0], pf.Strong)
-        self.assertEqual(il_content2.content[0].content[0].text, 'again')
+        self.assertEqual(il_content2.content[0].content[0].text, "again")
         self.assertIsInstance(il_content2.content[2], pf.Emph)
 
         # test if class conservation works and advanced nesting
         il_content3 = to_inline(content3)
         self.assertEqual(len(il_content3.content), 2)
         self.assertEqual(len(il_content3.content[0].content), 2)
-        self.assertEqual(il_content3.classes, ['div-class'])
+        self.assertEqual(il_content3.classes, ["div-class"])
         self.assertEqual(
-            il_content3.content[0].content[0].classes,
-            ['1st-span-class']
+            il_content3.content[0].content[0].classes, ["1st-span-class"]
         )
         self.assertEqual(
-            il_content3.content[0].content[1].classes,
-            ['2nd-span-class']
+            il_content3.content[0].content[1].classes, ["2nd-span-class"]
         )
 
 
 class TestExtractIdentifier(unittest.TestCase):
     def test_only_uxid(self):
-        annot = pf.Div(identifier='{}-foo'.format(SITE_UXID_PREFIX),
-                       classes=(SITE_UXID_PREFIX,))
+        annot = pf.Div(
+            identifier="{}-foo".format(SITE_UXID_PREFIX),
+            classes=(SITE_UXID_PREFIX,),
+        )
         identifier = extract_identifier([annot])
-        self.assertEqual(identifier, 'foo')
+        self.assertEqual(identifier, "foo")
 
     def test_uxid_para(self):
-        annot = pf.Div(identifier='{}-foo'.format(SITE_UXID_PREFIX),
-                       classes=(SITE_UXID_PREFIX,))
-        para = pf.Para(pf.Str('bar'))
+        annot = pf.Div(
+            identifier="{}-foo".format(SITE_UXID_PREFIX),
+            classes=(SITE_UXID_PREFIX,),
+        )
+        para = pf.Para(pf.Str("bar"))
         identifier = extract_identifier([annot, para])
-        self.assertEqual(identifier, 'foo')
+        self.assertEqual(identifier, "foo")
 
     def test_uxid_label_para(self):
-        uxid = pf.Div(identifier='{}-foo'.format(SITE_UXID_PREFIX),
-                      classes=(SITE_UXID_PREFIX,))
-        mlabel = pf.Div(identifier='{}-foo'.format(INDEX_LABEL_PREFIX),
-                        classes=(INDEX_LABEL_PREFIX,))
-        para = pf.Para(pf.Str('bar'))
+        uxid = pf.Div(
+            identifier="{}-foo".format(SITE_UXID_PREFIX),
+            classes=(SITE_UXID_PREFIX,),
+        )
+        mlabel = pf.Div(
+            identifier="{}-foo".format(INDEX_LABEL_PREFIX),
+            classes=(INDEX_LABEL_PREFIX,),
+        )
+        para = pf.Para(pf.Str("bar"))
 
         tests = (
-            ('foo', [mlabel, uxid, para]),
-            ('foo', [uxid, mlabel, para]),
+            ("foo", [mlabel, uxid, para]),
+            ("foo", [uxid, mlabel, para]),
             (None, [para]),
         )
 

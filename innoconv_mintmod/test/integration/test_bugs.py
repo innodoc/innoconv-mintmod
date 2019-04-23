@@ -6,7 +6,6 @@ from innoconv_mintmod.test.utils import get_doc_from_markup
 
 
 class TestCertainBugs(unittest.TestCase):
-
     def test_filename(self):
         """Underscore in filename should work."""
         tex = r"""
@@ -15,4 +14,4 @@ class TestCertainBugs(unittest.TestCase):
         doc = get_doc_from_markup(tex)
         img = doc.content[0].content[0].content[0]
         self.assertIsInstance(img, pf.Image)
-        self.assertEqual(img.url, 'bak_pop.png')
+        self.assertEqual(img.url, "bak_pop.png")

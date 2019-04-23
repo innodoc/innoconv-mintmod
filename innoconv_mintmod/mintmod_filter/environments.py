@@ -11,13 +11,18 @@ Handle mintmod LaTeX environments.
 """
 
 from innoconv_mintmod.constants import (
-    ELEMENT_CLASSES, REGEX_PATTERNS, TRANSLATIONS)
+    ELEMENT_CLASSES,
+    REGEX_PATTERNS,
+    TRANSLATIONS,
+)
 from innoconv_mintmod.mintmod_filter.elements import (
-    create_content_box, create_header)
+    create_content_box,
+    create_header,
+)
 from innoconv_mintmod.utils import parse_fragment, extract_identifier
 
 
-class Environments():
+class Environments:
 
     r"""Handlers for environments are defined here.
 
@@ -62,15 +67,18 @@ class Environments():
     def handle_mintro(self, elem_content, env_args, elem):
         r"""Handle ``\MIntro`` environment."""
         content = parse_fragment(elem_content)
-        lang = elem.doc.metadata['lang'].text
+        lang = elem.doc.metadata["lang"].text
         header = create_header(
-            TRANSLATIONS['introduction'][lang], elem.doc, level=3,
-            identifier='introduction')
+            TRANSLATIONS["introduction"][lang],
+            elem.doc,
+            level=3,
+            identifier="introduction",
+        )
         identifier = extract_identifier(content)
         if identifier:
             header.identifier = identifier
         # pylint: disable=no-member
-        header.classes.extend(ELEMENT_CLASSES['MINTRO'])
+        header.classes.extend(ELEMENT_CLASSES["MINTRO"])
         content.insert(0, header)
         return content
 
@@ -80,9 +88,10 @@ class Environments():
     def handle_mexercises(self, elem_content, env_args, elem):
         r"""Handle ``\MExercises`` environment."""
         content = parse_fragment(elem_content)
-        lang = elem.doc.metadata['lang'].text
+        lang = elem.doc.metadata["lang"].text
         header = create_header(
-            TRANSLATIONS['exercises'][lang], elem.doc, level=3)
+            TRANSLATIONS["exercises"][lang], elem.doc, level=3
+        )
         identifier = extract_identifier(content)
         if identifier:
             header.identifier = identifier
@@ -95,7 +104,7 @@ class Environments():
 
     def handle_mexercise(self, elem_content, env_args, elem):
         r"""Handle ``\MExercise`` environment."""
-        return create_content_box(elem_content, ELEMENT_CLASSES['MEXERCISE'])
+        return create_content_box(elem_content, ELEMENT_CLASSES["MEXERCISE"])
 
     def handle_mexerciseitems(self, elem_content, env_args, elem):
         r"""Handle ``\MExerciseitems`` environments by returning an ordered list
@@ -113,8 +122,7 @@ class Environments():
         This function just returns a div with a class, in order to leave the
         validation logic, to client scripts"""
         return create_content_box(
-            elem_content,
-            ELEMENT_CLASSES['MQUESTIONGROUP']
+            elem_content, ELEMENT_CLASSES["MQUESTIONGROUP"]
         )
 
     ###########################################################################
@@ -127,33 +135,33 @@ class Environments():
 
     def handle_minfo(self, elem_content, env_args, elem):
         r"""Handle ``\MInfo`` environment."""
-        return create_content_box(elem_content, ELEMENT_CLASSES['MINFO'])
+        return create_content_box(elem_content, ELEMENT_CLASSES["MINFO"])
 
     def handle_mxinfo(self, elem_content, env_args, elem):
         r"""Handle ``\MXInfo`` environment."""
-        div = create_content_box(elem_content, ELEMENT_CLASSES['MINFO'])
+        div = create_content_box(elem_content, ELEMENT_CLASSES["MINFO"])
         header = create_header(env_args[0], elem.doc, level=4, parse_text=True)
         div.content.insert(0, header)
         return div
 
     def handle_mexperiment(self, elem_content, env_args, elem):
         r"""Handle ``\MExperiment`` environment."""
-        return create_content_box(elem_content, ELEMENT_CLASSES['MEXPERIMENT'])
+        return create_content_box(elem_content, ELEMENT_CLASSES["MEXPERIMENT"])
 
     def handle_mexample(self, elem_content, env_args, elem):
         r"""Handle ``\MExample`` command."""
-        return create_content_box(elem_content, ELEMENT_CLASSES['MEXAMPLE'])
+        return create_content_box(elem_content, ELEMENT_CLASSES["MEXAMPLE"])
 
     def handle_mhint(self, elem_content, env_args, elem):
         r"""Handle ``\MHint`` command."""
-        return create_content_box(elem_content, ELEMENT_CLASSES['MHINT'])
+        return create_content_box(elem_content, ELEMENT_CLASSES["MHINT"])
 
     def handle_mtest(self, elem_content, env_args, elem):
         r"""Handle ``\MTest`` environment."""
-        div = create_content_box(elem_content, ELEMENT_CLASSES['MTEST'])
+        div = create_content_box(elem_content, ELEMENT_CLASSES["MTEST"])
 
         # remove reference to section
-        title = REGEX_PATTERNS['FIX_MTEST'].sub('', env_args[0])
+        title = REGEX_PATTERNS["FIX_MTEST"].sub("", env_args[0])
 
         header = create_header(title, elem.doc, level=3)
         identifier = extract_identifier(div.content)
@@ -164,17 +172,19 @@ class Environments():
 
     def handle_mcoshzusatz(self, elem_content, env_args, elem):
         r"""Handle ``\MCOSHZusatz`` environment."""
-        return create_content_box(elem_content, ELEMENT_CLASSES['MCOSHZUSATZ'])
+        return create_content_box(elem_content, ELEMENT_CLASSES["MCOSHZUSATZ"])
 
     def handle_html(self, elem_content, env_args, elem):
         r"""Handle ``\html`` environment."""
-        return parse_fragment(elem_content, from_format='html')
+        return parse_fragment(elem_content, from_format="html")
 
     def _replace_mexerciseitems(self, elem):
         r"""Helper function to replace `MExerciseItems` with enumerate in elem
         text and return the pandoc output of the parsed altered element."""
-        elem.text = elem.text.replace('\\begin{MExerciseItems}',
-                                      '\\begin{enumerate}')
-        elem.text = elem.text.replace('\\end{MExerciseItems}',
-                                      '\\end{enumerate}')
+        elem.text = elem.text.replace(
+            "\\begin{MExerciseItems}", "\\begin{enumerate}"
+        )
+        elem.text = elem.text.replace(
+            "\\end{MExerciseItems}", "\\end{enumerate}"
+        )
         return parse_fragment(elem.text)

@@ -8,7 +8,6 @@ from innoconv_mintmod.test.utils import get_doc_from_markup
 
 
 class TestSplitSections(unittest.TestCase):
-
     def test_split_sections(self):
         """test postflight split_sections"""
         tex = r"""
@@ -37,41 +36,41 @@ subsection-text-hier.
 
 subsubsection-text-hier.
 """
-        langs = (
-            ('de', 'Einführung'),
-            ('en', 'Introduction'),
-        )
+        langs = (("de", "Einführung"), ("en", "Introduction"))
         for lang in langs:
             with self.subTest(lang=lang[0]):
                 lang_code, intro_title = lang
                 with tempfile.TemporaryDirectory() as tmpdir:
-                    pandoc_output = os.path.join(tmpdir, 'output.json')
-                    get_doc_from_markup(tex,
-                                        style='innoconv-generate-innodoc',
-                                        output=pandoc_output,
-                                        lang=lang_code)
+                    pandoc_output = os.path.join(tmpdir, "output.json")
+                    get_doc_from_markup(
+                        tex,
+                        style="innoconv-generate-innodoc",
+                        output=pandoc_output,
+                        lang=lang_code,
+                    )
 
-                    toc_output = os.path.join(tmpdir, lang_code, 'toc.json')
-                    with open(toc_output, 'r') as toc_file:
+                    toc_output = os.path.join(tmpdir, lang_code, "toc.json")
+                    with open(toc_output, "r") as toc_file:
                         toc = json.load(toc_file)
 
                         sec_1 = toc[0]
-                        self.assertEqual(sec_1['id'], '000-LABEL_1')
-                        self.assertEqual(sec_1['title'][0]['c'], '1')
+                        self.assertEqual(sec_1["id"], "000-LABEL_1")
+                        self.assertEqual(sec_1["title"][0]["c"], "1")
 
-                        sec_1_1 = sec_1['children'][0]
-                        self.assertEqual(sec_1_1['id'], '000-LABEL_1_1')
-                        self.assertEqual(sec_1_1['title'][0]['c'], '1-1')
+                        sec_1_1 = sec_1["children"][0]
+                        self.assertEqual(sec_1_1["id"], "000-LABEL_1_1")
+                        self.assertEqual(sec_1_1["title"][0]["c"], "1-1")
 
-                        sec_1_1_1 = sec_1_1['children'][0]
-                        self.assertEqual(sec_1_1_1['id'], '000-LABEL_1_1_1')
+                        sec_1_1_1 = sec_1_1["children"][0]
+                        self.assertEqual(sec_1_1_1["id"], "000-LABEL_1_1_1")
                         self.assertEqual(
-                            sec_1_1_1['title'][0]['c'], intro_title)
+                            sec_1_1_1["title"][0]["c"], intro_title
+                        )
 
-                        sec_1_2 = sec_1['children'][1]
-                        self.assertEqual(sec_1_2['id'], '001-LABEL_1_2')
-                        self.assertEqual(sec_1_2['title'][0]['c'], '1-2')
+                        sec_1_2 = sec_1["children"][1]
+                        self.assertEqual(sec_1_2["id"], "001-LABEL_1_2")
+                        self.assertEqual(sec_1_2["title"][0]["c"], "1-2")
 
-                        sec_1_2_1 = sec_1_2['children'][0]
-                        self.assertEqual(sec_1_2_1['id'], '000-LABEL_1_2_1')
-                        self.assertEqual(sec_1_2_1['title'][0]['c'], '1-2-1')
+                        sec_1_2_1 = sec_1_2["children"][0]
+                        self.assertEqual(sec_1_2_1["id"], "000-LABEL_1_2_1")
+                        self.assertEqual(sec_1_2_1["title"][0]["c"], "1-2-1")

@@ -12,25 +12,27 @@ from innoconv_mintmod.constants import PANZER_SUPPORT_DIR, ENCODING
 from innoconv_mintmod.utils import log
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = os.path.join(SCRIPT_DIR, '..', '..')
+ROOT_DIR = os.path.join(SCRIPT_DIR, "..", "..")
 
 
-def get_doc_from_markup(markup, style='innoconv-debug', output=None,
-                        lang='de'):
+def get_doc_from_markup(
+    markup, style="innoconv-debug", output=None, lang="de"
+):
     """Run panzer on markup and return Doc."""
 
     cmd = [
-        'panzer',
-        '---panzer-support', PANZER_SUPPORT_DIR,
-        '--metadata=style:{}'.format(style),
-        '--metadata=lang:{}'.format(lang),
-        '--from=latex+raw_tex',
-        '--to=json',
-        '--standalone',
+        "panzer",
+        "---panzer-support",
+        PANZER_SUPPORT_DIR,
+        "--metadata=style:{}".format(style),
+        "--metadata=lang:{}".format(lang),
+        "--from=latex+raw_tex",
+        "--to=json",
+        "--standalone",
     ]
 
     if output:
-        cmd.append('--output={}'.format(output))
+        cmd.append("--output={}".format(output))
 
     env = os.environ.copy()
     proc = subprocess.Popen(
@@ -38,7 +40,7 @@ def get_doc_from_markup(markup, style='innoconv-debug', output=None,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        env=env
+        env=env,
     )
 
     proc.stdin.write(markup.encode(ENCODING))
