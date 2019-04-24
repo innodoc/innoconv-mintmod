@@ -416,16 +416,17 @@ class TestExercises(unittest.TestCase):
         """MQuestion command inline."""
         content = r"\MLParsedQuestion{10}{5}{3}{ER1}"
         doc = pf.Doc(pf.RawBlock(content), format="latex")
-        remember(doc, "points", "8")
+        remember(doc, "points", "8")  # simulate a preceding \MSetPoints
         elem = doc.content[0]  # this sets up elem.parent
         elem_args = ["10", "5", "3", "ER1"]
         ret = self.commands.handle_mlparsedquestion(elem_args, elem)
         # pylint: disable=no-member
         self.assertEqual(ret.classes, ["exercise", "text"])
+        self.assertNotIn("uxid", ret.attributes)
+        self.assertEqual(ret.identifier, "ER1")
         self.assertEqual(ret.attributes["length"], "10")
         self.assertEqual(ret.attributes["solution"], "5")
         self.assertEqual(ret.attributes["precision"], "3")
-        self.assertEqual(ret.attributes["uxid"], "ER1")
         self.assertEqual(ret.attributes["points"], "8")
         self.assertEqual(
             ret.attributes["questionType"], QUESTION_TYPES["MATH_EXPRESSION"]

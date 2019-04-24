@@ -26,7 +26,7 @@ class Exercise(pf.Element):
     __slots__ = ["identifier", "classes", "attributes"]
 
     def __new__(cls, *args, **kwargs):
-        """ The __new__ function expects a keyword argument with the key
+        """The __new__ function expects a keyword argument with the key
         'mintmod_class' that specifies the type of exercise in the mintmod
         converter.
         """
@@ -37,29 +37,25 @@ class Exercise(pf.Element):
         if points is None:
             points = DEFAULT_EXERCISE_POINTS
 
-        if mintmod_class is None:
-            raise ValueError(
-                "Expected named keyword arg "
-                "mintmod_class in: {}".format(kwargs)
-            )
-
         if mintmod_class == "MLQuestion":
             classes = ["exercise", "text"]
-            attributes = parse_ex_args(cmd_args, "length", "solution", "uxid")
-            attributes.append(["questionType", QUESTION_TYPES["EXACT"]])
+            identifier, attributes = Exercise.parse_ex_args(
+                cmd_args, "length", "solution", "uxid"
+            )
+            attributes.append(("questionType", QUESTION_TYPES["EXACT"]))
 
         elif mintmod_class == "MLParsedQuestion":
             classes = ["exercise", "text"]
-            attributes = parse_ex_args(
+            identifier, attributes = Exercise.parse_ex_args(
                 cmd_args, "length", "solution", "precision", "uxid"
             )
             attributes.append(
-                ["questionType", QUESTION_TYPES["MATH_EXPRESSION"]]
+                ("questionType", QUESTION_TYPES["MATH_EXPRESSION"])
             )
 
         elif mintmod_class == "MLFunctionQuestion":
             classes = ["exercise", "text"]
-            attributes = parse_ex_args(
+            identifier, attributes = Exercise.parse_ex_args(
                 cmd_args,
                 "length",
                 "solution",
@@ -68,11 +64,11 @@ class Exercise(pf.Element):
                 "precision",
                 "uxid",
             )
-            attributes.append(["questionType", QUESTION_TYPES["MATH_FORMULA"]])
+            attributes.append(("questionType", QUESTION_TYPES["MATH_FORMULA"]))
 
         elif mintmod_class == "MLSpecialQuestion":
             classes = ["exercise", "text"]
-            attributes = parse_ex_args(
+            identifier, attributes = Exercise.parse_ex_args(
                 cmd_args,
                 "length",
                 "solution",
@@ -82,11 +78,11 @@ class Exercise(pf.Element):
                 "special-type",
                 "uxid",
             )
-            attributes.append(["questionType", QUESTION_TYPES["SPECIAL"]])
+            attributes.append(("questionType", QUESTION_TYPES["SPECIAL"]))
 
         elif mintmod_class == "MLSimplifyQuestion":
             classes = ["exercise", "text"]
-            attributes = parse_ex_args(
+            identifier, attributes = Exercise.parse_ex_args(
                 cmd_args,
                 "length",
                 "solution",
@@ -97,29 +93,65 @@ class Exercise(pf.Element):
                 "uxid",
             )
             attributes.append(
-                ["questionType", QUESTION_TYPES["MATH_SIMPLIFY"]]
+                ("questionType", QUESTION_TYPES["MATH_SIMPLIFY"])
             )
 
         elif mintmod_class == "MLCheckbox":
             classes = ["exercise", "checkbox"]
-            attributes = parse_ex_args(cmd_args, "solution", "uxid")
-            attributes.append(["questionType", QUESTION_TYPES["BOOLEAN"]])
+            identifier, attributes = Exercise.parse_ex_args(
+                cmd_args, "solution", "uxid"
+            )
+            attributes.append(("questionType", QUESTION_TYPES["BOOLEAN"]))
 
         elif mintmod_class == "MLIntervalQuestion":
             classes = ["exercise", "text"]
-            attributes = parse_ex_args(
+            identifier, attributes = Exercise.parse_ex_args(
                 cmd_args, "length", "solution", "precision", "uxid"
             )
             attributes.append(
-                ["questionType", QUESTION_TYPES["MATH_INTERVAL"]]
+                ("questionType", QUESTION_TYPES["MATH_INTERVAL"])
+            )
+        else:
+            raise ValueError(
+                "Unknown or missing kwarg mintmod_class: {}".format(
+                    mintmod_class
+                )
             )
 
-        attributes.append(["points", points])
+        attributes.append(("points", points))
 
         if oktypes == pf.Block:
-            return pf.Div(classes=classes, attributes=attributes)
+            return pf.Div(
+                identifier=identifier, classes=classes, attributes=attributes
+            )
 
-        return pf.Span(classes=classes, attributes=attributes)
+        return pf.Span(
+            identifier=identifier, classes=classes, attributes=attributes
+        )
+
+    @staticmethod
+    def parse_ex_args(cmd_args, *names):
+        """Parse exercise arguments.
+
+        Receive a list of argument names and a list of values and return
+        a pandoc conformant argument array containing element's arguments.
+        In other words: take a list of arguments and make them named arguments
+        for easier referencing.
+        """
+        if len(names) != len(cmd_args):
+            log("Invalid args: {}, args: {}".format(names, cmd_args), "ERROR")
+            raise ValueError(
+                "Warning: Expected different number of args: {}".format(
+                    cmd_args
+                )
+            )
+        attrs = []
+        for idx, name in enumerate(names):
+            if name == "uxid":
+                identifier = cmd_args[idx]
+            else:
+                attrs.append((name, cmd_args[idx]))
+        return identifier, attrs
 
     def _slots_to_json(self):
         return [self._ica_to_json()]
@@ -196,24 +228,5 @@ def create_image(filename, descr, elem, add_descr=True, block=True):
     else:
         remember(elem.doc, "label", img)
         ret = img
-
-    return ret
-
-
-def parse_ex_args(cmd_args, *names):
-    """receive a list of argument names and a list of values and return
-    a pandoc conformant argument array containing element's arguments.
-    In other words: take a list of arguments and make them named arguments
-    for easier referencing."""
-
-    if len(names) != len(cmd_args):
-        log("invalid args: %s, args: %s" % (names, cmd_args), "ERROR")
-        raise ValueError(
-            "Warning: Expected different number of args: {}".format(cmd_args)
-        )
-
-    ret = []
-    for idx, name in enumerate(names):
-        ret.append([name, cmd_args[idx]])
 
     return ret
