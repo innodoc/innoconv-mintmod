@@ -408,7 +408,7 @@ class TestGraphics(unittest.TestCase):
         self.assertEqual(ret.url, "foo.jpg")
 
 
-class TestExercises(unittest.TestCase):
+class TestQuestions(unittest.TestCase):
     def setUp(self):
         self.commands = Commands()
 
@@ -421,7 +421,7 @@ class TestExercises(unittest.TestCase):
         elem_args = ["10", "5", "3", "ER1"]
         ret = self.commands.handle_mlparsedquestion(elem_args, elem)
         # pylint: disable=no-member
-        self.assertEqual(ret.classes, ["exercise", "text"])
+        self.assertEqual(ret.classes, ["question", "text"])
         self.assertNotIn("uxid", ret.attributes)
         self.assertEqual(ret.identifier, "ER1")
         self.assertEqual(ret.attributes["length"], "10")

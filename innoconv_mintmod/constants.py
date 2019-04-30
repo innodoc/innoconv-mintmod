@@ -38,7 +38,7 @@ EXERCISE_CMDS_ENVS = (
 QUESTION_TYPES = {
     "EXACT": "exact",
     "MATH_EXPRESSION": "mathExpression",
-    "MATH_FORMULA": "mathFormula",
+    "MATH_FUNCTION": "mathFunction",
     "MATH_SIMPLIFY": "mathSimplify",
     "SPECIAL": "special",
     "BOOLEAN": "boolean",
@@ -189,6 +189,7 @@ REGEX_PATTERNS = {
 
 #: Element classes
 ELEMENT_CLASSES = {
+    "QUESTION": ["question"],
     "HIGHLIGHT": ["highlight"],
     "IMAGE": ["img"],
     "FIGURE": ["figure"],

@@ -31,7 +31,7 @@ from innoconv_mintmod.utils import (
     remember,
 )
 from innoconv_mintmod.mintmod_filter.elements import (
-    Exercise,
+    Question,
     create_header,
     create_image,
 )
@@ -349,11 +349,11 @@ class Commands:
         return ret
 
     ###########################################################################
-    # Exercises
+    # Questions
 
     def handle_mlquestion(self, cmd_args, elem):
-        r"""Handle exercises defined by ``\MLQuestion`` command"""
-        return Exercise(
+        r"""Handle questions defined by ``\MLQuestion`` command"""
+        return Question(
             cmd_args,
             mintmod_class="MLQuestion",
             oktypes=elem.parent.content.oktypes,
@@ -361,8 +361,8 @@ class Commands:
         )
 
     def handle_mlparsedquestion(self, cmd_args, elem):
-        r"""Handle exercises defined by ``\MLParsedQuestion`` command"""
-        return Exercise(
+        r"""Handle questions defined by ``\MLParsedQuestion`` command"""
+        return Question(
             cmd_args,
             mintmod_class="MLParsedQuestion",
             oktypes=elem.parent.content.oktypes,
@@ -370,8 +370,8 @@ class Commands:
         )
 
     def handle_mlfunctionquestion(self, cmd_args, elem):
-        r"""Handle exercises defined by ``\MLFunctionQuestion`` command"""
-        return Exercise(
+        r"""Handle questions defined by ``\MLFunctionQuestion`` command"""
+        return Question(
             cmd_args,
             mintmod_class="MLFunctionQuestion",
             oktypes=elem.parent.content.oktypes,
@@ -379,8 +379,8 @@ class Commands:
         )
 
     def handle_mlspecialquestion(self, cmd_args, elem):
-        r"""Handle exercises defined by ``\MLSpecialquestion`` command"""
-        return Exercise(
+        r"""Handle questions defined by ``\MLSpecialquestion`` command"""
+        return Question(
             cmd_args,
             mintmod_class="MLSpecialQuestion",
             oktypes=elem.parent.content.oktypes,
@@ -388,8 +388,8 @@ class Commands:
         )
 
     def handle_mlsimplifyquestion(self, cmd_args, elem):
-        r"""Handle exercises defined by ``\MLSimplifyQuestion`` command"""
-        return Exercise(
+        r"""Handle questions defined by ``\MLSimplifyQuestion`` command"""
+        return Question(
             cmd_args,
             mintmod_class="MLSimplifyQuestion",
             oktypes=elem.parent.content.oktypes,
@@ -397,8 +397,8 @@ class Commands:
         )
 
     def handle_mlcheckbox(self, cmd_args, elem):
-        r"""Handle exercises defined by ``\MLCheckbox`` command"""
-        return Exercise(
+        r"""Handle questions defined by ``\MLCheckbox`` command"""
+        return Question(
             cmd_args,
             mintmod_class="MLCheckbox",
             oktypes=elem.parent.content.oktypes,
@@ -406,8 +406,8 @@ class Commands:
         )
 
     def handle_mlintervalquestion(self, cmd_args, elem):
-        r"""Handle exercises defined by ``\MLIntervalQuestion`` command"""
-        return Exercise(
+        r"""Handle questions defined by ``\MLIntervalQuestion`` command"""
+        return Question(
             cmd_args,
             mintmod_class="MLIntervalQuestion",
             oktypes=elem.parent.content.oktypes,
@@ -428,13 +428,10 @@ class Commands:
     def handle_msetpoints(self, cmd_args, elem):
         r"""Handle ``\MSetPoints`` command.
 
-        Remember points for next exercise.
+        Remember points for next question.
         """
         points_value = cmd_args[0]
-
-        # remember points for next exercise to pick them up
         remember(elem.doc, "points", points_value)
-
         return []
 
     # TODO: MDirectRouletteExercises

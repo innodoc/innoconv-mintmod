@@ -16,7 +16,7 @@ from innoconv_mintmod.utils import (
 )
 
 
-class Exercise(pf.Element):
+class Question(pf.Element):
     """
     Wrapper/Factory class that inherits from pf.Element and will return pf.Code
     instances, with special classes and attributes, depending on the given
@@ -27,7 +27,7 @@ class Exercise(pf.Element):
 
     def __new__(cls, *args, **kwargs):
         """The __new__ function expects a keyword argument with the key
-        'mintmod_class' that specifies the type of exercise in the mintmod
+        'mintmod_class' that specifies the type of question in the mintmod
         converter.
         """
         mintmod_class = kwargs.get("mintmod_class", None)
@@ -37,16 +37,18 @@ class Exercise(pf.Element):
         if points is None:
             points = DEFAULT_EXERCISE_POINTS
 
+        class_text_question = ELEMENT_CLASSES["QUESTION"] + ["text"]
+
         if mintmod_class == "MLQuestion":
-            classes = ["exercise", "text"]
-            identifier, attributes = Exercise.parse_ex_args(
+            classes = class_text_question
+            identifier, attributes = Question.parse_args(
                 cmd_args, "length", "solution", "uxid"
             )
             attributes.append(("questionType", QUESTION_TYPES["EXACT"]))
 
         elif mintmod_class == "MLParsedQuestion":
-            classes = ["exercise", "text"]
-            identifier, attributes = Exercise.parse_ex_args(
+            classes = class_text_question
+            identifier, attributes = Question.parse_args(
                 cmd_args, "length", "solution", "precision", "uxid"
             )
             attributes.append(
@@ -54,8 +56,8 @@ class Exercise(pf.Element):
             )
 
         elif mintmod_class == "MLFunctionQuestion":
-            classes = ["exercise", "text"]
-            identifier, attributes = Exercise.parse_ex_args(
+            classes = class_text_question
+            identifier, attributes = Question.parse_args(
                 cmd_args,
                 "length",
                 "solution",
@@ -64,11 +66,13 @@ class Exercise(pf.Element):
                 "precision",
                 "uxid",
             )
-            attributes.append(("questionType", QUESTION_TYPES["MATH_FORMULA"]))
+            attributes.append(
+                ("questionType", QUESTION_TYPES["MATH_FUNCTION"])
+            )
 
         elif mintmod_class == "MLSpecialQuestion":
-            classes = ["exercise", "text"]
-            identifier, attributes = Exercise.parse_ex_args(
+            classes = class_text_question
+            identifier, attributes = Question.parse_args(
                 cmd_args,
                 "length",
                 "solution",
@@ -81,8 +85,8 @@ class Exercise(pf.Element):
             attributes.append(("questionType", QUESTION_TYPES["SPECIAL"]))
 
         elif mintmod_class == "MLSimplifyQuestion":
-            classes = ["exercise", "text"]
-            identifier, attributes = Exercise.parse_ex_args(
+            classes = class_text_question
+            identifier, attributes = Question.parse_args(
                 cmd_args,
                 "length",
                 "solution",
@@ -97,15 +101,15 @@ class Exercise(pf.Element):
             )
 
         elif mintmod_class == "MLCheckbox":
-            classes = ["exercise", "checkbox"]
-            identifier, attributes = Exercise.parse_ex_args(
+            classes = ELEMENT_CLASSES["QUESTION"] + ["checkbox"]
+            identifier, attributes = Question.parse_args(
                 cmd_args, "solution", "uxid"
             )
             attributes.append(("questionType", QUESTION_TYPES["BOOLEAN"]))
 
         elif mintmod_class == "MLIntervalQuestion":
-            classes = ["exercise", "text"]
-            identifier, attributes = Exercise.parse_ex_args(
+            classes = class_text_question
+            identifier, attributes = Question.parse_args(
                 cmd_args, "length", "solution", "precision", "uxid"
             )
             attributes.append(
@@ -130,7 +134,7 @@ class Exercise(pf.Element):
         )
 
     @staticmethod
-    def parse_ex_args(cmd_args, *names):
+    def parse_args(cmd_args, *names):
         """Parse exercise arguments.
 
         Receive a list of argument names and a list of values and return
