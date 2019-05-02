@@ -8,7 +8,7 @@ from innoconv_mintmod.mintmod_filter.filter_action import MintmodFilterAction
 
 class TestFilterAction(unittest.TestCase):
     def setUp(self):
-        self.doc = pf.Doc()
+        self.doc = pf.Doc(metadata={"lang": "en"})
         self.filter_action = MintmodFilterAction()
 
     def test_str_input(self):

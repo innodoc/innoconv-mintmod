@@ -8,7 +8,7 @@ from innoconv_mintmod.mintmod_filter.environments import Environments
 
 class TestMsectionStart(unittest.TestCase):
     def setUp(self):
-        self.doc = pf.Doc()
+        self.doc = pf.Doc(metadata={"lang": "en"})
         self.environments = Environments()
         self.elem_content = r"""
         \begin{MSectionStart}
@@ -36,7 +36,7 @@ class TestMsectionStart(unittest.TestCase):
 
 class TestMxContent(unittest.TestCase):
     def setUp(self):
-        self.doc = pf.Doc()
+        self.doc = pf.Doc(metadata={"lang": "en"})
         self.environments = Environments()
         self.elem_content = r"""
         \begin{MXContent}{Nice title}{Short title}{STD}
@@ -69,7 +69,7 @@ class TestMxContent(unittest.TestCase):
 
 class TestBoxesWithoutTitle(unittest.TestCase):
     def setUp(self):
-        self.doc = pf.Doc()
+        self.doc = pf.Doc(metadata={"lang": "en"})
         self.environments = Environments()
 
     def test_handle_mexercise(self):
@@ -99,9 +99,12 @@ class TestBoxesWithoutTitle(unittest.TestCase):
 
     def test_handle_mhint(self):
         """MHint"""
-        self._test_content_box(
-            self.environments.handle_mhint, ELEMENT_CLASSES["MHINT"]
+        div = self._test_content_box(
+            self.environments.handle_mhint,
+            ELEMENT_CLASSES["MHINT"],
+            [r"\iSolution"],
         )
+        self.assertEqual(div.attributes["caption"], "Solution")
 
     def _test_content_box(self, handler, element_classes, env_args=None):
         # some latex content in the environment
@@ -129,6 +132,7 @@ class TestBoxesWithoutTitle(unittest.TestCase):
             bullet_list.content[0].content[0].content[0].content[0].text,
             "item1",
         )
+        return div
 
 
 class TestMTest(unittest.TestCase):
@@ -137,7 +141,7 @@ class TestMTest(unittest.TestCase):
 
     def test_handle_mtest(self):
         """MTest"""
-        doc = pf.Doc()
+        doc = pf.Doc(metadata={"lang": "en"})
         elem_content = r"""
         \begin{MTest}{Abschlusstest}
             Foo bar
@@ -164,7 +168,7 @@ class TestMTest(unittest.TestCase):
 
     def test_handle_mtest_section_title(self):
         """MTest"""
-        doc = pf.Doc()
+        doc = pf.Doc(metadata={"lang": "en"})
         elem_content = r"""
         \begin{MTest}{Abschlusstest Kapitel \arabic{section}}
             Foo bar
@@ -196,13 +200,12 @@ class TestMXInfo(unittest.TestCase):
 
     def test_handle_mxinfo(self):
         """MXInfo"""
-        doc = pf.Doc()
+        doc = pf.Doc(metadata={"lang": "en"})
         elem_content = r"""
         \begin{MXInfo}{Ableitung}
         Foo bar
         \end{MXInfo}
         """
-        doc = pf.Doc()
         doc.content.extend([pf.RawBlock(elem_content, format="latex")])
         elem = doc.content[0]  # this sets up elem.parent
         ret = self.environments.handle_mxinfo("Foo bar", ["Ableitung"], elem)
@@ -222,7 +225,7 @@ class TestMXInfo(unittest.TestCase):
 
     def test_handle_mxinfo_math_title(self):
         """MXInfo with Math in title"""
-        doc = pf.Doc()
+        doc = pf.Doc(metadata={"lang": "en"})
         elem_content = r"""
         \begin{MXInfo}{Ableitung $x^n$}
         Foo bar
@@ -259,7 +262,7 @@ class TestHtml(unittest.TestCase):
 
     def test_handle_html(self):
         """html"""
-        doc = pf.Doc()
+        doc = pf.Doc(metadata={"lang": "en"})
         html = r"""<p>
         <h3 class="start">Suitable browsers</h3>
         The following browsers can be used for the course: Firefox, Internet

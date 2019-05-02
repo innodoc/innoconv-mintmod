@@ -51,9 +51,7 @@ class Question(pf.Element):
             identifier, attributes = Question.parse_args(
                 cmd_args, "length", "solution", "precision", "uxid"
             )
-            attributes.append(
-                ("questionType", QUESTION_TYPES["MATH_EXPRESSION"])
-            )
+            attributes.append(("questionType", QUESTION_TYPES["MATH_TERM"]))
 
         elif mintmod_class == "MLFunctionQuestion":
             classes = class_text_question
@@ -66,9 +64,7 @@ class Question(pf.Element):
                 "precision",
                 "uxid",
             )
-            attributes.append(
-                ("questionType", QUESTION_TYPES["MATH_FUNCTION"])
-            )
+            attributes.append(("questionType", QUESTION_TYPES["MATH_TERM"]))
 
         elif mintmod_class == "MLSpecialQuestion":
             classes = class_text_question
@@ -96,9 +92,7 @@ class Question(pf.Element):
                 "simplification-code",
                 "uxid",
             )
-            attributes.append(
-                ("questionType", QUESTION_TYPES["MATH_SIMPLIFY"])
-            )
+            attributes.append(("questionType", QUESTION_TYPES["MATH_TERM"]))
 
         elif mintmod_class == "MLCheckbox":
             classes = ELEMENT_CLASSES["QUESTION"] + ["checkbox"]
@@ -161,7 +155,7 @@ class Question(pf.Element):
         return [self._ica_to_json()]
 
 
-def create_content_box(elem_content, elem_classes):
+def create_content_box(elem_content, elem_classes, lang):
     """
     Create a content box.
 
@@ -181,7 +175,7 @@ def create_content_box(elem_content, elem_classes):
         raise ValueError(msg)
 
     div = pf.Div(classes=elem_classes)
-    content = parse_fragment(elem_content)
+    content = parse_fragment(elem_content, lang)
 
     # Check if environment had an \MLabel/SiteUXID identifier
     identifier = extract_identifier(content)
@@ -203,7 +197,7 @@ def create_header(title_str, doc, level=0, parse_text=False, identifier=""):
         raise ValueError("create_header without Doc element")
 
     if parse_text:
-        title = parse_fragment(title_str)[0].content
+        title = parse_fragment(title_str, doc.metadata["lang"].text)[0].content
     else:
         title = destringify(title_str)
     header = pf.Header(*title, level=level, identifier=identifier)
@@ -217,9 +211,11 @@ def create_image(filename, descr, elem, add_descr=True, block=True):
     img = pf.Image(url=filename, classes=ELEMENT_CLASSES["IMAGE"])
 
     if add_descr:
-        descr = parse_fragment(descr, as_doc=True)
+        descr = parse_fragment(
+            descr, elem.doc.metadata["lang"].text, as_doc=True
+        )
         img.title = shorten(
-            pf.stringify(descr).strip(), width=125, placeholder="..."
+            pf.stringify(*descr.content).strip(), width=125, placeholder="..."
         )
     else:
         img.title = descr

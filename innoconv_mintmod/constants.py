@@ -33,16 +33,13 @@ EXERCISE_CMDS_ENVS = (
     "MLSpecialQuestion",
 )
 
-# These values mirror the values set in
-# https://gitlab.tu-berlin.de/innodoc/innodoc-webapp/blob/master/lib/questionTypes.js
+#: Question types
 QUESTION_TYPES = {
-    "EXACT": "exact",
-    "MATH_EXPRESSION": "mathExpression",
-    "MATH_FUNCTION": "mathFunction",
-    "MATH_SIMPLIFY": "mathSimplify",
-    "SPECIAL": "special",
     "BOOLEAN": "boolean",
+    "EXACT": "exact",
     "MATH_INTERVAL": "mathInterval",
+    "MATH_TERM": "mathTerm",
+    "SPECIAL": "special",
 }
 
 #: Simple Regex substitutions for math

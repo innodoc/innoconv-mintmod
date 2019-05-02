@@ -241,7 +241,11 @@ class TestCommands(unittest.TestCase):
 
     def test_handle_mentry(self):
         r"""\MEntry without math"""
-        elem = pf.RawInline(r"\MEntry{Bla bla}{bla}", format="latex")
+        doc = pf.Doc(metadata={"lang": "en"})
+        doc.content.extend(
+            [pf.Para(pf.RawInline(r"\MEntry{Bla bla}{bla}", format="latex"))]
+        )
+        elem = doc.content[0].content[0]
         ret = self.commands.handle_mentry(["Bla bla", "bla"], elem)
         self.assertIsInstance(ret, pf.Span)
         self.assertEqual("index-bla", ret.identifier)
@@ -252,10 +256,18 @@ class TestCommands(unittest.TestCase):
 
     def test_handle_mentry_math(self):
         r"""\MEntry with math inside"""
-        elem = pf.RawInline(
-            r"\MEntry{$\MTextSF{floor}$-Funktion}{floor-Funktion}",
-            format="latex",
+        doc = pf.Doc(metadata={"lang": "en"})
+        doc.content.extend(
+            [
+                pf.Para(
+                    pf.RawInline(
+                        r"\MEntry{$\MTextSF{floor}$-Funktion}{floor-Funktion}",
+                        format="latex",
+                    )
+                )
+            ]
         )
+        elem = doc.content[0].content[0]
         ret = self.commands.handle_mentry(
             [r"$\MTextSF{floor}$-Funktion", "floor-Funktion"], elem
         )
@@ -290,7 +302,9 @@ class TestFormatting(unittest.TestCase):
     def test_handle_modstextbf(self):
         """modstextbf command"""
         content = r"\modstextbf{foo $x^2$}"
-        doc = pf.Doc(pf.RawBlock(content, format="latex"))
+        doc = pf.Doc(
+            pf.RawBlock(content, format="latex"), metadata={"lang": "en"}
+        )
         elem = doc.content[0]  # this sets up elem.parent
         strong = self.commands.handle_modstextbf(["foo $x^2$"], elem)
         self.assertIsInstance(strong, pf.Strong)
@@ -305,7 +319,9 @@ class TestFormatting(unittest.TestCase):
     def test_handle_modsemph(self):
         """modsemph command"""
         content = r"\modsemph{foo $x^2$}"
-        doc = pf.Doc(pf.RawBlock(content, format="latex"))
+        doc = pf.Doc(
+            pf.RawBlock(content, format="latex"), metadata={"lang": "en"}
+        )
         elem = doc.content[0]  # this sets up elem.parent
         emph = self.commands.handle_modsemph(["foo $x^2$"], elem)
         self.assertIsInstance(emph, pf.Emph)
@@ -320,7 +336,9 @@ class TestFormatting(unittest.TestCase):
     def test_handle_highlight(self):
         """highlight command"""
         content = r"\highlight{foo $x^2$}"
-        doc = pf.Doc(pf.RawBlock(content, format="latex"))
+        doc = pf.Doc(
+            pf.RawBlock(content, format="latex"), metadata={"lang": "en"}
+        )
         elem = doc.content[0]  # this sets up elem.parent
         highlight = self.commands.handle_highlight(["foo $x^2$"], elem)
         self.assertIsInstance(highlight, pf.Span)
@@ -352,7 +370,9 @@ class TestGraphics(unittest.TestCase):
         content = (
             r"\MUGraphics{foobar.png}{width=0.3\linewidth}" "{Footitle $a^2$}"
         )
-        doc = pf.Doc(pf.RawBlock(content, format="latex"))
+        doc = pf.Doc(
+            pf.RawBlock(content, format="latex"), metadata={"lang": "en"}
+        )
         elem = doc.content[0]  # this sets up elem.parent
         elem_args = ["foobar.png", r"width=0.3\linewidth", "Footitle $a^2$"]
         ret = self.commands.handle_mugraphics(elem_args, elem)
@@ -377,7 +397,10 @@ class TestGraphics(unittest.TestCase):
     def test_handle_mugraphics_inline(self):
         """MUGraphics command (inline)"""
         content = r"\MUGraphics{foobar.png}{width=0.3\linewidth}{Footitle}"
-        doc = pf.Doc(pf.Para(pf.RawInline(content, format="latex")))
+        doc = pf.Doc(
+            pf.Para(pf.RawInline(content, format="latex")),
+            metadata={"lang": "en"},
+        )
         elem = doc.content[0].content[0]  # this sets up elem.parent
         elem_args = ["foobar.png", r"width=0.3\linewidth", "Footitle"]
         ret = self.commands.handle_mugraphics(elem_args, elem)
@@ -429,5 +452,5 @@ class TestQuestions(unittest.TestCase):
         self.assertEqual(ret.attributes["precision"], "3")
         self.assertEqual(ret.attributes["points"], "8")
         self.assertEqual(
-            ret.attributes["questionType"], QUESTION_TYPES["MATH_EXPRESSION"]
+            ret.attributes["questionType"], QUESTION_TYPES["MATH_TERM"]
         )

@@ -53,7 +53,7 @@ vitae tellus. In quis viverra nibh.
 class TestParseFragment(unittest.TestCase):
     def test_parse_fragment(self):
         """parse_fragment() returns valid output if given test document"""
-        doc = parse_fragment(CONTENT)
+        doc = parse_fragment(CONTENT, "en")
         h_1 = doc[0]
         para_1 = doc[1]
         h_2 = doc[2]
@@ -92,26 +92,26 @@ class TestParseFragment(unittest.TestCase):
         prints errors"""
         with captured_output() as out:
             with self.assertRaises(RuntimeError):
-                parse_fragment(r"\begin{fooenv}bla")
+                parse_fragment(r"\begin{fooenv}bla", "en")
             err_out = out[1].getvalue()
         self.assertTrue("ERROR" in err_out)
 
     def test_parse_fragment_quiet(self):
         """parse_fragment() prints debug messages"""
         with captured_output() as out:
-            parse_fragment(r"\section{foo} \unknownfoobar")
+            parse_fragment(r"\section{foo} \unknownfoobar", "en")
             err_out = out[1].getvalue()
         self.assertTrue("Could not handle command unknownfoobar" in err_out)
 
     @patch("innoconv_mintmod.utils.log")
     def test_parse_fragment_log_is_called(self, log_mock):
         """parse_fragment() calls log function on warning"""
-        parse_fragment(r"\unknowncommandfoobar")
+        parse_fragment(r"\unknowncommandfoobar", "en")
         self.assertTrue(log_mock.called)
 
     def test_parse_fragment_empty(self):
         """parse_fragment() returns [] if given empty document"""
-        ret = parse_fragment("")
+        ret = parse_fragment("", "en")
         self.assertEqual(ret, [])
 
     @patch("innoconv_mintmod.utils.which", return_value=None)
@@ -119,7 +119,7 @@ class TestParseFragment(unittest.TestCase):
         # pylint: disable=unused-argument
         """parse_fragment() raises OSError if panzer not in PATH"""
         with self.assertRaises(OSError):
-            parse_fragment("foo bar")
+            parse_fragment("foo bar", "en")
 
 
 class TestDestringify(unittest.TestCase):

@@ -272,7 +272,7 @@ def main(debug=False):
     if debug:
         _print_sections(sections)
 
-    # removing pandoc output file
+    # remove pandoc output file
     os.unlink(filepath)
     panzertools.log(
         "INFO", "Removed original pandoc output: {}".format(filepath)

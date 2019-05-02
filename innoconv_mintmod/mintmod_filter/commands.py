@@ -241,7 +241,9 @@ class Commands:
         concept = cmd_args[1]
         strong = pf.Strong()
 
-        strong.content.extend(parse_fragment(text)[0].content)
+        strong.content.extend(
+            parse_fragment(text, elem.doc.metadata["lang"].text)[0].content
+        )
         span = pf.Span()
         span.identifier = "index-{}".format(slugify(concept))
         span.attributes = {"data-index-concept": concept}
@@ -455,7 +457,7 @@ class Commands:
 
     def handle_minputhint(self, cmd_args, elem):
         r"""Handle ``\MInputHint`` command."""
-        content = parse_fragment(cmd_args[0])
+        content = parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)
         if isinstance(elem, pf.Block):
             div = pf.Div(classes=ELEMENT_CLASSES["MINPUTHINT"])
             div.content.extend(content)
@@ -475,8 +477,12 @@ class Commands:
                 )
             )
 
-        content_left = parse_fragment(cmd_args[0])
-        content_right = parse_fragment(cmd_args[1])
+        content_left = parse_fragment(
+            cmd_args[0], elem.doc.metadata["lang"].text
+        )
+        content_right = parse_fragment(
+            cmd_args[1], elem.doc.metadata["lang"].text
+        )
 
         content = to_inline(
             [
@@ -543,11 +549,19 @@ class Commands:
 
     def handle_modstextbf(self, cmd_args, elem):
         r"""Handle \modstextbf command."""
-        return pf.Strong(*parse_fragment(cmd_args[0])[0].content)
+        return pf.Strong(
+            *parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)[
+                0
+            ].content
+        )
 
     def handle_modsemph(self, cmd_args, elem):
         r"""Handle \modsemph command."""
-        return pf.Emph(*parse_fragment(cmd_args[0])[0].content)
+        return pf.Emph(
+            *parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)[
+                0
+            ].content
+        )
 
     def handle_highlight(self, cmd_args, elem):
         r"""Handle \highlight command.
@@ -557,7 +571,9 @@ class Commands:
         the information here.
         """
         return pf.Span(
-            *parse_fragment(cmd_args[0])[0].content,
+            *parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)[
+                0
+            ].content,
             classes=ELEMENT_CLASSES["HIGHLIGHT"]
         )
 

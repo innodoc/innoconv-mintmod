@@ -45,11 +45,15 @@ def get_panzer_bin():
     return panzer_bin
 
 
-def parse_fragment(parse_string, as_doc=False, from_format="latex+raw_tex"):
+def parse_fragment(
+    parse_string, lang, as_doc=False, from_format="latex+raw_tex"
+):
     """Parse a source fragment using panzer.
 
     :param parse_string: Source fragment
     :type parse_string: str
+    :param lang: Language code
+    :type lang: str
     :param as_doc: Return elements as :class:`panflute.elements.Doc`
     :type as_doc: bool
     :param from_format: Source format
@@ -72,6 +76,7 @@ def parse_fragment(parse_string, as_doc=False, from_format="latex+raw_tex"):
         "--from={}".format(from_format),
         "--to=json",
         "--metadata=style:innoconv",
+        "--metadata=lang:{}".format(lang),
     ]
 
     # pass nesting depth as ENV var
