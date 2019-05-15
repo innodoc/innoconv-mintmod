@@ -235,7 +235,7 @@ class Commands:
         """
 
         if isinstance(elem, pf.Block):
-            log("Warning: Expected Inline for MNRef: {}".format(cmd_args))
+            log("Warning: Expected Inline for MEntry: {}".format(cmd_args))
 
         text = cmd_args[0]
         concept = cmd_args[1]
@@ -257,7 +257,7 @@ class Commands:
         """
 
         if isinstance(elem, pf.Block):
-            log("Warning: Expected Inline for MNRef: {}".format(cmd_args))
+            log("Warning: Expected Inline for MIndex: {}".format(cmd_args))
 
         concept = cmd_args[0]
         span = pf.Span()
