@@ -179,6 +179,7 @@ class Environments:
         lang = elem.doc.metadata["lang"].text
         div = create_content_box(elem_content, ELEMENT_CLASSES["MHINT"], lang)
         caption = env_args[0]
+        # pylint: disable=no-member
         div.attributes["caption"] = caption.replace(
             r"\iSolution", lang == "de" and "Lösung" or "Solution"
         )

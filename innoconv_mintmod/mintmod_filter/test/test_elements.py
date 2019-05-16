@@ -15,6 +15,7 @@ class TestQuestion(unittest.TestCase):
             points="12",
         )
         self.assertIsInstance(ex, pf.Span)
+        # pylint: disable=no-member
         self.assertIn("question", ex.classes)
         self.assertIn("checkbox", ex.classes)
         self.assertEqual("correct answer", ex.attributes["solution"])

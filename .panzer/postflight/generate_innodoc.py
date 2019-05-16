@@ -14,6 +14,8 @@ import sys
 import json
 import re
 from subprocess import Popen, PIPE
+from pprint import pformat
+
 import yaml
 
 from innoconv_mintmod.constants import ENCODING, OUTPUT_FORMAT_EXT_MAP
@@ -31,6 +33,19 @@ PANDOC_TIMEOUT = 120
 #: Languages key in manifest.yml
 LANGKEY = "languages"
 TITLEKEY = "title"
+
+
+def _attrs_to_dict(attrs):
+    return dict((k, v) for k, v in attrs)
+
+
+def section_id_to_mintmod_section_id(section_id):
+    """Remove number prefix from section, e.g. '000-foo' -> 'foo'."""
+    if len(section_id) >= 3:
+        mm_section_id = section_id[3:]
+    if mm_section_id and mm_section_id[0] == "-":
+        mm_section_id = mm_section_id[1:]
+    return mm_section_id
 
 
 def concatenate_strings(elems):
@@ -92,6 +107,186 @@ def create_doc_tree(tree, level):
         create_section(sections, section, children)
 
     return sections, content
+
+
+def create_map_of_section_ids(sections):
+    """Create mapping between mintmod section id and section path."""
+    id_map = {}
+
+    def handle_section(section, prefix):
+        mintmod_section_id = section_id_to_mintmod_section_id(section["id"])
+        id_map[mintmod_section_id] = "{}/{}".format(prefix, section["id"])
+        try:
+            for subsection in section["children"]:
+                handle_section(
+                    subsection, prefix="{}".format(id_map[mintmod_section_id])
+                )
+        except KeyError:
+            pass
+
+    for section in sections:
+        handle_section(section, "")
+
+    return id_map
+
+
+def create_map_of_ids(sections):
+    """Create a mapping between link IDs and section path."""
+    id_map = {}
+
+    def handle_node(node, section_path):
+        # pylint: disable=too-many-branches
+        # TODO: figure, image, what else...?
+        if node["t"] == "Span":
+            span_id = node["c"][0][0]
+            if span_id:
+                id_map[span_id] = section_path
+            for sub_node in node["c"][1]:
+                handle_node(sub_node, section_path)
+        elif node["t"] in ("Para", "Plain"):
+            for sub_node in node["c"]:
+                handle_node(sub_node, section_path)
+        elif node["t"] == "Div":
+            div_id = node["c"][0][0]
+            if div_id:
+                id_map[div_id] = section_path
+            for sub_node in node["c"][1]:
+                handle_node(sub_node, section_path)
+        elif node["t"] in ("Emph", "Strong"):
+            for sub_node in node["c"]:
+                handle_node(sub_node, section_path)
+        elif node["t"] == "OrderedList":
+            for item in node["c"][1]:
+                for sub_node in item:
+                    handle_node(sub_node, section_path)
+        elif node["t"] == "BulletList":
+            for item in node["c"]:
+                for sub_node in item:
+                    handle_node(sub_node, section_path)
+        elif node["t"] in (
+            "LineBreak",
+            "Link",
+            "Math",
+            "SoftBreak",
+            "Space",
+            "Str",
+        ):
+            pass
+        else:
+            panzertools.log(
+                "WARNING",
+                "Encountered unknown element: {}".format(pformat(node)),
+            )
+
+    def handle_section(section, prefix):
+        section_path = "{}/{}".format(prefix, section["id"])
+        if "content" in section:
+            for node in section["content"]:
+                handle_node(node, section_path)
+        if "children" in section:
+            for child in section["children"]:
+                handle_section(child, section_path)
+
+    for section in sections:
+        handle_section(section, "")
+
+    return id_map
+
+
+def postprocess_links(sections, section_map, id_map):
+    """Rewrite links."""
+    # pylint: disable=too-many-statements
+
+    def handle_link(cmd, node):
+        target = node["c"][2][0]
+        if target.startswith("#"):
+            target = target[1:]
+        try:
+            # try ID
+            section_path = id_map[target]
+            url = "{}#{}".format(section_path, target)
+        except KeyError:
+            # try section ID
+            try:
+                url = section_map[target]
+            except KeyError:
+                panzertools.log(
+                    "WARNING",
+                    "Found {}: Couldn't map ID={}".format(cmd, target),
+                )
+                return
+        node["c"][0][2] = []  # remove attributes
+        node["c"][2][0] = url
+        panzertools.log(
+            "INFO", "Found {}: '{}' -> '{}'".format(cmd, target, url)
+        )
+
+    def handle_node(node):
+        # pylint: disable=too-many-branches
+        if node["t"] == "Span":
+            attrs = _attrs_to_dict(node["c"][0][2])
+            if "data-mentry" in attrs.keys():
+                pass
+            elif "data-mindex" in attrs.keys():
+                pass
+            elif not attrs.keys():
+                for sub_node in node["c"][1]:
+                    handle_node(sub_node)
+            elif "question" in node["c"][0][1]:
+                pass
+            else:
+                panzertools.log(
+                    "WARNING", r"Found unknown span={}".format(pformat(node))
+                )
+        elif node["t"] == "Link":
+            attrs = _attrs_to_dict(node["c"][0][2])
+            if "data-mref" in attrs.keys():
+                # \MRef has ID target, caption is (section, example,
+                # exercise, ...) number
+                handle_link("MRef", node)
+                node["c"][1] = []
+            elif "data-msref" in attrs.keys():
+                # \MSRef has ID target and caption
+                handle_link("MSRef", node)
+            elif "data-mnref" in attrs.keys():
+                # \MNRef: seems to be the same as \MRef...
+                handle_link("MNRef", node)
+                node["c"][1] = []
+        elif node["t"] in ("Para", "Plain"):
+            for sub_node in node["c"]:
+                handle_node(sub_node)
+        elif node["t"] == "Div":
+            for sub_node in node["c"][1]:
+                handle_node(sub_node)
+        elif node["t"] == "Emph":
+            for sub_node in node["c"]:
+                handle_node(sub_node)
+        elif node["t"] == "OrderedList":
+            for item in node["c"][1]:
+                for sub_node in item:
+                    handle_node(sub_node)
+        elif node["t"] == "BulletList":
+            for item in node["c"]:
+                for sub_node in item:
+                    handle_node(sub_node)
+        elif node["t"] in ("LineBreak", "Math", "SoftBreak", "Space", "Str"):
+            pass
+        else:
+            panzertools.log(
+                "WARNING",
+                "Encountered unknown element: {}".format(pformat(node)),
+            )
+
+    def handle_section(section):
+        if "content" in section:
+            for node in section["content"]:
+                handle_node(node)
+        if "children" in section:
+            for child in section["children"]:
+                handle_section(child)
+
+    for section in sections:
+        handle_section(section)
 
 
 def write_sections(sections, outdir_base, output_format):
@@ -215,6 +410,7 @@ def _print_sections(sections):
 
 def main(debug=False):
     """Post-flight script entry point."""
+    # pylint: disable=too-many-locals
     options = panzertools.read_options()
     filepath = options["pandoc"]["output"]
     convert_to = "json"
@@ -244,6 +440,14 @@ def main(debug=False):
     # extract sections from headers
     sections, _ = create_doc_tree(doc["blocks"], level=1)
     panzertools.log("INFO", "Extracted table of contents.")
+
+    # rewrite internal links
+    section_map = create_map_of_section_ids(sections)
+    panzertools.log("INFO", "Created map of sections from AST.")
+    id_map = create_map_of_ids(sections)
+    panzertools.log("INFO", "Created ID map from AST.")
+    postprocess_links(sections, section_map, id_map)
+    panzertools.log("INFO", "Post-processed links.")
 
     # output directory
     outdir = os.path.normpath(os.path.dirname(filepath))

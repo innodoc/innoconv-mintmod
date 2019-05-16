@@ -193,7 +193,9 @@ class Commands:
         This command translates to ``\vref``.
         """
         url = "#%s" % cmd_args[0]
-        return block_wrap(pf.Link(pf.Str("PLACEHOLDER"), url=url), elem)
+        return block_wrap(
+            pf.Link(url=url, attributes={"data-mref": "true"}), elem
+        )
 
     def handle_msref(self, cmd_args, elem):
         r"""Handle ``\MSRef`` command.
@@ -202,18 +204,20 @@ class Commands:
         """
         url = "#%s" % cmd_args[0]
         description = destringify(cmd_args[1])
-        return block_wrap(pf.Link(*description, url=url), elem)
+        return block_wrap(
+            pf.Link(*description, url=url, attributes={"data-msref": "true"}),
+            elem,
+        )
 
     def handle_mnref(self, cmd_args, elem):
         r"""Handle ``\MNRef`` command.
 
         This command inserts a section link.
         """
-        identifier = cmd_args[0]
-        span = pf.Span()
-        span.attributes = {"data-link-section": identifier}
-        span.content = [pf.Str(identifier)]
-        return block_wrap(span, elem)
+        target = cmd_args[0]
+        return block_wrap(
+            pf.Link(url=target, attributes={"data-mnref": "true"}), elem
+        )
 
     def handle_mextlink(self, cmd_args, elem):
         r"""Handle ``\MExtLink`` command.
@@ -240,13 +244,12 @@ class Commands:
         text = cmd_args[0]
         concept = cmd_args[1]
         strong = pf.Strong()
-
         strong.content.extend(
             parse_fragment(text, elem.doc.metadata["lang"].text)[0].content
         )
         span = pf.Span()
         span.identifier = "index-{}".format(slugify(concept))
-        span.attributes = {"data-index-concept": concept}
+        span.attributes = {"data-mentry": concept}
         span.content = [strong]
         return block_wrap(span, elem)
 
@@ -262,7 +265,7 @@ class Commands:
         concept = cmd_args[0]
         span = pf.Span()
         span.identifier = "index-{}".format(slugify(concept))
-        span.attributes = {"data-index-concept": concept, "hidden": "hidden"}
+        span.attributes = {"data-mindex": concept, "hidden": "hidden"}
         return block_wrap(span, elem)
 
     ###########################################################################
