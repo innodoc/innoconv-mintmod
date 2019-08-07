@@ -64,6 +64,8 @@ class InnoconvRunner:
             )
             source_file = self.source
             output_dir = self.output_dir_base
+        else:
+            raise FileNotFoundError("Couldn't find {}".format(self.source))
 
         # create output directory
         os.makedirs(output_dir, exist_ok=True)
