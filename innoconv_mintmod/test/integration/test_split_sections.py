@@ -7,10 +7,7 @@ import tempfile
 from innoconv_mintmod.test.utils import get_doc_from_markup
 
 
-class TestSplitSections(unittest.TestCase):
-    def test_split_sections(self):
-        """test postflight split_sections"""
-        tex = r"""
+TEX_CODE = r"""
 \MSection{1}
 \MLabel{LABEL_1}
 
@@ -36,6 +33,11 @@ subsection-text-hier.
 
 subsubsection-text-hier.
 """
+
+
+class TestSplitSections(unittest.TestCase):
+    def test_split_sections(self):
+        """test postflight split_sections"""
         langs = (("de", "Einführung"), ("en", "Introduction"))
         for lang in langs:
             with self.subTest(lang=lang[0]):
@@ -43,7 +45,7 @@ subsubsection-text-hier.
                 with tempfile.TemporaryDirectory() as tmpdir:
                     pandoc_output = os.path.join(tmpdir, "output.json")
                     get_doc_from_markup(
-                        tex,
+                        TEX_CODE,
                         style="innoconv-generate-innodoc",
                         output=pandoc_output,
                         lang=lang_code,
