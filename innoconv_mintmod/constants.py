@@ -45,7 +45,7 @@ QUESTION_TYPES = {
 #: Simple Regex substitutions for math
 MATH_SUBSTITUTIONS = (
     # leave \Rightarrow, ... intact
-    (r"\\([NZQRC])($|[_\\$:=\s^,.})])", r"\mathbb{\1}\2"),
+    (r"\\([NZQRC])($|[_\\$:=\s^,.})])", r"\\mathbb{\1}\2"),
     (r"\\Mtfrac", r"\\tfrac"),
     (r"\\Mdfrac", r"\\dfrac"),
     (r"\\MBlank", r"\ "),
@@ -54,14 +54,14 @@ MATH_SUBSTITUTIONS = (
     (r"\\MDFPaSpace", r"\,\,"),
     (r"\\MDFPeriod", r"\, ."),
     (r"\\MTSP", r""),
-    (r"\\MSetminus", r"\setminus"),
+    (r"\\MSetminus", r"\\setminus"),
     (r"\\MElSetSep", ";"),
     (r"\\MIntvlSep", ";"),
     (r"\\MEU", "e"),
     (r"\\MDwSp", r"\,d"),
     (r"\\ML", "L"),
-    (r"\\MEmptyset", r"\emptyset"),
-    (r"\\MUnderset", r"\underset"),
+    (r"\\MEmptyset", r"\\emptyset"),
+    (r"\\MUnderset", r"\\underset"),
     (r"\\MBinom", r"\\binom"),
     (r"\\MTextSF", r"\\textsf"),
     (r"\\MHDots", r"\\dots"),
@@ -86,9 +86,9 @@ MATH_SUBSTITUTIONS = (
     (r"\\Mmapsto", r"\\mapsto"),
     # handled by innoconv.mathjax.js
     (r"\\MZahl{([0-9]+?)}{([0-9]*?)}", r"\\num{\1.\2}"),
-    (r"\\MZXYZhltrennzeichen", r"\decmarker"),
+    (r"\\MZXYZhltrennzeichen", r"\\decmarker"),
     # intervals (#17)
-    (r"\\MoIl\[\\left\]", r"\left]"),
+    (r"\\MoIl\[\\left\]", r"\\left]"),
     (r"\\MoIr\[\\right\]", r"\\right["),
     (r"\\MoIl", "]"),
     (r"\\MoIr", "["),
