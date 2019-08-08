@@ -67,8 +67,10 @@ class TestGenerateInnodoc(unittest.TestCase):
             with open(os.path.join(output_dir_lang, "content.md")) as file:
                 content = file.read()
                 links = (
-                    "[](/000-LABEL_1/001-LABEL_1_2/000-LABEL_1_2_1#infolabel)",
-                    "[Intro](/000-LABEL_1/000-LABEL_1_1/000-LABEL_1_1_1)",
+                    "[](/section/000-LABEL_1/"
+                    "001-LABEL_1_2/000-LABEL_1_2_1#infolabel)",
+                    "[Intro](/section/000-LABEL_1/"
+                    "000-LABEL_1_1/000-LABEL_1_1_1)",
                 )
                 for link in links:
                     self.assertIn(link, content)

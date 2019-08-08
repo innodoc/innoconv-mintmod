@@ -9,12 +9,12 @@ This is the final step to generate innoDoc content from Mintmod input.
  - Removes single JSON file.
 """
 
-import os
-import sys
 import json
+import os
 import re
-from subprocess import Popen, PIPE
+import sys
 from pprint import pformat
+from subprocess import PIPE, Popen
 
 import yaml
 
@@ -32,6 +32,7 @@ class CreateMapOfIds:
     """Create a mapping between link IDs and section path."""
 
     def __init__(self, sections):
+        """Init attributes."""
         self.sections = sections
         self.id_map = {}
 
@@ -42,13 +43,13 @@ class CreateMapOfIds:
         return self.id_map
 
     def _handle_section(self, section, prefix):
-        section_path = "{}/{}".format(prefix, section["id"])
+        section_path = "{}{}".format(prefix, section["id"])
         if "content" in section:
             for node in section["content"]:
                 self._handle_node(node, section_path)
         if "children" in section:
             for child in section["children"]:
-                self._handle_section(child, section_path)
+                self._handle_section(child, "{}/".format(section_path))
 
     def _handle_node(self, node, section_path):
         # TODO: figure, image, what else...?
@@ -212,11 +213,11 @@ class PostprocessLinks:
         try:
             # try ID
             section_path = self.id_map[target]
-            url = "{}#{}".format(section_path, target)
+            url = self._generate_section_link(section_path, target)
         except KeyError:
             # try section ID
             try:
-                url = self.section_map[target]
+                url = self._generate_section_link(self.section_map[target])
             except KeyError:
                 panzertools.log(
                     "WARNING",
@@ -228,6 +229,12 @@ class PostprocessLinks:
         panzertools.log(
             "INFO", "Found {}: '{}' -> '{}'".format(cmd, target, url)
         )
+
+    @staticmethod
+    def _generate_section_link(section_path, hash_target=None):
+        if hash_target:
+            return "/section/{}#{}".format(section_path, hash_target)
+        return "/section/{}".format(section_path)
 
     @staticmethod
     def _attrs_to_dict(attrs):
@@ -301,16 +308,22 @@ class CreateMapOfSectionIds:
         self.sections = sections
         self.id_map = {}
 
+    def get_map(self):
+        """Generate section map."""
+        for section in self.sections:
+            self._handle_section(section, "")
+        return self.id_map
+
     def _handle_section(self, section, prefix):
         mintmod_section_id = self._section_id_to_mintmod_section_id(
             section["id"]
         )
-        self.id_map[mintmod_section_id] = "{}/{}".format(prefix, section["id"])
+        self.id_map[mintmod_section_id] = "{}{}".format(prefix, section["id"])
         try:
             for subsection in section["children"]:
                 self._handle_section(
                     subsection,
-                    prefix="{}".format(self.id_map[mintmod_section_id]),
+                    prefix="{}/".format(self.id_map[mintmod_section_id]),
                 )
         except KeyError:
             pass
@@ -323,12 +336,6 @@ class CreateMapOfSectionIds:
         if mm_section_id and mm_section_id[0] == "-":
             mm_section_id = mm_section_id[1:]
         return mm_section_id
-
-    def get_map(self):
-        """Generate section map."""
-        for section in self.sections:
-            self._handle_section(section, "")
-        return self.id_map
 
 
 class WriteSections:
