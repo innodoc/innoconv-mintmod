@@ -261,6 +261,7 @@ ENCODING = "utf-8"
 
 #: Translatable strings
 TRANSLATIONS = {
+    "content": {"de": "Inhalt", "en": "Content"},
     "introduction": {"de": "Einführung", "en": "Introduction"},
     "exercises": {"de": "Aufgaben", "en": "Exercises"},
 }

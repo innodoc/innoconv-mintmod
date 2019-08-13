@@ -62,7 +62,19 @@ class Environments:
 
     def handle_mcontent(self, elem_content, env_args, elem):
         r"""Handle ``\MContent`` environment."""
-        return parse_fragment(elem_content, elem.doc.metadata["lang"].text)
+        content = parse_fragment(elem_content, elem.doc.metadata["lang"].text)
+        lang = elem.doc.metadata["lang"].text
+        header = create_header(
+            TRANSLATIONS["content"][lang],
+            elem.doc,
+            level=3,
+            identifier="content",
+        )
+        identifier = extract_identifier(content)
+        if identifier:
+            header.identifier = identifier
+        content.insert(0, header)
+        return content
 
     def handle_mintro(self, elem_content, env_args, elem):
         r"""Handle ``\MIntro`` environment."""
