@@ -60,8 +60,9 @@ class CreateMapOfIds:
             "CodeBlock": self._handle_codeblock,
             "DefinitionList": self._handle_definitionlist,
             "Div": self._handle_div,
-            "Image": self._handle_image,
             "Header": self._handle_header,
+            "Image": self._handle_image,
+            "Link": self._handle_link,
             "OrderedList": self._handle_orderedlist,
             "Quoted": self._handle_quoted,
             "Span": self._handle_span,
@@ -70,7 +71,6 @@ class CreateMapOfIds:
             ("Para", "Plain"): self._handle_para,
             (
                 "LineBreak",
-                "Link",
                 "Math",
                 "SoftBreak",
                 "Space",
@@ -94,6 +94,12 @@ class CreateMapOfIds:
         image_id = node["c"][0][0]
         if image_id:
             self.id_map[image_id] = section_path
+
+    def _handle_link(self, node, section_path):
+        if "video" in node["c"][0][1]:
+            video_id = node["c"][0][0]
+            if video_id:
+                self.id_map[video_id] = section_path
 
     def _handle_definitionlist(self, node, section_path):
         for term in node["c"]:

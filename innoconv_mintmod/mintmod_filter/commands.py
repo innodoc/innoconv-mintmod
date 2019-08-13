@@ -169,6 +169,10 @@ class Commands:
         ret.attributes = {"hidden": "hidden"}
         return ret
 
+    def handle_mcopyrightlabel(self, cmd_args, elem):
+        r"""Handle ``\MCopyrightLabel`` command."""
+        return self.handle_mlabel(cmd_args, elem)
+
     def handle_msetsectionid(self, cmd_args, elem):
         r"""Handle ``\MSetSectionID`` command.
 
@@ -332,6 +336,7 @@ class Commands:
             title=title,
             classes=ELEMENT_CLASSES["MVIDEO"]
         )
+        remember(elem.doc, "label", link)
         return block_wrap(link, elem)
 
     def handle_mtikzauto(self, cmd_args, elem):
