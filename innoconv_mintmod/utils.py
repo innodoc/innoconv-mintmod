@@ -251,8 +251,8 @@ def extract_identifier(content):
                 return match.groups()[0]
         raise ValueError()
 
-    # extract ID
-    for prefix in (INDEX_LABEL_PREFIX, SITE_UXID_PREFIX):
+    # extract ID (label takes precedence!)
+    for prefix in (SITE_UXID_PREFIX, INDEX_LABEL_PREFIX):
         try:
             # check first 3 elements
             for idx in range(3):

@@ -361,23 +361,24 @@ class TestExtractIdentifier(unittest.TestCase):
         self.assertEqual(identifier, "foo")
 
     def test_uxid_label_para(self):
-        uxid = pf.Div(
-            identifier="{}-foo".format(SITE_UXID_PREFIX),
-            classes=(SITE_UXID_PREFIX,),
-        )
         mlabel = pf.Div(
             identifier="{}-foo".format(INDEX_LABEL_PREFIX),
             classes=(INDEX_LABEL_PREFIX,),
         )
+        uxid = pf.Div(
+            identifier="{}-bar".format(SITE_UXID_PREFIX),
+            classes=(SITE_UXID_PREFIX,),
+        )
         para = pf.Para(pf.Str("bar"))
 
         tests = (
-            ("foo", [mlabel, uxid, para]),
-            ("foo", [uxid, mlabel, para]),
-            (None, [para]),
+            ("(mlabel,uxid,para)", "foo", [mlabel, uxid, para]),
+            ("(uxid,mlabel,para)", "foo", [uxid, mlabel, para]),
+            ("(uxid,para)", "bar", [uxid, para]),
+            ("(para)", None, [para]),
         )
 
-        for exp_id, test in tests:
-            with self.subTest(test):
+        for name, exp_id, test in tests:
+            with self.subTest("{} expected: {}".format(name, exp_id)):
                 identifier = extract_identifier(test)
                 self.assertEqual(identifier, exp_id)
