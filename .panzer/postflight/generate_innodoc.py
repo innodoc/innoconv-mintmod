@@ -2,9 +2,12 @@
 """
 This is the final step to generate innoDoc content from Mintmod input.
 
- - Loads pandoc output from single JSON file.
- - Extract section tree.
- - Save individual sections to course directory structure.
+ - Load pandoc output from single JSON file.
+ - Generate a section tree from headings.
+ - Create a mapping between mintmod section IDs and section paths. (a)
+ - Create a mapping between element IDs and section paths. (b)
+ - Rewrite all links by using (a) and (b).
+ - Save individual sections to innoDoc-specific directory structure.
  - Generate a ``manifest.yml``.
  - Removes single JSON file.
 """
@@ -52,14 +55,19 @@ class CreateMapOfIds:
                 self._handle_section(child, "{}/".format(section_path))
 
     def _handle_node(self, node, section_path):
-        # TODO: figure, image, what else...?
         handle_node_map = {
-            "Span": self._handle_span,
-            ("Para", "Plain"): self._handle_para,
-            "Div": self._handle_div,
-            ("Emph", "Strong"): self._handle_emph_strong,
-            "OrderedList": self._handle_orderedlist,
             "BulletList": self._handle_bulletlist,
+            "CodeBlock": self._handle_codeblock,
+            "DefinitionList": self._handle_definitionlist,
+            "Div": self._handle_div,
+            "Image": self._handle_image,
+            "Header": self._handle_header,
+            "OrderedList": self._handle_orderedlist,
+            "Quoted": self._handle_quoted,
+            "Span": self._handle_span,
+            "Table": self._handle_table,
+            ("Emph", "Strong"): self._handle_emph_strong,
+            ("Para", "Plain"): self._handle_para,
             (
                 "LineBreak",
                 "Link",
@@ -75,8 +83,47 @@ class CreateMapOfIds:
                 handle_node_map[elem_type](node, section_path)
                 return
         panzertools.log(
-            "WARNING", "Encountered unknown element: {}".format(pformat(node))
+            "WARNING",
+            "CreateMapOfIds: Unknown element {}: {}".format(
+                node["t"], pformat(node)
+            ),
         )
+
+    def _handle_image(self, node, section_path):
+        image_id = node["c"][0][0]
+        if image_id:
+            self.id_map[image_id] = section_path
+
+    def _handle_definitionlist(self, node, section_path):
+        for term in node["c"]:
+            for term_0 in term[0]:
+                if isinstance(term_0, list):
+                    for sub_node in term_0:
+                        self._handle_node(sub_node, section_path)
+                else:
+                    self._handle_node(term_0, section_path)
+            for term_1 in term[1]:
+                if isinstance(term_1, list):
+                    for sub_node in term_1:
+                        self._handle_node(sub_node, section_path)
+                else:
+                    self._handle_node(term_1, section_path)
+
+    def _handle_quoted(self, node, section_path):
+        for sub_node in node["c"][1]:
+            self._handle_node(sub_node, section_path)
+
+    def _handle_header(self, node, section_path):
+        header_id = node["c"][1][0]
+        if header_id:
+            self.id_map[header_id] = section_path
+        for sub_node in node["c"][2]:
+            self._handle_node(sub_node, section_path)
+
+    def _handle_codeblock(self, node, section_path):
+        cb_id = node["c"][0][0]
+        if cb_id:
+            self.id_map[cb_id] = section_path
 
     def _handle_span(self, node, section_path):
         span_id = node["c"][0][0]
@@ -85,9 +132,23 @@ class CreateMapOfIds:
         for sub_node in node["c"][1]:
             self._handle_node(sub_node, section_path)
 
+    def _handle_table(self, node, section_path):
+        for headcol in node["c"][3]:
+            for sub_node in headcol:
+                self._handle_node(sub_node, section_path)
+        for row in node["c"][4]:
+            for col in row:
+                for sub_node in col:
+                    self._handle_node(sub_node, section_path)
+
     def _handle_para(self, node, section_path):
         for sub_node in node["c"]:
             self._handle_node(sub_node, section_path)
+
+    def _handle_bulletlist(self, node, section_path):
+        for item in node["c"]:
+            for sub_node in item:
+                self._handle_node(sub_node, section_path)
 
     def _handle_div(self, node, section_path):
         div_id = node["c"][0][0]
@@ -98,15 +159,11 @@ class CreateMapOfIds:
 
     def _handle_emph_strong(self, node, section_path):
         for sub_node in node["c"]:
-            self._handle_node(sub_node, section_path)
+            if isinstance(sub_node, list):
+                self._handle_node(sub_node, section_path)
 
     def _handle_orderedlist(self, node, section_path):
         for item in node["c"][1]:
-            for sub_node in item:
-                self._handle_node(sub_node, section_path)
-
-    def _handle_bulletlist(self, node, section_path):
-        for item in node["c"]:
             for sub_node in item:
                 self._handle_node(sub_node, section_path)
 
@@ -134,13 +191,21 @@ class PostprocessLinks:
 
     def _handle_node(self, node):
         handle_node_map = {
-            "Span": self._handle_span,
-            "Link": self._handle_ref,
-            ("Para", "Plain", "Emph"): self._handle_para,
-            "Div": self._handle_div,
-            "OrderedList": self._handle_orderedlist,
             "BulletList": self._handle_bulletlist,
+            "DefinitionList": self._handle_definitionlist,
+            "Div": self._handle_div,
+            "Link": self._handle_ref,
+            "OrderedList": self._handle_orderedlist,
+            "Quoted": self._handle_quoted,
+            "Span": self._handle_span,
+            "Strong": self._handle_strong,
+            "Table": self._handle_table,
+            ("Para", "Plain", "Emph"): self._handle_para,
             (
+                "Code",
+                "CodeBlock",
+                "Header",
+                "Image",
                 "LineBreak",
                 "Math",
                 "SoftBreak",
@@ -154,8 +219,44 @@ class PostprocessLinks:
                 handle_node_map[elem_type](node)
                 return
         panzertools.log(
-            "WARNING", "Encountered unknown element: {}".format(pformat(node))
+            "WARNING",
+            "PostprocessLinks: Unknown element {}: {}".format(
+                node["t"], pformat(node)
+            ),
         )
+
+    def _handle_definitionlist(self, node):
+        for term in node["c"]:
+            for term_0 in term[0]:
+                if isinstance(term_0, list):
+                    for sub_node in term_0:
+                        self._handle_node(sub_node)
+                else:
+                    self._handle_node(term_0)
+            for term_1 in term[1]:
+                if isinstance(term_1, list):
+                    for sub_node in term_1:
+                        self._handle_node(sub_node)
+                else:
+                    self._handle_node(term_1)
+
+    def _handle_table(self, node):
+        for headcol in node["c"][3]:
+            for sub_node in headcol:
+                self._handle_node(sub_node)
+        for row in node["c"][4]:
+            for col in row:
+                for sub_node in col:
+                    self._handle_node(sub_node)
+
+    def _handle_quoted(self, node):
+        for sub_node in node["c"][1]:
+            self._handle_node(sub_node)
+
+    def _handle_strong(self, node):
+        for sub_node in node["c"]:
+            if isinstance(sub_node, list):
+                self._handle_node(sub_node)
 
     def _handle_span(self, node):
         attrs = self._attrs_to_dict(node["c"][0][2])
