@@ -82,10 +82,11 @@ class CreateMapOfIds:
             if node["t"] == elem_type or node["t"] in elem_type:
                 handle_node_map[elem_type](node, section_path)
                 return
+
         panzertools.log(
             "WARNING",
-            "CreateMapOfIds: Unknown element {}: {}".format(
-                node["t"], pformat(node)
+            "CreateMapOfIds: Unknown element {} in section {}: {}".format(
+                node["t"], section_path, pformat(node)
             ),
         )
 
@@ -184,12 +185,12 @@ class PostprocessLinks:
     def _handle_section(self, section):
         if "content" in section:
             for node in section["content"]:
-                self._handle_node(node)
+                self._handle_node(node, section)
         if "children" in section:
             for child in section["children"]:
                 self._handle_section(child)
 
-    def _handle_node(self, node):
+    def _handle_node(self, node, section):
         handle_node_map = {
             "BulletList": self._handle_bulletlist,
             "DefinitionList": self._handle_definitionlist,
@@ -216,49 +217,50 @@ class PostprocessLinks:
 
         for elem_type in handle_node_map:
             if node["t"] == elem_type or node["t"] in elem_type:
-                handle_node_map[elem_type](node)
+                handle_node_map[elem_type](node, section)
                 return
+
         panzertools.log(
             "WARNING",
-            "PostprocessLinks: Unknown element {}: {}".format(
-                node["t"], pformat(node)
+            "PostprocessLinks: Unknown element {} in section {}: {}".format(
+                node["t"], section["id"], pformat(node)
             ),
         )
 
-    def _handle_definitionlist(self, node):
+    def _handle_definitionlist(self, node, section):
         for term in node["c"]:
             for term_0 in term[0]:
                 if isinstance(term_0, list):
                     for sub_node in term_0:
-                        self._handle_node(sub_node)
+                        self._handle_node(sub_node, section)
                 else:
-                    self._handle_node(term_0)
+                    self._handle_node(term_0, section)
             for term_1 in term[1]:
                 if isinstance(term_1, list):
                     for sub_node in term_1:
-                        self._handle_node(sub_node)
+                        self._handle_node(sub_node, section)
                 else:
-                    self._handle_node(term_1)
+                    self._handle_node(term_1, section)
 
-    def _handle_table(self, node):
+    def _handle_table(self, node, section):
         for headcol in node["c"][3]:
             for sub_node in headcol:
-                self._handle_node(sub_node)
+                self._handle_node(sub_node, section)
         for row in node["c"][4]:
             for col in row:
                 for sub_node in col:
-                    self._handle_node(sub_node)
+                    self._handle_node(sub_node, section)
 
-    def _handle_quoted(self, node):
+    def _handle_quoted(self, node, section):
         for sub_node in node["c"][1]:
-            self._handle_node(sub_node)
+            self._handle_node(sub_node, section)
 
-    def _handle_strong(self, node):
+    def _handle_strong(self, node, section):
         for sub_node in node["c"]:
             if isinstance(sub_node, list):
-                self._handle_node(sub_node)
+                self._handle_node(sub_node, section)
 
-    def _handle_span(self, node):
+    def _handle_span(self, node, section):
         attrs = self._attrs_to_dict(node["c"][0][2])
         if "data-mentry" in attrs.keys():
             pass
@@ -266,48 +268,51 @@ class PostprocessLinks:
             pass
         elif not attrs.keys():
             for sub_node in node["c"][1]:
-                self._handle_node(sub_node)
+                self._handle_node(sub_node, section)
         elif "question" in node["c"][0][1]:
             pass
         else:
             panzertools.log(
-                "WARNING", r"Found unknown span={}".format(pformat(node))
+                "WARNING",
+                r"Found unknown span in section {}: {}".format(
+                    section["id"], pformat(node)
+                ),
             )
 
-    def _handle_ref(self, node):
+    def _handle_ref(self, node, section):
         attrs = self._attrs_to_dict(node["c"][0][2])
         if "data-mref" in attrs.keys():
             # \MRef has ID target, caption is (section, example,
             # exercise, ...) number
-            self._handle_link("MRef", node)
+            self._handle_link("MRef", node, section)
             node["c"][1] = []
         elif "data-msref" in attrs.keys():
             # \MSRef has ID target and caption
-            self._handle_link("MSRef", node)
+            self._handle_link("MSRef", node, section)
         elif "data-mnref" in attrs.keys():
             # \MNRef: seems to be the same as \MRef...
-            self._handle_link("MNRef", node)
+            self._handle_link("MNRef", node, section)
             node["c"][1] = []
 
-    def _handle_para(self, node):
+    def _handle_para(self, node, section):
         for sub_node in node["c"]:
-            self._handle_node(sub_node)
+            self._handle_node(sub_node, section)
 
-    def _handle_div(self, node):
+    def _handle_div(self, node, section):
         for sub_node in node["c"][1]:
-            self._handle_node(sub_node)
+            self._handle_node(sub_node, section)
 
-    def _handle_orderedlist(self, node):
+    def _handle_orderedlist(self, node, section):
         for item in node["c"][1]:
             for sub_node in item:
-                self._handle_node(sub_node)
+                self._handle_node(sub_node, section)
 
-    def _handle_bulletlist(self, node):
+    def _handle_bulletlist(self, node, section):
         for item in node["c"]:
             for sub_node in item:
-                self._handle_node(sub_node)
+                self._handle_node(sub_node, section)
 
-    def _handle_link(self, cmd, node):
+    def _handle_link(self, cmd, node, section):
         target = node["c"][2][0]
         if target.startswith("#"):
             target = target[1:]
@@ -322,13 +327,15 @@ class PostprocessLinks:
             except KeyError:
                 panzertools.log(
                     "WARNING",
-                    "Found {}: Couldn't map ID={}".format(cmd, target),
+                    "Found {}: Couldn't map ID={} in section {}".format(
+                        cmd, target, section["id"]
+                    ),
                 )
                 return
         node["c"][0][2] = []  # remove attributes
         node["c"][2][0] = url
         panzertools.log(
-            "INFO", "Found {}: '{}' -> '{}'".format(cmd, target, url)
+            "DEBUG", "Found {}: '{}' -> '{}'".format(cmd, target, url)
         )
 
     @staticmethod
