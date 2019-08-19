@@ -44,7 +44,7 @@ class TestGenerateInnodoc(unittest.TestCase):
         """Test postflight generate_innodoc.py link processing."""
         lang = "en"
         with tempfile.TemporaryDirectory() as tmpdir:
-            source_dir = os.path.join(tmpdir, "source", lang)
+            source_dir = os.path.join(tmpdir, "source")
             source_lang_dir = os.path.join(source_dir, lang)
             output_dir = os.path.join(tmpdir, "output")
             output_dir_lang = os.path.join(output_dir, lang)
