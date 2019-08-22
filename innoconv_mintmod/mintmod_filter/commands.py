@@ -15,9 +15,10 @@ import panflute as pf
 from slugify import slugify
 from innoconv_mintmod.constants import (
     ELEMENT_CLASSES,
+    INDEX_ATTRIBUTE,
+    INDEX_LABEL_PREFIX,
     MINTMOD_SUBJECTS,
     REGEX_PATTERNS,
-    INDEX_LABEL_PREFIX,
     SITE_UXID_PREFIX,
     TIKZ_SUBSTITUTIONS,
 )
@@ -234,12 +235,12 @@ class Commands:
         return block_wrap(link, elem)
 
     ###########################################################################
-    # Glossary/index
+    # Index
 
     def handle_mentry(self, cmd_args, elem):
         r"""Handle ``\MEntry`` command.
 
-        This command creates an entry for the glossary/index.
+        This command creates an entry for the index.
         """
 
         if isinstance(elem, pf.Block):
@@ -252,15 +253,14 @@ class Commands:
             parse_fragment(text, elem.doc.metadata["lang"].text)[0].content
         )
         span = pf.Span()
-        span.identifier = "index-{}".format(slugify(concept))
-        span.attributes = {"data-mentry": concept}
+        span.attributes = {INDEX_ATTRIBUTE: concept}
         span.content = [strong]
         return block_wrap(span, elem)
 
     def handle_mindex(self, cmd_args, elem):
         r"""Handle ``\MIndex`` command.
 
-        This command creates an invisible entry for the glossary/index.
+        This command creates an invisible entry for the index.
         """
 
         if isinstance(elem, pf.Block):
@@ -268,8 +268,7 @@ class Commands:
 
         concept = cmd_args[0]
         span = pf.Span()
-        span.identifier = "index-{}".format(slugify(concept))
-        span.attributes = {"data-mindex": concept, "hidden": "hidden"}
+        span.attributes = {INDEX_ATTRIBUTE: concept, "hidden": "hidden"}
         return block_wrap(span, elem)
 
     ###########################################################################

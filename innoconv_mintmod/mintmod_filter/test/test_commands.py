@@ -5,6 +5,7 @@ import panflute as pf
 
 from innoconv_mintmod.constants import (
     ELEMENT_CLASSES,
+    INDEX_ATTRIBUTE,
     INDEX_LABEL_PREFIX,
     QUESTION_TYPES,
 )
@@ -248,7 +249,7 @@ class TestCommands(unittest.TestCase):
         elem = doc.content[0].content[0]
         ret = self.commands.handle_mentry(["Bla bla", "bla"], elem)
         self.assertIsInstance(ret, pf.Span)
-        self.assertEqual("index-bla", ret.identifier)
+        self.assertIn(INDEX_ATTRIBUTE, ret.attributes)
         strong = ret.content[0]
         self.assertIsInstance(strong, pf.Strong)
         self.assertEqual(strong.content[0].text, "Bla")
@@ -272,7 +273,6 @@ class TestCommands(unittest.TestCase):
             [r"$\MTextSF{floor}$-Funktion", "floor-Funktion"], elem
         )
         self.assertIsInstance(ret, pf.Span)
-        self.assertEqual("index-floor-funktion", ret.identifier)
         strong = ret.content[0]
         self.assertIsInstance(strong, pf.Strong)
         self.assertIsInstance(strong.content[0], pf.Math)

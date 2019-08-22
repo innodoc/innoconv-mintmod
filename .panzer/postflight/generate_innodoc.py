@@ -268,9 +268,7 @@ class PostprocessLinks:
 
     def _handle_span(self, node, section):
         attrs = self._attrs_to_dict(node["c"][0][2])
-        if "data-mentry" in attrs.keys():
-            pass
-        elif "data-mindex" in attrs.keys():
+        if "data-index-term" in attrs.keys():
             pass
         elif not attrs.keys():
             for sub_node in node["c"][1]:

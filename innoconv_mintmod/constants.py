@@ -8,6 +8,9 @@ import os
 #: Element class for index labels
 INDEX_LABEL_PREFIX = "index-label"
 
+#: Attribute name for index terms
+INDEX_ATTRIBUTE = "data-index-term"
+
 #: Element class for SiteUXID
 SITE_UXID_PREFIX = "site-uxid"
 
