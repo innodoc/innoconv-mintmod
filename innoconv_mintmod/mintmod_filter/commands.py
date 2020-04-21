@@ -13,7 +13,6 @@ from os import getcwd, linesep
 from os.path import join
 import re
 import panflute as pf
-from slugify import slugify
 from innoconv_mintmod.constants import (
     ELEMENT_CLASSES,
     INDEX_ATTRIBUTE,
