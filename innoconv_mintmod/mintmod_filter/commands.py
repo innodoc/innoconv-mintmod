@@ -9,7 +9,8 @@ Handle mintmod LaTeX commands.
     Example: ``handle_msection`` method will receive the command ``\MSection``.
 """
 
-from os import linesep
+from os import getcwd, linesep
+from os.path import join
 import re
 import panflute as pf
 from slugify import slugify
@@ -59,6 +60,16 @@ class Commands:
     """
 
     # pylint: disable=unused-argument,no-self-use,too-many-public-methods
+
+    ###########################################################################
+    # \input{...}
+    # disabled in raw_tex mode since Pandoc 2.8, see pandoc#5673
+
+    def handle_input(self, cmd_args, elem):
+        r"""Handle ``\input`` command."""
+        with open(join(getcwd(), cmd_args[0]), "r") as input_file:
+            input_content = input_file.read()
+        return parse_fragment(input_content, elem.doc.metadata["lang"].text)
 
     ###########################################################################
     # Sections
