@@ -520,7 +520,7 @@ class WriteSections:
         section_json = json.dumps(
             {
                 "blocks": content,
-                "pandoc-api-version": [1, 17, 5, 1],
+                "pandoc-api-version": [1, 20],
                 "meta": {"title": {"t": "MetaInlines", "c": title}},
             }
         ).encode(ENCODING)
