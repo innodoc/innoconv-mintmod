@@ -100,6 +100,7 @@ MATH_SUBSTITUTIONS = (
     (r"\\MVec{", r"\\vec{"),  # trailing '{' so it doesn't touch \MVector
     # italic integral
     (r"\\MD", r"d"),
+    (r"\\jMD", r"\,d"),
     # MCaseEnv
     (r"\\begin{MCaseEnv}", r"\\left\\lbrace\\begin{array}{rl}"),
     (r"\\end{MCaseEnv}", r"\\end{array}\\right."),
