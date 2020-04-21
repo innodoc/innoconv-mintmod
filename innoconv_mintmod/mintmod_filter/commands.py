@@ -17,6 +17,7 @@ from innoconv_mintmod.constants import (
     ELEMENT_CLASSES,
     INDEX_ATTRIBUTE,
     INDEX_LABEL_PREFIX,
+    MATH_SUBSTITUTIONS,
     MINTMOD_SUBJECTS,
     REGEX_PATTERNS,
     SITE_UXID_PREFIX,
@@ -258,6 +259,8 @@ class Commands:
 
         text = cmd_args[0]
         concept = cmd_args[1]
+        for repl in MATH_SUBSTITUTIONS:  # can contain LaTeX!
+            concept = re.sub(repl[0], repl[1], concept)
         strong = pf.Strong()
         strong.content.extend(
             parse_fragment(text, elem.doc.metadata["lang"].text)[0].content
@@ -277,6 +280,8 @@ class Commands:
             log("Warning: Expected Inline for MIndex: {}".format(cmd_args))
 
         concept = cmd_args[0]
+        for repl in MATH_SUBSTITUTIONS:  # can contain LaTeX!
+            concept = re.sub(repl[0], repl[1], concept)
         span = pf.Span()
         span.attributes = {INDEX_ATTRIBUTE: concept, "hidden": "hidden"}
         return block_wrap(span, elem)
