@@ -2,11 +2,7 @@
 
 from textwrap import shorten
 import panflute as pf
-from innoconv_mintmod.constants import (
-    DEFAULT_EXERCISE_POINTS,
-    ELEMENT_CLASSES,
-    QUESTION_TYPES,
-)
+from innoconv_mintmod.constants import DEFAULT_EXERCISE_POINTS, ELEMENT_CLASSES
 from innoconv_mintmod.utils import (
     destringify,
     parse_fragment,
@@ -44,14 +40,14 @@ class Question(pf.Element):
             identifier, attributes = Question.parse_args(
                 cmd_args, "length", "solution", "uxid"
             )
-            attributes.append(("questionType", QUESTION_TYPES["EXACT"]))
+            attributes.append(("validation", "exact"))
 
         elif mintmod_class == "MLParsedQuestion":
             classes = class_text_question
             identifier, attributes = Question.parse_args(
                 cmd_args, "length", "solution", "precision", "uxid"
             )
-            attributes.append(("questionType", QUESTION_TYPES["MATH_TERM"]))
+            attributes.append(("validation", "parsed"))
 
         elif mintmod_class == "MLFunctionQuestion":
             classes = class_text_question
@@ -64,7 +60,7 @@ class Question(pf.Element):
                 "precision",
                 "uxid",
             )
-            attributes.append(("questionType", QUESTION_TYPES["MATH_TERM"]))
+            attributes.append(("validation", "function"))
 
         elif mintmod_class == "MLSpecialQuestion":
             classes = class_text_question
@@ -78,7 +74,7 @@ class Question(pf.Element):
                 "special-type",
                 "uxid",
             )
-            attributes.append(("questionType", QUESTION_TYPES["SPECIAL"]))
+            attributes.append(("validation", "special"))
 
         elif mintmod_class == "MLSimplifyQuestion":
             classes = class_text_question
@@ -92,40 +88,30 @@ class Question(pf.Element):
                 "simplification-code",
                 "uxid",
             )
-            attributes.append(("questionType", QUESTION_TYPES["MATH_TERM"]))
+            attributes.append(("validation", "simplify"))
 
         elif mintmod_class == "MLCheckbox":
             classes = ELEMENT_CLASSES["QUESTION"] + ["checkbox"]
-            identifier, attributes = Question.parse_args(
-                cmd_args, "solution", "uxid"
-            )
-            attributes.append(("questionType", QUESTION_TYPES["BOOLEAN"]))
+            identifier, attributes = Question.parse_args(cmd_args, "solution", "uxid")
+            attributes.append(("validation", "boolean"))
 
         elif mintmod_class == "MLIntervalQuestion":
             classes = class_text_question
             identifier, attributes = Question.parse_args(
                 cmd_args, "length", "solution", "precision", "uxid"
             )
-            attributes.append(
-                ("questionType", QUESTION_TYPES["MATH_INTERVAL"])
-            )
+            attributes.append(("validation", "interval"))
         else:
             raise ValueError(
-                "Unknown or missing kwarg mintmod_class: {}".format(
-                    mintmod_class
-                )
+                "Unknown or missing kwarg mintmod_class: {}".format(mintmod_class)
             )
 
         attributes.append(("points", points))
 
         if oktypes == pf.Block:
-            return pf.Div(
-                identifier=identifier, classes=classes, attributes=attributes
-            )
+            return pf.Div(identifier=identifier, classes=classes, attributes=attributes)
 
-        return pf.Span(
-            identifier=identifier, classes=classes, attributes=attributes
-        )
+        return pf.Span(identifier=identifier, classes=classes, attributes=attributes)
 
     @staticmethod
     def parse_args(cmd_args, *names):
@@ -139,9 +125,7 @@ class Question(pf.Element):
         if len(names) != len(cmd_args):
             log("Invalid args: {}, args: {}".format(names, cmd_args), "ERROR")
             raise ValueError(
-                "Warning: Expected different number of args: {}".format(
-                    cmd_args
-                )
+                "Warning: Expected different number of args: {}".format(cmd_args)
             )
         attrs = []
         for idx, name in enumerate(names):
@@ -163,15 +147,11 @@ def create_content_box(elem_content, elem_classes, lang):
     by having diffent content and classes.
     """
     if not elem_classes or elem_classes == []:
-        msg = "create_content_box without element classes: {}".format(
-            elem_classes
-        )
+        msg = "create_content_box without element classes: {}".format(elem_classes)
         raise ValueError(msg)
 
     if not elem_content or elem_content == "":
-        msg = "create_content_box without element content: {}".format(
-            elem_content
-        )
+        msg = "create_content_box without element content: {}".format(elem_content)
         raise ValueError(msg)
 
     div = pf.Div(classes=elem_classes)
@@ -211,9 +191,7 @@ def create_image(filename, descr, elem, add_descr=True, block=True):
     img = pf.Image(url=filename, classes=ELEMENT_CLASSES["IMAGE"])
 
     if add_descr:
-        descr = parse_fragment(
-            descr, elem.doc.metadata["lang"].text, as_doc=True
-        )
+        descr = parse_fragment(descr, elem.doc.metadata["lang"].text, as_doc=True)
         img.title = shorten(
             pf.stringify(*descr.content).strip(), width=125, placeholder="..."
         )
