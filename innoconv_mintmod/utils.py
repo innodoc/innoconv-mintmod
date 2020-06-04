@@ -45,9 +45,7 @@ def get_panzer_bin():
     return panzer_bin
 
 
-def parse_fragment(
-    parse_string, lang, as_doc=False, from_format="latex+raw_tex"
-):
+def parse_fragment(parse_string, lang, as_doc=False, from_format="latex+raw_tex"):
     """Parse a source fragment using panzer.
 
     :param parse_string: Source fragment
@@ -102,7 +100,7 @@ def parse_fragment(
     match = REGEX_PATTERNS["PANZER_OUTPUT"].search(err)
     if match:
         for line in match.group("messages").strip().splitlines():
-            log(u"↳ %s" % line.strip(), level="INFO")
+            log("↳ %s" % line.strip(), level="INFO")
     else:
         raise RuntimeError("Unable to parse panzer output: {}".format(err))
 
@@ -244,9 +242,7 @@ def extract_identifier(content):
 
     def _extract_id(prefix, child):
         if prefix in child.classes:
-            match = REGEX_PATTERNS["EXTRACT_ID"](prefix).match(
-                child.identifier
-            )
+            match = REGEX_PATTERNS["EXTRACT_ID"](prefix).match(child.identifier)
             if match:
                 return match.groups()[0]
         raise ValueError()
@@ -277,8 +273,7 @@ def remove_annotations(doc):
     def _rem_para(elem, _):
         try:
             if isinstance(elem, pf.Div) and (
-                INDEX_LABEL_PREFIX in elem.classes
-                or SITE_UXID_PREFIX in elem.classes
+                INDEX_LABEL_PREFIX in elem.classes or SITE_UXID_PREFIX in elem.classes
             ):
                 return []  # delete element
         except AttributeError:
@@ -363,3 +358,31 @@ def block_wrap(elem, orig_elem):
     if isinstance(orig_elem, pf.Block):
         return pf.Plain(elem)
     return elem
+
+
+def convert_simplification_code(code):
+    """Convert binary flags to string flags."""
+    flags = []
+    if (code & 15) == 1:
+        flags.append("no-brackets")
+    if (code & 15) == 2:
+        flags.append("factor-notation")
+    if (code & 15) == 3:
+        # actually never used in tub_mathe
+        flags.append("sum-notation")
+
+    code_flags = (
+        (16, "only-one-slash"),
+        (32, "antiderivative"),
+        (64, "no-sqrt"),
+        (128, "no-abs"),
+        (256, "no-fractions-no-powers"),
+        (512, "special-support-points"),
+        (1024, "only-integer"),
+        (2048, "one-power-no-mult-or-div"),
+    )
+    for code_flag, str_flag in code_flags:
+        if (code & code_flag) == code_flag:
+            flags.append(str_flag)
+
+    return ",".join(flags)

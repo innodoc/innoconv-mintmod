@@ -9,6 +9,7 @@ from innoconv_mintmod.utils import (
     extract_identifier,
     remember,
     log,
+    convert_simplification_code,
 )
 
 
@@ -68,13 +69,14 @@ class Question(pf.Element):
                 cmd_args,
                 "length",
                 "solution",
-                "supporting-points",
-                "variables",
-                "precision",
-                "special-type",
+                "precision",  # is wrongly called supporting-points in mintmod!
+                "",  # other params not used
+                "",
+                "",
                 "uxid",
             )
-            attributes.append(("validation", "special"))
+            attributes = attributes[:3]
+            attributes.append(("validation", "exact-fraction"))
 
         elif mintmod_class == "MLSimplifyQuestion":
             classes = class_text_question
@@ -88,7 +90,10 @@ class Question(pf.Element):
                 "simplification-code",
                 "uxid",
             )
-            attributes.append(("validation", "simplify"))
+            code = int(attributes[5][1])
+            attributes = attributes[:5]  # throw away simplification-code
+            attributes.append(("simplification", convert_simplification_code(code)))
+            attributes.append(("validation", "function"))
 
         elif mintmod_class == "MLCheckbox":
             classes = ELEMENT_CLASSES["QUESTION"] + ["checkbox"]

@@ -17,6 +17,7 @@ from innoconv_mintmod.utils import (
     get_remembered,
     to_inline,
     extract_identifier,
+    convert_simplification_code,
 )
 from innoconv_mintmod.test.utils import captured_output
 from innoconv_mintmod.constants import INDEX_LABEL_PREFIX, SITE_UXID_PREFIX
@@ -239,9 +240,7 @@ class TestParseNestedArgs(unittest.TestCase):
     def test_parse_nested_args_2(self):
         """It should parse nested arguments: nested 2"""
         ret = parse_nested_args(r"{cont}{}{\foo{\bla{\stop}}}{\baz{}{}{}}")
-        self.assertEqual(
-            ret, (["cont", "", r"\foo{\bla{\stop}}", r"\baz{}{}{}"], None)
-        )
+        self.assertEqual(ret, (["cont", "", r"\foo{\bla{\stop}}", r"\baz{}{}{}"], None))
 
     def test_parse_nested_args_rest(self):
         """It should parse nested arguments with rest"""
@@ -302,18 +301,14 @@ class TestToInline(unittest.TestCase):
         transformed1 = content1.content[0]
 
         content2 = pf.Div(
-            pf.Para(
-                pf.Strong(pf.Str("again")), pf.Space, pf.Emph(pf.Str("normal"))
-            )
+            pf.Para(pf.Strong(pf.Str("again")), pf.Space, pf.Emph(pf.Str("normal")))
         )
 
         content3 = pf.Div(
             pf.Para(
                 pf.Span(pf.Str("foo"), classes=["1st-span-class"]),
                 pf.Span(
-                    pf.Strong(
-                        pf.Str("Unhandled"), pf.Space, pf.Str("command:")
-                    ),
+                    pf.Strong(pf.Str("Unhandled"), pf.Space, pf.Str("command:")),
                     classes=["2nd-span-class"],
                 ),
             ),
@@ -334,27 +329,21 @@ class TestToInline(unittest.TestCase):
         self.assertEqual(len(il_content3.content), 2)
         self.assertEqual(len(il_content3.content[0].content), 2)
         self.assertEqual(il_content3.classes, ["div-class"])
-        self.assertEqual(
-            il_content3.content[0].content[0].classes, ["1st-span-class"]
-        )
-        self.assertEqual(
-            il_content3.content[0].content[1].classes, ["2nd-span-class"]
-        )
+        self.assertEqual(il_content3.content[0].content[0].classes, ["1st-span-class"])
+        self.assertEqual(il_content3.content[0].content[1].classes, ["2nd-span-class"])
 
 
 class TestExtractIdentifier(unittest.TestCase):
     def test_only_uxid(self):
         annot = pf.Div(
-            identifier="{}-foo".format(SITE_UXID_PREFIX),
-            classes=(SITE_UXID_PREFIX,),
+            identifier="{}-foo".format(SITE_UXID_PREFIX), classes=(SITE_UXID_PREFIX,),
         )
         identifier = extract_identifier([annot])
         self.assertEqual(identifier, "foo")
 
     def test_uxid_para(self):
         annot = pf.Div(
-            identifier="{}-foo".format(SITE_UXID_PREFIX),
-            classes=(SITE_UXID_PREFIX,),
+            identifier="{}-foo".format(SITE_UXID_PREFIX), classes=(SITE_UXID_PREFIX,),
         )
         para = pf.Para(pf.Str("bar"))
         identifier = extract_identifier([annot, para])
@@ -366,8 +355,7 @@ class TestExtractIdentifier(unittest.TestCase):
             classes=(INDEX_LABEL_PREFIX,),
         )
         uxid = pf.Div(
-            identifier="{}-bar".format(SITE_UXID_PREFIX),
-            classes=(SITE_UXID_PREFIX,),
+            identifier="{}-bar".format(SITE_UXID_PREFIX), classes=(SITE_UXID_PREFIX,),
         )
         para = pf.Para(pf.Str("bar"))
 
@@ -382,3 +370,21 @@ class TestExtractIdentifier(unittest.TestCase):
             with self.subTest("{} expected: {}".format(name, exp_id)):
                 identifier = extract_identifier(test)
                 self.assertEqual(identifier, exp_id)
+
+
+class TestConvertSimplificationCode(unittest.TestCase):
+    def test_flags(self):
+        cases = (
+            (0, ""),
+            (1, "no-brackets"),
+            (2, "factor-notation"),
+            (513, "no-brackets,special-support-points"),
+            (528, "only-one-slash,special-support-points"),
+            (576, "no-sqrt,special-support-points"),
+            (2048, "one-power-no-mult-or-div"),
+        )
+
+        for code, exp_code_str in cases:
+            with self.subTest("{} expected: {}".format(code, exp_code_str)):
+                code_str = convert_simplification_code(code)
+                self.assertEqual(exp_code_str, code_str)
