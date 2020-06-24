@@ -92,7 +92,9 @@ class Question(pf.Element):
             )
             code = int(attributes[5][1])
             attributes = attributes[:5]  # throw away simplification-code
-            attributes.append(("simplification", convert_simplification_code(code)))
+            code_str = convert_simplification_code(code)
+            if code_str != "":
+                attributes.append(("simplification", code_str))
             attributes.append(("validation", "function"))
 
         elif mintmod_class == "MLCheckbox":

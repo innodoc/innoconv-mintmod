@@ -378,7 +378,7 @@ def convert_simplification_code(code):
         (128, "no-abs"),
         (256, "no-fractions-no-powers"),
         (512, "special-support-points"),
-        (1024, "only-integer"),
+        (1024, "only-natural-number"),
         (2048, "one-power-no-mult-or-div"),
     )
     for code_flag, str_flag in code_flags:
