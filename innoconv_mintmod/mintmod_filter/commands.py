@@ -150,6 +150,7 @@ class Commands:
         return ret
 
     def handle_mlabel(self, cmd_args, elem):
+        # pylint: disable=line-too-long
         r"""Handle ``\MLabel`` command.
 
         Will search for the previous header element and update its ID to the
