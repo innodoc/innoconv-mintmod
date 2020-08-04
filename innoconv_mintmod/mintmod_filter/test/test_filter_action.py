@@ -40,17 +40,13 @@ class TestFilterAction(unittest.TestCase):
 
     def test_unknown_raw_block_command(self):
         """filter() handles unknown RawBlock command"""
-        elem_unkown_cmd = pf.RawBlock(
-            r"\ThisCommandDoesNotExist", format="latex"
-        )
+        elem_unkown_cmd = pf.RawBlock(r"\ThisCommandDoesNotExist", format="latex")
         ret = self._filter_elem([elem_unkown_cmd], elem_unkown_cmd)
         self.assertIsNone(ret)
 
     def test_unknown_raw_inline_command(self):
         """filter() handles unknown RawInline command"""
-        elem_unkown_cmd = pf.RawInline(
-            r"\ThisCommandDoesNotExist", format="latex"
-        )
+        elem_unkown_cmd = pf.RawInline(r"\ThisCommandDoesNotExist", format="latex")
         para = pf.Para(elem_unkown_cmd)
         ret = self._filter_elem([para], elem_unkown_cmd)
         self.assertIsNone(ret)
@@ -112,9 +108,7 @@ class TestFilterAction(unittest.TestCase):
     def test_unknown_environment(self):
         """filter() handles unknown LaTeX environment"""
         elem_env = pf.RawBlock(
-            r"\begin{ThisEnvDoesNotExist}"
-            "FOOBARCONTENT"
-            r"\end{ThisEnvDoesNotExist}",
+            r"\begin{ThisEnvDoesNotExist}" "FOOBARCONTENT" r"\end{ThisEnvDoesNotExist}",
             format="latex",
         )
         ret = self._filter_elem([elem_env], elem_env)

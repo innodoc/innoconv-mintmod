@@ -50,12 +50,12 @@ class TestCommands(unittest.TestCase):
         """MTitle command"""
         doc = pf.Doc(pf.RawBlock(r"\MTitle{Schöne Titel nach Maß?}"), format="latex")
         elem = doc.content[0]
-        ret = self.commands.handle_mtitle([u"Schöne Titel nach Maß?"], elem)
+        ret = self.commands.handle_mtitle(["Schöne Titel nach Maß?"], elem)
         self.assertIsInstance(ret, pf.Header)
         self.assertIsInstance(ret.content[0], pf.Str)
-        self.assertEqual(ret.content[0].text, u"Schöne")
+        self.assertEqual(ret.content[0].text, "Schöne")
         self.assertIsInstance(ret.content[6], pf.Str)
-        self.assertEqual(ret.content[6].text, u"Maß?")
+        self.assertEqual(ret.content[6].text, "Maß?")
         self.assertEqual(ret.level, 3)
 
     def test_handle_msubsubsubsectionx(self):
@@ -66,7 +66,7 @@ class TestCommands(unittest.TestCase):
         ret = self.commands.handle_msubsubsubsectionx(["Subsubsubsectionx"], elem)
         self.assertIsInstance(ret, pf.Header)
         self.assertIsInstance(ret.content[0], pf.Str)
-        self.assertEqual(ret.content[0].text, u"Subsubsubsectionx")
+        self.assertEqual(ret.content[0].text, "Subsubsubsectionx")
         self.assertEqual(ret.level, 4)
 
     def test_handle_mlabel_no_last_header(self):

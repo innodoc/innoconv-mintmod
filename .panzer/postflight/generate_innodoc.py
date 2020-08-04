@@ -69,13 +69,7 @@ class CreateMapOfIds:
             "Table": self._handle_table,
             ("Emph", "Strong"): self._handle_emph_strong,
             ("Para", "Plain"): self._handle_para,
-            (
-                "LineBreak",
-                "Math",
-                "SoftBreak",
-                "Space",
-                "Str",
-            ): lambda *args: None,
+            ("LineBreak", "Math", "SoftBreak", "Space", "Str",): lambda *args: None,
         }
 
         for elem_type in handle_node_map:
@@ -338,9 +332,7 @@ class PostprocessLinks:
                 return
         node["c"][0][2] = []  # remove attributes
         node["c"][2][0] = url
-        panzertools.log(
-            "DEBUG", "Found {}: '{}' -> '{}'".format(cmd, target, url)
-        )
+        panzertools.log("DEBUG", "Found {}: '{}' -> '{}'".format(cmd, target, url))
 
     @staticmethod
     def _generate_section_link(section_path, hash_target=None):
@@ -380,9 +372,7 @@ class ExtractSectionTree:
                 section_num = "{:03}".format(section_idx)
                 if section_id:
                     # number sections so they are in consistent order
-                    self.section["id"] = "{}-{}".format(
-                        section_num, section_id
-                    )
+                    self.section["id"] = "{}-{}".format(section_num, section_id)
                 else:
                     # if there's no section id for some reason just use number
                     self.section["id"] = section_num
@@ -427,15 +417,12 @@ class CreateMapOfSectionIds:
         return self.id_map
 
     def _handle_section(self, section, prefix):
-        mintmod_section_id = self._section_id_to_mintmod_section_id(
-            section["id"]
-        )
+        mintmod_section_id = self._section_id_to_mintmod_section_id(section["id"])
         self.id_map[mintmod_section_id] = "{}{}".format(prefix, section["id"])
         try:
             for subsection in section["children"]:
                 self._handle_section(
-                    subsection,
-                    prefix="{}/".format(self.id_map[mintmod_section_id]),
+                    subsection, prefix="{}/".format(self.id_map[mintmod_section_id]),
                 )
         except KeyError:
             pass
@@ -484,14 +471,12 @@ class WriteSections:
         except KeyError:
             content = []
 
-        filename = "content.{}".format(
-            OUTPUT_FORMAT_EXT_MAP[self.output_format]
-        )
+        filename = "content.{}".format(OUTPUT_FORMAT_EXT_MAP[self.output_format])
         filepath = os.path.join(outdir_section, filename)
 
         if self.output_format == "markdown":
             output = self._convert_section_to_markdown(
-                content, section["title"]
+                content, section["title"], section_type
             )
             with open(filepath, "w") as sfile:
                 sfile.write(output)
@@ -506,7 +491,7 @@ class WriteSections:
         except KeyError:
             pass
 
-    def _convert_section_to_markdown(self, content, title):
+    def _convert_section_to_markdown(self, content, title, section_type):
         """Convert JSON section to markdown format using pandoc."""
         # TODO: ensure atx-headers are used
         pandoc_cmd = [
@@ -525,16 +510,12 @@ class WriteSections:
             }
         ).encode(ENCODING)
         proc = Popen(pandoc_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        out, err = proc.communicate(
-            input=section_json, timeout=self.PANDOC_TIMEOUT
-        )
+        out, err = proc.communicate(input=section_json, timeout=self.PANDOC_TIMEOUT)
         out = out.decode(ENCODING)
         err = err.decode(ENCODING)
         if proc.returncode != 0:
             panzertools.log("ERROR", err)
-            raise RuntimeError(
-                "pandoc process exited with non-zero return code."
-            )
+            raise RuntimeError("pandoc process exited with non-zero return code.")
         return out
 
 
@@ -563,9 +544,7 @@ class GenerateInnodoc:
             if match:
                 self.lang = match.group(1)
         if not self.lang:
-            raise RuntimeError(
-                "Error: Unable to extract lang key from metadata!"
-            )
+            raise RuntimeError("Error: Unable to extract lang key from metadata!")
         panzertools.log("INFO", "Found lang key={}".format(self.lang))
 
     def main(self):
@@ -593,9 +572,7 @@ class GenerateInnodoc:
         os.makedirs(outdir, exist_ok=True)
 
         # write sections to file
-        sections = WriteSections(
-            sections, outdir, self.convert_to
-        ).write_sections()
+        sections = WriteSections(sections, outdir, self.convert_to).write_sections()
 
         if os.environ.get("INNOCONV_GENERATE_INNODOC_MARKDOWN"):
             # write metadata file
@@ -626,9 +603,7 @@ class GenerateInnodoc:
 
         If it doesn't exist it will be created.
         """
-        manifest_path = os.path.abspath(
-            os.path.join(outdir, "..", "manifest.yml")
-        )
+        manifest_path = os.path.abspath(os.path.join(outdir, "..", "manifest.yml"))
         try:
             with open(manifest_path) as manifest_file:
                 manifest = yaml.safe_load(manifest_file)
@@ -641,10 +616,7 @@ class GenerateInnodoc:
 
         with open(manifest_path, "w") as manifest_file:
             yaml.dump(
-                manifest,
-                manifest_file,
-                default_flow_style=False,
-                allow_unicode=True,
+                manifest, manifest_file, default_flow_style=False, allow_unicode=True,
             )
         panzertools.log("INFO", "Wrote: {}".format(manifest_path))
 

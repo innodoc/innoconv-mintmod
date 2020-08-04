@@ -120,9 +120,7 @@ class Commands:
 
         Command defines the category.
         """
-        elem.doc.metadata["subject"] = pf.MetaString(
-            MINTMOD_SUBJECTS[cmd_args[0]]
-        )
+        elem.doc.metadata["subject"] = pf.MetaString(MINTMOD_SUBJECTS[cmd_args[0]])
         return []
 
     ###########################################################################
@@ -209,9 +207,7 @@ class Commands:
         This command translates to ``\vref``.
         """
         url = "#%s" % cmd_args[0]
-        return block_wrap(
-            pf.Link(url=url, attributes={"data-mref": "true"}), elem
-        )
+        return block_wrap(pf.Link(url=url, attributes={"data-mref": "true"}), elem)
 
     def handle_msref(self, cmd_args, elem):
         r"""Handle ``\MSRef`` command.
@@ -221,8 +217,7 @@ class Commands:
         url = "#%s" % cmd_args[0]
         description = destringify(cmd_args[1])
         return block_wrap(
-            pf.Link(*description, url=url, attributes={"data-msref": "true"}),
-            elem,
+            pf.Link(*description, url=url, attributes={"data-msref": "true"}), elem,
         )
 
     def handle_mnref(self, cmd_args, elem):
@@ -231,9 +226,7 @@ class Commands:
         This command inserts a section link.
         """
         target = cmd_args[0]
-        return block_wrap(
-            pf.Link(url=target, attributes={"data-mnref": "true"}), elem
-        )
+        return block_wrap(pf.Link(url=target, attributes={"data-mnref": "true"}), elem)
 
     def handle_mextlink(self, cmd_args, elem):
         r"""Handle ``\MExtLink`` command.
@@ -333,7 +326,7 @@ class Commands:
             *destringify(title),
             url=url,
             title=title,
-            classes=ELEMENT_CLASSES["MYOUTUBE_VIDEO"]
+            classes=ELEMENT_CLASSES["MYOUTUBE_VIDEO"],
         )
         return block_wrap(link, elem)
 
@@ -348,7 +341,7 @@ class Commands:
             *destringify(title),
             url=filename,
             title=title,
-            classes=ELEMENT_CLASSES["MVIDEO"]
+            classes=ELEMENT_CLASSES["MVIDEO"],
         )
         remember(elem.doc, "label", link)
         return block_wrap(link, elem)
@@ -494,24 +487,14 @@ class Commands:
 
         if len(cmd_args) != 2:
             raise ValueError(
-                r"\MEquationItem needs 2 arguments. Received: {}".format(
-                    cmd_args
-                )
+                r"\MEquationItem needs 2 arguments. Received: {}".format(cmd_args)
             )
 
-        content_left = parse_fragment(
-            cmd_args[0], elem.doc.metadata["lang"].text
-        )
-        content_right = parse_fragment(
-            cmd_args[1], elem.doc.metadata["lang"].text
-        )
+        content_left = parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)
+        content_right = parse_fragment(cmd_args[1], elem.doc.metadata["lang"].text)
 
         content = to_inline(
-            [
-                content_left,
-                pf.Math(r"\;\;=\;", format="InlineMath"),
-                content_right,
-            ]
+            [content_left, pf.Math(r"\;\;=\;", format="InlineMath"), content_right]
         )
 
         if isinstance(elem, pf.Block):
@@ -530,9 +513,7 @@ class Commands:
         outside of math environments it's defined here too.
         """
         if isinstance(elem, pf.Block):
-            raise ValueError(
-                r"Encountered \MZXYZhltrennzeichen as block element!"
-            )
+            raise ValueError(r"Encountered \MZXYZhltrennzeichen as block element!")
         return pf.Math(r"\decmarker", format="InlineMath")
 
     def handle_mzahl(self, cmd_args, elem):
@@ -543,8 +524,7 @@ class Commands:
         if isinstance(elem, pf.Block):
             raise ValueError(r"Encountered \MZahl as block element!")
         return pf.Math(
-            r"\num{{{}.{}}}".format(cmd_args[0], cmd_args[1]),
-            format="InlineMath",
+            r"\num{{{}.{}}}".format(cmd_args[0], cmd_args[1]), format="InlineMath",
         )
 
     ###########################################################################
@@ -572,17 +552,13 @@ class Commands:
     def handle_modstextbf(self, cmd_args, elem):
         r"""Handle \modstextbf command."""
         return pf.Strong(
-            *parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)[
-                0
-            ].content
+            *parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)[0].content
         )
 
     def handle_modsemph(self, cmd_args, elem):
         r"""Handle \modsemph command."""
         return pf.Emph(
-            *parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)[
-                0
-            ].content
+            *parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)[0].content
         )
 
     def handle_highlight(self, cmd_args, elem):
@@ -593,10 +569,8 @@ class Commands:
         the information here.
         """
         return pf.Span(
-            *parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)[
-                0
-            ].content,
-            classes=ELEMENT_CLASSES["HIGHLIGHT"]
+            *parse_fragment(cmd_args[0], elem.doc.metadata["lang"].text)[0].content,
+            classes=ELEMENT_CLASSES["HIGHLIGHT"],
         )
 
     def handle_newline(self, cmd_args, elem):

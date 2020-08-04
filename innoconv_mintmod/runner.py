@@ -51,9 +51,7 @@ class InnoconvRunner:
 
         if os.path.isdir(self.source):
             source_dir = os.path.join(self.source, self.language_code)
-            filename = "index.{}".format(
-                OUTPUT_FORMAT_EXT_MAP[self.output_format]
-            )
+            filename = "index.{}".format(OUTPUT_FORMAT_EXT_MAP[self.output_format])
             source_file = "index.tex"
             output_dir = os.path.join(self.output_dir_base, self.language_code)
         elif os.path.isfile(self.source):
@@ -108,9 +106,7 @@ class InnoconvRunner:
             source_file,
         ]
 
-        proc = subprocess.Popen(
-            cmd, cwd=source_dir, stderr=subprocess.STDOUT, env=env
-        )
+        proc = subprocess.Popen(cmd, cwd=source_dir, stderr=subprocess.STDOUT, env=env)
 
         return_code = proc.wait(timeout=PANZER_TIMEOUT)
         if return_code != 0:

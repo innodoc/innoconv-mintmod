@@ -65,10 +65,7 @@ class Environments:
         content = parse_fragment(elem_content, elem.doc.metadata["lang"].text)
         lang = elem.doc.metadata["lang"].text
         header = create_header(
-            TRANSLATIONS["content"][lang],
-            elem.doc,
-            level=3,
-            identifier="content",
+            TRANSLATIONS["content"][lang], elem.doc, level=3, identifier="content",
         )
         identifier = extract_identifier(content)
         if identifier:
@@ -101,9 +98,7 @@ class Environments:
         r"""Handle ``\MExercises`` environment."""
         content = parse_fragment(elem_content, elem.doc.metadata["lang"].text)
         lang = elem.doc.metadata["lang"].text
-        header = create_header(
-            TRANSLATIONS["exercises"][lang], elem.doc, level=3
-        )
+        header = create_header(TRANSLATIONS["exercises"][lang], elem.doc, level=3)
         identifier = extract_identifier(content)
         if identifier:
             header.identifier = identifier
@@ -117,9 +112,7 @@ class Environments:
     def handle_mexercise(self, elem_content, env_args, elem):
         r"""Handle ``\MExercise`` environment."""
         return create_content_box(
-            elem_content,
-            ELEMENT_CLASSES["MEXERCISE"],
-            elem.doc.metadata["lang"].text,
+            elem_content, ELEMENT_CLASSES["MEXERCISE"], elem.doc.metadata["lang"].text,
         )
 
     def handle_mexerciseitems(self, elem_content, env_args, elem):
@@ -154,17 +147,13 @@ class Environments:
     def handle_minfo(self, elem_content, env_args, elem):
         r"""Handle ``\MInfo`` environment."""
         return create_content_box(
-            elem_content,
-            ELEMENT_CLASSES["MINFO"],
-            elem.doc.metadata["lang"].text,
+            elem_content, ELEMENT_CLASSES["MINFO"], elem.doc.metadata["lang"].text,
         )
 
     def handle_mxinfo(self, elem_content, env_args, elem):
         r"""Handle ``\MXInfo`` environment."""
         div = create_content_box(
-            elem_content,
-            ELEMENT_CLASSES["MINFO"],
-            elem.doc.metadata["lang"].text,
+            elem_content, ELEMENT_CLASSES["MINFO"], elem.doc.metadata["lang"].text,
         )
         header = create_header(env_args[0], elem.doc, level=4, parse_text=True)
         div.content.insert(0, header)
@@ -181,9 +170,7 @@ class Environments:
     def handle_mexample(self, elem_content, env_args, elem):
         r"""Handle ``\MExample`` command."""
         return create_content_box(
-            elem_content,
-            ELEMENT_CLASSES["MEXAMPLE"],
-            elem.doc.metadata["lang"].text,
+            elem_content, ELEMENT_CLASSES["MEXAMPLE"], elem.doc.metadata["lang"].text,
         )
 
     def handle_mhint(self, elem_content, env_args, elem):
@@ -232,10 +219,6 @@ class Environments:
     def _replace_mexerciseitems(self, elem):
         r"""Helper function to replace `MExerciseItems` with enumerate in elem
         text and return the pandoc output of the parsed altered element."""
-        elem.text = elem.text.replace(
-            "\\begin{MExerciseItems}", "\\begin{enumerate}"
-        )
-        elem.text = elem.text.replace(
-            "\\end{MExerciseItems}", "\\end{enumerate}"
-        )
+        elem.text = elem.text.replace("\\begin{MExerciseItems}", "\\begin{enumerate}")
+        elem.text = elem.text.replace("\\end{MExerciseItems}", "\\end{enumerate}")
         return parse_fragment(elem.text, elem.doc.metadata["lang"].text)

@@ -65,9 +65,7 @@ class TestSplitSections(unittest.TestCase):
 
                         sec_1_1_1 = sec_1_1["children"][0]
                         self.assertEqual(sec_1_1_1["id"], "000-LABEL_1_1_1")
-                        self.assertEqual(
-                            sec_1_1_1["title"][0]["c"], intro_title
-                        )
+                        self.assertEqual(sec_1_1_1["title"][0]["c"], intro_title)
 
                         sec_1_2 = sec_1["children"][1]
                         self.assertEqual(sec_1_2["id"], "001-LABEL_1_2")

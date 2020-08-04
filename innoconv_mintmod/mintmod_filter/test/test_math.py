@@ -10,9 +10,7 @@ class TestHandleSubstitutions(unittest.TestCase):
         """Math substitutions should work"""
         elem_math = pf.Math(r"\N \Q {\R}")
         elem_math_repl = handle_math(elem_math)
-        self.assertEqual(
-            elem_math_repl.text, r"\mathbb{N} \mathbb{Q} {\mathbb{R}}"
-        )
+        self.assertEqual(elem_math_repl.text, r"\mathbb{N} \mathbb{Q} {\mathbb{R}}")
 
 
 class TestHandleIrregular(unittest.TestCase):
@@ -27,20 +25,15 @@ class TestHandleIrregular(unittest.TestCase):
 
     def test_handle_math_mpointtwo(self):
         """MPointTwo: commands in arguments"""
-        elem_math = pf.Math(
-            r"\MPointTwo{\frac{3}{2}}{1+\frac{\sqrt{3}}{2}} " "x_2"
-        )
+        elem_math = pf.Math(r"\MPointTwo{\frac{3}{2}}{1+\frac{\sqrt{3}}{2}} " "x_2")
         elem_math_repl = handle_math(elem_math)
         self.assertEqual(
-            elem_math_repl.text,
-            r"(\frac{3}{2}\coordsep 1+\frac{\sqrt{3}}{2}) x_2",
+            elem_math_repl.text, r"(\frac{3}{2}\coordsep 1+\frac{\sqrt{3}}{2}) x_2",
         )
 
     def test_handle_math_mpointtwo_big(self):
         r"""MPointTwo[\big]: commands in arguments"""
-        elem_math = pf.Math(
-            r"\MPointTwo[\Big]{\frac{3}{2}}{1+\frac{\sqrt{3}}{2}}"
-        )
+        elem_math = pf.Math(r"\MPointTwo[\Big]{\frac{3}{2}}{1+\frac{\sqrt{3}}{2}}")
         elem_math_repl = handle_math(elem_math)
         self.assertEqual(
             elem_math_repl.text,
@@ -52,8 +45,7 @@ class TestHandleIrregular(unittest.TestCase):
         elem_math = pf.Math(r"\MPointTwo[\Big]{\frac{1}{n}}{0}\MCondSetSep")
         elem_math_repl = handle_math(elem_math)
         self.assertEqual(
-            elem_math_repl.text,
-            r"\Big(\frac{1}{n}\coordsep 0{}\Big) {\,}:{\,}",
+            elem_math_repl.text, r"\Big(\frac{1}{n}\coordsep 0{}\Big) {\,}:{\,}",
         )
 
     def test_handle_math_mpointtwoas(self):
@@ -61,8 +53,7 @@ class TestHandleIrregular(unittest.TestCase):
         elem_math = pf.Math(r"\MPointTwoAS{-\sqrt6}{-\frac12\sqrt6}")
         elem_math_repl = handle_math(elem_math)
         self.assertEqual(
-            elem_math_repl.text,
-            r"\left(-\sqrt6\coordsep -\frac12\sqrt6\right)",
+            elem_math_repl.text, r"\left(-\sqrt6\coordsep -\frac12\sqrt6\right)",
         )
 
     def test_handle_math_mpointthree(self):
@@ -83,8 +74,7 @@ class TestHandleIrregular(unittest.TestCase):
         elem_math = pf.Math(r"\MPointThree[\Big]{\frac{3}{2}}{1}{2}")
         elem_math_repl = handle_math(elem_math)
         self.assertEqual(
-            elem_math_repl.text,
-            r"\Big(\frac{3}{2}\coordsep 1\coordsep 2{}\Big)",
+            elem_math_repl.text, r"\Big(\frac{3}{2}\coordsep 1\coordsep 2{}\Big)",
         )
 
     def test_handle_math_multiple(self):
@@ -135,9 +125,7 @@ class TestHandleIrregular(unittest.TestCase):
         r"""MEinheit"""
         elem_math = pf.Math(r"\MEinheit{kg} -58^{\circ}{\MEinheit[]{C}}")
         elem_math_repl = handle_math(elem_math)
-        self.assertEqual(
-            elem_math_repl.text, r"\, \mathrm{kg} -58^{\circ}{\mathrm{C}}"
-        )
+        self.assertEqual(elem_math_repl.text, r"\, \mathrm{kg} -58^{\circ}{\mathrm{C}}")
 
 
 class TestHandleMCaseEnv(unittest.TestCase):

@@ -49,9 +49,7 @@ class TestGenerateInnodoc(unittest.TestCase):
             output_dir = os.path.join(tmpdir, "output")
             output_dir_lang = os.path.join(output_dir, lang)
             os.makedirs(source_lang_dir)
-            with open(
-                os.path.join(source_lang_dir, "index.tex"), "w+"
-            ) as file:
+            with open(os.path.join(source_lang_dir, "index.tex"), "w+") as file:
                 file.write(TEX_CODE)
             InnoconvRunner(
                 source_dir,
@@ -69,8 +67,7 @@ class TestGenerateInnodoc(unittest.TestCase):
                 links = (
                     "[](/section/000-LABEL_1/"
                     "001-LABEL_1_2/000-LABEL_1_2_1#infolabel)",
-                    "[Intro](/section/000-LABEL_1/"
-                    "000-LABEL_1_1/000-LABEL_1_1_1)",
+                    "[Intro](/section/000-LABEL_1/" "000-LABEL_1_1/000-LABEL_1_1_1)",
                 )
                 for link in links:
                     self.assertIn(link, content)

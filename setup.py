@@ -29,9 +29,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 METADATA_PATH = os.path.join(ROOT_DIR, "innoconv_mintmod", "metadata.py")
 with open(METADATA_PATH, "r") as metadata_file:
     METADATA = dict(
-        re.findall(
-            r"__([a-z_]+)__\s*=\s*['\"]([^'\"]+)['\"]", metadata_file.read()
-        )
+        re.findall(r"__([a-z_]+)__\s*=\s*['\"]([^'\"]+)['\"]", metadata_file.read())
     )
 
 
@@ -59,9 +57,7 @@ class BaseCommand(distutils.cmd.Command):  # pylint: disable=no-member
         env = os.environ.copy()
         env["PYTHONPATH"] = ROOT_DIR
 
-        proc = subprocess.Popen(
-            command, cwd=cwd, env=env, stderr=subprocess.STDOUT
-        )
+        proc = subprocess.Popen(command, cwd=cwd, env=env, stderr=subprocess.STDOUT)
 
         return_code = proc.wait(timeout=120)
         if return_code != 0:
@@ -99,9 +95,7 @@ class CoverageCommand(BaseCommand):
 
     def run(self):
         if not os.path.isfile(os.path.join(ROOT_DIR, ".coverage")):
-            self.log.error(
-                'Run "./setup.py test" first to generate a ".coverage".'
-            )
+            self.log.error('Run "./setup.py test" first to generate a ".coverage".')
         self._run(["coverage", "html"])
 
 
@@ -125,9 +119,7 @@ def setup_package():
             "pylint": PylintCommand,
             "test": TestCommand,
         },
-        dependency_links=[
-            "git+https://github.com/msprev/panzer#egg=panzer-1.4.1"
-        ],
+        dependency_links=["git+https://github.com/msprev/panzer#egg=panzer-1.4.1"],
         entry_points={
             "console_scripts": [
                 "innoconv-mintmod = innoconv_mintmod.__main__:main",

@@ -113,9 +113,7 @@ class TestInnoconvIntegrationMlabel(unittest.TestCase):
 
     def test_mgraphics(self):
         r"""Test if \MGraphics gets ID from \MLabel."""
-        doc = get_doc_from_markup(
-            r"\MGraphicsSolo{test.png}{scale=1}\MLabel{G_TEST}"
-        )
+        doc = get_doc_from_markup(r"\MGraphicsSolo{test.png}{scale=1}\MLabel{G_TEST}")
 
         div = doc.content[0]
         self.assertIsInstance(div, pf.Div)

@@ -15,9 +15,7 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 ROOT_DIR = os.path.join(SCRIPT_DIR, "..", "..")
 
 
-def get_doc_from_markup(
-    markup, style="innoconv-debug", output=None, lang="de"
-):
+def get_doc_from_markup(markup, style="innoconv-debug", output=None, lang="de"):
     """Run panzer on markup and return Doc."""
 
     cmd = [

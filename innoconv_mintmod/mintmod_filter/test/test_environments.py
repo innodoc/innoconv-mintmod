@@ -14,17 +14,13 @@ class TestMsectionStart(unittest.TestCase):
         \begin{MSectionStart}
             Lorem ipsum
         \end{MSectionStart}"""
-        self.doc.content.extend(
-            [pf.RawBlock(self.elem_content, format="latex")]
-        )
+        self.doc.content.extend([pf.RawBlock(self.elem_content, format="latex")])
         self.elem = self.doc.content[0]  # this sets up elem.parent
 
     def test_msectionstart(self):
         """Should handle MSectionStart"""
 
-        ret = self.environments.handle_msectionstart(
-            "Lorem ipsum", [], self.elem
-        )[0]
+        ret = self.environments.handle_msectionstart("Lorem ipsum", [], self.elem)[0]
 
         self.assertIsInstance(ret, pf.Para)
         self.assertIsInstance(ret.content[0], pf.Str)
@@ -42,9 +38,7 @@ class TestMxContent(unittest.TestCase):
         \begin{MXContent}{Nice title}{Short title}{STD}
             Lorem ipsum
         \end{MXContent}"""
-        self.doc.content.extend(
-            [pf.RawBlock(self.elem_content, format="latex")]
-        )
+        self.doc.content.extend([pf.RawBlock(self.elem_content, format="latex")])
         self.elem = self.doc.content[0]  # this sets up elem.parent
 
     def test_mxcontent(self):
@@ -80,15 +74,12 @@ class TestBoxesWithoutTitle(unittest.TestCase):
 
     def test_handle_minfo(self):
         """MInfo"""
-        self._test_content_box(
-            self.environments.handle_minfo, ELEMENT_CLASSES["MINFO"]
-        )
+        self._test_content_box(self.environments.handle_minfo, ELEMENT_CLASSES["MINFO"])
 
     def test_handle_mexperiment(self):
         """MExperiment"""
         self._test_content_box(
-            self.environments.handle_mexperiment,
-            ELEMENT_CLASSES["MEXPERIMENT"],
+            self.environments.handle_mexperiment, ELEMENT_CLASSES["MEXPERIMENT"],
         )
 
     def test_handle_mexample(self):
@@ -100,9 +91,7 @@ class TestBoxesWithoutTitle(unittest.TestCase):
     def test_handle_mhint(self):
         """MHint"""
         div = self._test_content_box(
-            self.environments.handle_mhint,
-            ELEMENT_CLASSES["MHINT"],
-            [r"\iSolution"],
+            self.environments.handle_mhint, ELEMENT_CLASSES["MHINT"], [r"\iSolution"],
         )
         self.assertEqual(div.attributes["caption"], "Solution")
 
@@ -129,8 +118,7 @@ class TestBoxesWithoutTitle(unittest.TestCase):
         bullet_list = div.content[0]
         self.assertIsInstance(bullet_list, pf.BulletList)
         self.assertEqual(
-            bullet_list.content[0].content[0].content[0].content[0].text,
-            "item1",
+            bullet_list.content[0].content[0].content[0].content[0].text, "item1",
         )
         return div
 
@@ -149,9 +137,7 @@ class TestMTest(unittest.TestCase):
         doc.content.extend([pf.RawBlock(elem_content, format="latex")])
         elem = doc.content[0]  # this sets up elem.parent
 
-        ret = self.environments.handle_mtest(
-            "Foo bar", ["Abschlusstest"], elem
-        )
+        ret = self.environments.handle_mtest("Foo bar", ["Abschlusstest"], elem)
 
         self.assertIsInstance(ret, pf.Div)
 
@@ -233,9 +219,7 @@ class TestMXInfo(unittest.TestCase):
         """
         doc.content.extend([pf.RawBlock(elem_content, format="latex")])
         elem = doc.content[0]  # this sets up elem.parent
-        ret = self.environments.handle_mxinfo(
-            "Foo bar", ["Ableitung $x^n$"], elem
-        )
+        ret = self.environments.handle_mxinfo("Foo bar", ["Ableitung $x^n$"], elem)
 
         self.assertIsInstance(ret, pf.Div)
 

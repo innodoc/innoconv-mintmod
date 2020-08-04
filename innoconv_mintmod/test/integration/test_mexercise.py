@@ -35,9 +35,7 @@ class TestInnoconvIntegrationMExercise(unittest.TestCase):
         self.assertEqual(exercise.identifier, "TEST_EXERCISE")
         self.assertIn("exercise", exercise.classes)
         checkbox_1 = exercise.content[0].content[4]
-        self.assertEqual(
-            checkbox_1.attributes["points"], DEFAULT_EXERCISE_POINTS
-        )
+        self.assertEqual(checkbox_1.attributes["points"], DEFAULT_EXERCISE_POINTS)
         checkbox_2 = exercise.content[0].content[7]
         self.assertEqual(checkbox_2.attributes["points"], "1")
         checkbox_3 = exercise.content[0].content[9]
