@@ -80,6 +80,9 @@ class Commands:
 
     def handle_msubsection(self, cmd_args, elem):
         r"""Handle ``\MSubsection``"""
+        if cmd_args[0] == "Abschlusstest" or cmd_args[0] == "Final test":
+            # skip final test section headings -> handled in \MTest env
+            return []
         return create_header(cmd_args[0], level=2, doc=elem.doc)
 
     def handle_msubsubsection(self, cmd_args, elem):

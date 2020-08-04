@@ -102,6 +102,8 @@ class Environments:
         identifier = extract_identifier(content)
         if identifier:
             header.identifier = identifier
+        # pylint: disable=no-member
+        header.classes.extend(ELEMENT_CLASSES["MEXERCISES"])
         content.insert(0, header)
         return content
 
@@ -186,21 +188,16 @@ class Environments:
 
     def handle_mtest(self, elem_content, env_args, elem):
         r"""Handle ``\MTest`` environment."""
-        div = create_content_box(
-            elem_content,
-            ELEMENT_CLASSES["MTEST"],
-            elem.doc.metadata["lang"].text,
-        )
-
-        # remove reference to section
+        content = parse_fragment(elem_content, elem.doc.metadata["lang"].text)
         title = REGEX_PATTERNS["FIX_MTEST"].sub("", env_args[0])
-
-        header = create_header(title, elem.doc, level=3)
-        identifier = extract_identifier(div.content)
+        header = create_header(title, elem.doc, level=2)
+        identifier = extract_identifier(content)
         if identifier:
             header.identifier = identifier
-        div.content.insert(0, header)
-        return div
+        # pylint: disable=no-member
+        header.classes.extend(ELEMENT_CLASSES["MTEST"])
+        content.insert(0, header)
+        return content
 
     def handle_mcoshzusatz(self, elem_content, env_args, elem):
         r"""Handle ``\MCOSHZusatz`` environment."""

@@ -139,13 +139,13 @@ class TestMTest(unittest.TestCase):
 
         ret = self.environments.handle_mtest("Foo bar", ["Abschlusstest"], elem)
 
-        self.assertIsInstance(ret, pf.Div)
+        self.assertEqual(len(ret), 2)
 
-        header = ret.content[0]
+        header = ret[0]
         self.assertIsInstance(header, pf.Header)
         self.assertEqual(pf.stringify(header), "Abschlusstest")
 
-        para = ret.content[1]
+        para = ret[1]
         self.assertIsInstance(para.content[0], pf.Str)
         self.assertEqual(para.content[0].text, "Foo")
         self.assertIsInstance(para.content[1], pf.Space)
@@ -166,13 +166,13 @@ class TestMTest(unittest.TestCase):
             "Foo bar", [r"Abschlusstest Kapitel \arabic{section}"], elem
         )
 
-        self.assertIsInstance(ret, pf.Div)
+        self.assertEqual(len(ret), 2)
 
-        header = ret.content[0]
+        header = ret[0]
         self.assertIsInstance(header, pf.Header)
         self.assertEqual(pf.stringify(header), "Abschlusstest")
 
-        para = ret.content[1]
+        para = ret[1]
         self.assertIsInstance(para.content[0], pf.Str)
         self.assertEqual(para.content[0].text, "Foo")
         self.assertIsInstance(para.content[1], pf.Space)

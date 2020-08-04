@@ -369,6 +369,13 @@ class ExtractSectionTree:
                     self.section = {}
                 self.section["title"] = node["c"][2]
                 section_id = node["c"][1][0]
+
+                # section type
+                if "exercises" in node["c"][1][1]:
+                    self.section["type"] = "exercises"
+                elif "test" in node["c"][1][1]:
+                    self.section["type"] = "test"
+
                 section_num = "{:03}".format(section_idx)
                 if section_id:
                     # number sections so they are in consistent order
@@ -475,6 +482,10 @@ class WriteSections:
         filepath = os.path.join(outdir_section, filename)
 
         if self.output_format == "markdown":
+            try:
+                section_type = section["type"]
+            except KeyError:
+                section_type = None
             output = self._convert_section_to_markdown(
                 content, section["title"], section_type
             )
@@ -502,12 +513,11 @@ class WriteSections:
             "--from=json",
             "--to=markdown+yaml_metadata_block",
         ]
+        meta = {"title": {"t": "MetaInlines", "c": title}}
+        if section_type is not None:
+            meta["type"] = {"t": "MetaInlines", "c": [{"t": "Str", "c": section_type}]}
         section_json = json.dumps(
-            {
-                "blocks": content,
-                "pandoc-api-version": [1, 20],
-                "meta": {"title": {"t": "MetaInlines", "c": title}},
-            }
+            {"blocks": content, "pandoc-api-version": [1, 20], "meta": meta}
         ).encode(ENCODING)
         proc = Popen(pandoc_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         out, err = proc.communicate(input=section_json, timeout=self.PANDOC_TIMEOUT)
