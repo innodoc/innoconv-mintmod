@@ -504,9 +504,9 @@ class WriteSections:
 
     def _convert_section_to_markdown(self, content, title, section_type):
         """Convert JSON section to markdown format using pandoc."""
-        # TODO: ensure atx-headers are used
         pandoc_cmd = [
             "pandoc",
+            "--atx-headers",
             "--wrap=preserve",
             "--columns=999",
             "--standalone",
