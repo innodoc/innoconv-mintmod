@@ -339,7 +339,7 @@ class TestGraphics(unittest.TestCase):
 
     def test_handle_mugraphics_block(self):
         """MUGraphics command (block) with description"""
-        content = r"\MUGraphics{foobar.png}{width=0.3\linewidth}" "{Footitle $a^2$}"
+        content = r"\MUGraphics{foobar.png}{width=0.3\linewidth}{Footitle $a^2$}"
         doc = pf.Doc(pf.RawBlock(content, format="latex"), metadata={"lang": "en"})
         elem = doc.content[0]  # this sets up elem.parent
         elem_args = ["foobar.png", r"width=0.3\linewidth", "Footitle $a^2$"]

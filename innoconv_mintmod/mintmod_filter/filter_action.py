@@ -179,6 +179,6 @@ class MintmodFilterAction:
                 name, args, elem.__class__.__name__, err
             )
         )
-        import traceback
+        import traceback  # pylint: disable=import-outside-toplevel
 
         traceback.print_tb(err.__traceback__)

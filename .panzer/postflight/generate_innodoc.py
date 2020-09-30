@@ -24,7 +24,7 @@ import yaml
 from innoconv_mintmod.constants import ENCODING, OUTPUT_FORMAT_EXT_MAP
 
 sys.path.append(os.path.join(os.environ["PANZER_SHARED"], "panzerhelper"))
-# pylint: disable=import-error,wrong-import-position
+# pylint: disable=import-error,wrong-import-position,wrong-import-order
 import panzertools  # noqa: E402
 
 #: Max. depth of headers to consider when splitting sections
@@ -69,7 +69,13 @@ class CreateMapOfIds:
             "Table": self._handle_table,
             ("Emph", "Strong"): self._handle_emph_strong,
             ("Para", "Plain"): self._handle_para,
-            ("LineBreak", "Math", "SoftBreak", "Space", "Str",): lambda *args: None,
+            (
+                "LineBreak",
+                "Math",
+                "SoftBreak",
+                "Space",
+                "Str",
+            ): lambda *args: None,
         }
 
         for elem_type in handle_node_map:
@@ -429,7 +435,8 @@ class CreateMapOfSectionIds:
         try:
             for subsection in section["children"]:
                 self._handle_section(
-                    subsection, prefix="{}/".format(self.id_map[mintmod_section_id]),
+                    subsection,
+                    prefix="{}/".format(self.id_map[mintmod_section_id]),
                 )
         except KeyError:
             pass
@@ -437,6 +444,7 @@ class CreateMapOfSectionIds:
     @staticmethod
     def _section_id_to_mintmod_section_id(section_id):
         """Remove number prefix from section, e.g. '000-foo' -> 'foo'."""
+        mm_section_id = None
         if len(section_id) >= 3:
             mm_section_id = section_id[3:]
         if mm_section_id and mm_section_id[0] == "-":
@@ -626,7 +634,10 @@ class GenerateInnodoc:
 
         with open(manifest_path, "w") as manifest_file:
             yaml.dump(
-                manifest, manifest_file, default_flow_style=False, allow_unicode=True,
+                manifest,
+                manifest_file,
+                default_flow_style=False,
+                allow_unicode=True,
             )
         panzertools.log("INFO", "Wrote: {}".format(manifest_path))
 

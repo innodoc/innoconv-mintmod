@@ -128,6 +128,7 @@ def to_inline(elem, classes=[], attributes={}):
     if isinstance(elem, pf.RawBlock):
         return pf.RawInline(elem.text, format=elem.format)
 
+    elems = []
     if isinstance(elem, pf.Block):
         elems = elem.content
     elif isinstance(elem, list):
@@ -209,7 +210,7 @@ def parse_nested_args(to_parse):
         for i, cha in enumerate(to_parse):
             if not stack and cha != "{":
                 break
-            elif cha == "{":
+            if cha == "{":
                 stack.append(i)
             elif cha == "}" and stack:
                 start = stack.pop()
