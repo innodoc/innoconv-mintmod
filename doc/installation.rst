@@ -26,7 +26,7 @@ Pandoc
 ~~~~~~
 
 You need to make sure to have a recent version of the pandoc binary available
-in ``PATH`` (**Pandoc 2.2.1** at the time of writing). There are `several ways
+in ``PATH`` (**Pandoc 2.10.1** at the time of writing). There are `several ways
 on installing Pandoc <https://pandoc.org/installing.html>`_.
 
 Virtual environment

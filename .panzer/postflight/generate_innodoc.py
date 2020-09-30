@@ -517,7 +517,7 @@ class WriteSections:
         if section_type is not None:
             meta["type"] = {"t": "MetaInlines", "c": [{"t": "Str", "c": section_type}]}
         section_json = json.dumps(
-            {"blocks": content, "pandoc-api-version": [1, 20], "meta": meta}
+            {"blocks": content, "pandoc-api-version": [1, 21], "meta": meta}
         ).encode(ENCODING)
         proc = Popen(pandoc_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         out, err = proc.communicate(input=section_json, timeout=self.PANDOC_TIMEOUT)
