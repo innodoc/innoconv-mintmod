@@ -79,7 +79,8 @@ class TestBoxesWithoutTitle(unittest.TestCase):
     def test_handle_mexperiment(self):
         """MExperiment"""
         self._test_content_box(
-            self.environments.handle_mexperiment, ELEMENT_CLASSES["MEXPERIMENT"],
+            self.environments.handle_mexperiment,
+            ELEMENT_CLASSES["MEXPERIMENT"],
         )
 
     def test_handle_mexample(self):
@@ -91,7 +92,9 @@ class TestBoxesWithoutTitle(unittest.TestCase):
     def test_handle_mhint(self):
         """MHint"""
         div = self._test_content_box(
-            self.environments.handle_mhint, ELEMENT_CLASSES["MHINT"], [r"\iSolution"],
+            self.environments.handle_mhint,
+            ELEMENT_CLASSES["MHINT"],
+            [r"\iSolution"],
         )
         self.assertEqual(div.attributes["caption"], "Solution")
 
@@ -118,7 +121,8 @@ class TestBoxesWithoutTitle(unittest.TestCase):
         bullet_list = div.content[0]
         self.assertIsInstance(bullet_list, pf.BulletList)
         self.assertEqual(
-            bullet_list.content[0].content[0].content[0].content[0].text, "item1",
+            bullet_list.content[0].content[0].content[0].content[0].text,
+            "item1",
         )
         return div
 

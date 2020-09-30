@@ -221,7 +221,8 @@ class Commands:
         url = "#%s" % cmd_args[0]
         description = destringify(cmd_args[1])
         return block_wrap(
-            pf.Link(*description, url=url, attributes={"data-msref": "true"}), elem,
+            pf.Link(*description, url=url, attributes={"data-msref": "true"}),
+            elem,
         )
 
     def handle_mnref(self, cmd_args, elem):
@@ -528,7 +529,8 @@ class Commands:
         if isinstance(elem, pf.Block):
             raise ValueError(r"Encountered \MZahl as block element!")
         return pf.Math(
-            r"\num{{{}.{}}}".format(cmd_args[0], cmd_args[1]), format="InlineMath",
+            r"\num{{{}.{}}}".format(cmd_args[0], cmd_args[1]),
+            format="InlineMath",
         )
 
     ###########################################################################

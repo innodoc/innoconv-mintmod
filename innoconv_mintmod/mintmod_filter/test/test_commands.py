@@ -60,7 +60,8 @@ class TestCommands(unittest.TestCase):
 
     def test_handle_msubsubsubsectionx(self):
         doc = pf.Doc(
-            pf.RawBlock(r"\MSubsubsubsectionx{Subsubsubsectionx}"), format="latex",
+            pf.RawBlock(r"\MSubsubsubsectionx{Subsubsubsectionx}"),
+            format="latex",
         )
         elem = doc.content[0]
         ret = self.commands.handle_msubsubsubsectionx(["Subsubsubsectionx"], elem)
@@ -108,7 +109,8 @@ class TestCommands(unittest.TestCase):
         """special command should not remove 'html:' in the middle of a
         string."""
         doc = pf.Doc(
-            pf.RawBlock(r'\special{html:<a href="#bar">html:</a>}'), format="latex",
+            pf.RawBlock(r'\special{html:<a href="#bar">html:</a>}'),
+            format="latex",
         )
         elem = doc.content[0]
         ret = self.commands.handle_special([r'html:<a href="#bar">html:</a>'], elem)
@@ -119,7 +121,8 @@ class TestCommands(unittest.TestCase):
     def test_handle_special_detect_html(self):
         """special command should not be confused by a 'html:'."""
         doc = pf.Doc(
-            pf.RawBlock(r'\special{bar:<a href="#foo">html:</a>}'), format="latex",
+            pf.RawBlock(r'\special{bar:<a href="#foo">html:</a>}'),
+            format="latex",
         )
         elem = doc.content[0]
         ret = self.commands.handle_special([r'bar:<a href="#foo">html:</a>'], elem)
@@ -148,7 +151,8 @@ class TestCommands(unittest.TestCase):
         """MExtLink command"""
         block = pf.Para(
             pf.RawInline(
-                r"\MExtLink{https://www.example.com/}{Example link}", format="latex",
+                r"\MExtLink{https://www.example.com/}{Example link}",
+                format="latex",
             )
         )
         doc = pf.Doc(block)
@@ -265,7 +269,11 @@ class TestCommands(unittest.TestCase):
         """Test no-op commands."""
         noops = (
             (self.commands.handle_mmodstartbox, [], r"\MModstartBox"),
-            (self.commands.handle_mpragma, ["MathSkip"], r"\MPragma{MathSkip}",),
+            (
+                self.commands.handle_mpragma,
+                ["MathSkip"],
+                r"\MPragma{MathSkip}",
+            ),
         )
         for handler, elem_args, elem_code in noops:
             with self.subTest(name=handler.__name__):
@@ -366,7 +374,8 @@ class TestGraphics(unittest.TestCase):
         """MUGraphics command (inline)"""
         content = r"\MUGraphics{foobar.png}{width=0.3\linewidth}{Footitle}"
         doc = pf.Doc(
-            pf.Para(pf.RawInline(content, format="latex")), metadata={"lang": "en"},
+            pf.Para(pf.RawInline(content, format="latex")),
+            metadata={"lang": "en"},
         )
         elem = doc.content[0].content[0]  # this sets up elem.parent
         elem_args = ["foobar.png", r"width=0.3\linewidth", "Footitle"]

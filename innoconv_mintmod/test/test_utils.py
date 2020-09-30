@@ -336,14 +336,16 @@ class TestToInline(unittest.TestCase):
 class TestExtractIdentifier(unittest.TestCase):
     def test_only_uxid(self):
         annot = pf.Div(
-            identifier="{}-foo".format(SITE_UXID_PREFIX), classes=(SITE_UXID_PREFIX,),
+            identifier="{}-foo".format(SITE_UXID_PREFIX),
+            classes=(SITE_UXID_PREFIX,),
         )
         identifier = extract_identifier([annot])
         self.assertEqual(identifier, "foo")
 
     def test_uxid_para(self):
         annot = pf.Div(
-            identifier="{}-foo".format(SITE_UXID_PREFIX), classes=(SITE_UXID_PREFIX,),
+            identifier="{}-foo".format(SITE_UXID_PREFIX),
+            classes=(SITE_UXID_PREFIX,),
         )
         para = pf.Para(pf.Str("bar"))
         identifier = extract_identifier([annot, para])
@@ -355,7 +357,8 @@ class TestExtractIdentifier(unittest.TestCase):
             classes=(INDEX_LABEL_PREFIX,),
         )
         uxid = pf.Div(
-            identifier="{}-bar".format(SITE_UXID_PREFIX), classes=(SITE_UXID_PREFIX,),
+            identifier="{}-bar".format(SITE_UXID_PREFIX),
+            classes=(SITE_UXID_PREFIX,),
         )
         para = pf.Para(pf.Str("bar"))
 

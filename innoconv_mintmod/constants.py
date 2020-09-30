@@ -107,7 +107,10 @@ COMMANDS_IRREGULAR = OrderedDict(
     (
         ("MVector", r"\begin{{pmatrix}}{}\end{{pmatrix}}"),
         ("MPointTwoAS", r"\left({}\coordsep {}\right)"),
-        ("MPointTwo", {2: r"({0}\coordsep {1})", 3: r"{0}({1}\coordsep {2}{{}}{0})"},),
+        (
+            "MPointTwo",
+            {2: r"({0}\coordsep {1})", 3: r"{0}({1}\coordsep {2}{{}}{0})"},
+        ),
         (
             "MPointThree",
             {
@@ -115,7 +118,10 @@ COMMANDS_IRREGULAR = OrderedDict(
                 4: r"{0}({1}\coordsep {2}\coordsep {3}{{}}{0})",
             },
         ),
-        ("MCases", r"\left\lbrace{{\begin{{array}}{{rl}} {} \end{{array}}}}\right.",),
+        (
+            "MCases",
+            r"\left\lbrace{{\begin{{array}}{{rl}} {} \end{{array}}}}\right.",
+        ),
         (
             "function",
             r"{}:\;\left\lbrace{{\begin{{array}}{{rcl}} {} "
@@ -149,7 +155,8 @@ REGEX_PATTERNS = {
     # latex parsing
     "CMD": re.compile(r"\A\\([^\\\s{]+)(.*)\Z", re.DOTALL),
     "ENV": re.compile(
-        r"\A\\begin{(?P<env_name>[^}]+)}(.+)" r"\\end{(?P=env_name)}\Z", re.DOTALL,
+        r"\A\\begin{(?P<env_name>[^}]+)}(.+)" r"\\end{(?P=env_name)}\Z",
+        re.DOTALL,
     ),
     "EXTRACT_ID": lambda x: re.compile(r"^{}-(.+)$".format(x)),
     "STRIP_HASH_LINE": re.compile(r"^\%(\r\n|\r|\n)"),

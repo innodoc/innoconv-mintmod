@@ -94,12 +94,18 @@ def get_arg_parser():
 
     ign_exercises_help = "don't show logs for unknown exercise commands/envs"
     innoconv_argparser.add_argument(
-        "-i", "--ignore-exercises", action="store_true", help=ign_exercises_help,
+        "-i",
+        "--ignore-exercises",
+        action="store_true",
+        help=ign_exercises_help,
     )
 
     rem_exercises_help = "remove all exercise commands/envs"
     innoconv_argparser.add_argument(
-        "-r", "--remove-exercises", action="store_true", help=rem_exercises_help,
+        "-r",
+        "--remove-exercises",
+        action="store_true",
+        help=rem_exercises_help,
     )
 
     generate_innodoc_help = "split sections and generate manifest.yaml"

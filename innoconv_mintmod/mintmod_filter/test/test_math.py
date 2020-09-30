@@ -28,7 +28,8 @@ class TestHandleIrregular(unittest.TestCase):
         elem_math = pf.Math(r"\MPointTwo{\frac{3}{2}}{1+\frac{\sqrt{3}}{2}} " "x_2")
         elem_math_repl = handle_math(elem_math)
         self.assertEqual(
-            elem_math_repl.text, r"(\frac{3}{2}\coordsep 1+\frac{\sqrt{3}}{2}) x_2",
+            elem_math_repl.text,
+            r"(\frac{3}{2}\coordsep 1+\frac{\sqrt{3}}{2}) x_2",
         )
 
     def test_handle_math_mpointtwo_big(self):
@@ -45,7 +46,8 @@ class TestHandleIrregular(unittest.TestCase):
         elem_math = pf.Math(r"\MPointTwo[\Big]{\frac{1}{n}}{0}\MCondSetSep")
         elem_math_repl = handle_math(elem_math)
         self.assertEqual(
-            elem_math_repl.text, r"\Big(\frac{1}{n}\coordsep 0{}\Big) {\,}:{\,}",
+            elem_math_repl.text,
+            r"\Big(\frac{1}{n}\coordsep 0{}\Big) {\,}:{\,}",
         )
 
     def test_handle_math_mpointtwoas(self):
@@ -53,7 +55,8 @@ class TestHandleIrregular(unittest.TestCase):
         elem_math = pf.Math(r"\MPointTwoAS{-\sqrt6}{-\frac12\sqrt6}")
         elem_math_repl = handle_math(elem_math)
         self.assertEqual(
-            elem_math_repl.text, r"\left(-\sqrt6\coordsep -\frac12\sqrt6\right)",
+            elem_math_repl.text,
+            r"\left(-\sqrt6\coordsep -\frac12\sqrt6\right)",
         )
 
     def test_handle_math_mpointthree(self):
@@ -74,7 +77,8 @@ class TestHandleIrregular(unittest.TestCase):
         elem_math = pf.Math(r"\MPointThree[\Big]{\frac{3}{2}}{1}{2}")
         elem_math_repl = handle_math(elem_math)
         self.assertEqual(
-            elem_math_repl.text, r"\Big(\frac{3}{2}\coordsep 1\coordsep 2{}\Big)",
+            elem_math_repl.text,
+            r"\Big(\frac{3}{2}\coordsep 1\coordsep 2{}\Big)",
         )
 
     def test_handle_math_multiple(self):
