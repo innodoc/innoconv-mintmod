@@ -53,11 +53,16 @@ class Environments:
     def handle_mxcontent(self, elem_content, env_args, elem):
         r"""Handle ``\MXContent`` environment."""
         content = parse_fragment(elem_content, elem.doc.metadata["lang"].text)
-        header = create_header(env_args[0], elem.doc, level=3)
-        identifier = extract_identifier(content)
-        if identifier:
-            header.identifier = identifier
-        content.insert(0, header)
+
+        # special case: Skip header creation for some weird (meta?) caption in
+        # entrance test.
+        if env_args[0] != "Restart" and env_args[0] != "Neustart":
+            header = create_header(env_args[0], elem.doc, level=3)
+            identifier = extract_identifier(content)
+            if identifier:
+                header.identifier = identifier
+            content.insert(0, header)
+
         return content
 
     def handle_mcontent(self, elem_content, env_args, elem):
@@ -201,10 +206,18 @@ class Environments:
         r"""Handle ``\MTest`` environment."""
         content = parse_fragment(elem_content, elem.doc.metadata["lang"].text)
         title = REGEX_PATTERNS["FIX_MTEST"].sub("", env_args[0])
+
+        # Fix entrance test title
+        if title == "Eingangstest für den Onlinekurs":
+            title = "Test 1: Abzugebender Teil"
+        elif title == "Graded Test for the Online Course":
+            title = "Test 1: Graded Part To Be Submitted"
+
         header = create_header(title, elem.doc, level=2)
         identifier = extract_identifier(content)
         if identifier:
             header.identifier = identifier
+
         # pylint: disable=no-member
         header.classes.extend(ELEMENT_CLASSES["MTEST"])
         content.insert(0, header)
