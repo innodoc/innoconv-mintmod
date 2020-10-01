@@ -24,7 +24,7 @@ install:
   script:
     - apk add git build-base libxml2-dev libxslt-dev
     - mkdir -p .local
-    - "[[ -e .local/bin/pandoc ]] || wget -qO- https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-linux-amd64.tar.gz | tar -xvzf - --strip-components 1 -C .local"
+    - '[[ "$(pandoc -v | head -n1 | cut -f2 -d\ )" != "$PANDOC_VERSION" ]] && wget -qO- https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-linux-amd64.tar.gz | tar -xvzf - --strip-components 1 -C .local || true'
     - python -m venv venv
     - source venv/bin/activate
     - pip install --upgrade pip setuptools
