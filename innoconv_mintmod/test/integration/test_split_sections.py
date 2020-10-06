@@ -71,6 +71,5 @@ class TestSplitSections(unittest.TestCase):
                         self.assertEqual(sec_1_2["id"], "001-LABEL_1_2")
                         self.assertEqual(sec_1_2["title"][0]["c"], "1-2")
 
-                        sec_1_2_1 = sec_1_2["children"][0]
-                        self.assertEqual(sec_1_2_1["id"], "000-LABEL_1_2_1")
-                        self.assertEqual(sec_1_2_1["title"][0]["c"], "1-2-1")
+                        # \MSubsubsection (level 4) must not generate section
+                        self.assertNotIn("children", sec_1_2)

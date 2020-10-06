@@ -56,7 +56,7 @@ class TestCommands(unittest.TestCase):
         self.assertEqual(ret.content[0].text, "Schöne")
         self.assertIsInstance(ret.content[6], pf.Str)
         self.assertEqual(ret.content[6].text, "Maß?")
-        self.assertEqual(ret.level, 3)
+        self.assertEqual(ret.level, 4)
 
     def test_handle_msubsubsubsectionx(self):
         doc = pf.Doc(

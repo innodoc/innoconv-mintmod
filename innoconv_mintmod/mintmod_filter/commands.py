@@ -100,23 +100,27 @@ class Commands:
 
     def handle_msubsubsection(self, cmd_args, elem):
         r"""Handle ``\MSubsubsection``"""
-        return create_header(cmd_args[0], level=3, doc=elem.doc)
+        return create_header(cmd_args[0], level=4, doc=elem.doc)
 
     def handle_msubsubsectionx(self, cmd_args, elem):
         r"""Handle ``\MSubsubsectionx`` command. Which will generate a level
-        3 header."""
-        return create_header(cmd_args[0], level=3, doc=elem.doc)
+        4 header."""
+        return create_header(cmd_args[0], level=4, doc=elem.doc)
 
     def handle_mtitle(self, cmd_args, elem):
         r"""Handle ``\MTitle`` command.
 
         This is an equivalent to ``\subsubsection``
         """
-        return create_header(cmd_args[0], level=3, doc=elem.doc)
+        return create_header(cmd_args[0], level=4, doc=elem.doc)
 
     def handle_msubsubsubsectionx(self, cmd_args, elem):
         r"""Handle ``\MSubsubsubsectionx`` command. Which will generate a level
-        4 header."""
+        4 header.
+
+        From logical point of view this should be level 5. But from looking at
+        the sources, level 4 is correct.
+        """
         return create_header(cmd_args[0], level=4, doc=elem.doc)
 
     ###########################################################################
