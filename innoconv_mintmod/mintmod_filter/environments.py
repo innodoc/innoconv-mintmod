@@ -10,11 +10,7 @@ Handle mintmod LaTeX environments.
     ``\begin{MXContent}…\end{MXContent}`` environment.
 """
 
-from innoconv_mintmod.constants import (
-    ELEMENT_CLASSES,
-    REGEX_PATTERNS,
-    TRANSLATIONS,
-)
+from innoconv_mintmod.constants import ELEMENT_CLASSES, TRANSLATIONS
 from innoconv_mintmod.mintmod_filter.elements import (
     create_content_box,
     create_header,
@@ -205,12 +201,16 @@ class Environments:
     def handle_mtest(self, elem_content, env_args, elem):
         r"""Handle ``\MTest`` environment."""
         content = parse_fragment(elem_content, elem.doc.metadata["lang"].text)
-        title = REGEX_PATTERNS["FIX_MTEST"].sub("", env_args[0])
+        title = env_args[0]
 
-        # Fix entrance test title
-        if title == "Eingangstest für den Onlinekurs":
+        # Normalize various forms of inconsistent titles
+        if "Abschlusstest" in title:  # Final test
+            title = "Abschlusstest"
+        elif "Final Test" in title:
+            title = "Final Test"
+        elif "Eingangstest" in title:  # Entrance test
             title = "Test 1: Abzugebender Teil"
-        elif title == "Graded Test for the Online Course":
+        elif "Graded Test" in title:
             title = "Test 1: Graded Part To Be Submitted"
 
         header = create_header(title, elem.doc, level=2)

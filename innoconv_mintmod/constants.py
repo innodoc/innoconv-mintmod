@@ -166,7 +166,6 @@ REGEX_PATTERNS = {
         "----- pandoc write -----",
         re.MULTILINE | re.DOTALL,
     ),
-    "FIX_MTEST": re.compile(r" (zu )?(Kapitel|Modul) (\d{1,2}|\\arabic{section})"),
     "IRREG_MATH_CMDS": re.compile(
         "({})".format(
             "|".join(r"\\{}".format(cmd) for cmd in list(COMMANDS_IRREGULAR.keys()))
