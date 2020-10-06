@@ -178,6 +178,11 @@ class Commands:
         """
         identifier = cmd_args[0]
 
+        # Ignore MLabel in test sections as this would mess up the previous
+        # section caption.
+        if "Abschlusstest" in identifier or "Ausgangstest" in identifier:
+            return []
+
         # attach identifier to previous element
         try:
             get_remembered(elem.doc, "label").identifier = identifier
