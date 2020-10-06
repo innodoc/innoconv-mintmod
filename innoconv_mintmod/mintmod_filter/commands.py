@@ -84,7 +84,7 @@ class Commands:
         # Skip headings in final tests and entrance test -> handled in \MTest env
         if cmd_args[0] in (
             "Abschlusstest",
-            "Final test",
+            "Final Test",
             "Test 1: Abzugebender Teil",
             "Test 1: Graded Part To Be Submitted",
         ):
