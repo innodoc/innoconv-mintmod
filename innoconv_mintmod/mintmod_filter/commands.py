@@ -9,8 +9,8 @@ Handle mintmod LaTeX commands.
     Example: ``handle_msection`` method will receive the command ``\MSection``.
 """
 
-from os import getcwd, linesep
-from os.path import join
+from os import environ, getcwd, linesep
+from os.path import dirname, join
 import re
 import panflute as pf
 from innoconv_mintmod.constants import (
@@ -67,8 +67,10 @@ class Commands:
 
     def handle_input(self, cmd_args, elem):
         r"""Handle ``\input`` command."""
-        with open(join(getcwd(), cmd_args[0]), "r") as input_file:
+        filepath = join(getcwd(), cmd_args[0])
+        with open(filepath, "r") as input_file:
             input_content = input_file.read()
+        environ["INNOCONV_MINTMOD_CURRENT_DIR"] = dirname(filepath)
         return parse_fragment(input_content, elem.doc.metadata["lang"].text)
 
     ###########################################################################
@@ -478,12 +480,18 @@ class Commands:
         remember(elem.doc, "points", points_value)
         return []
 
-    # TODO: MDirectRouletteExercises
-    # filename.rtex is a pool of MExercise envs. In the content
-    # one exercise of these should appear randomly. There is a button
-    # saying 'next exercise' that gives another randomly chosen exercise.
-    # Tasks: open .rtex file, get array of MExercises, parse each exercise env
-    #  output some roulette exercise div including the complete exercise pool
+    def handle_mdirectrouletteexercises(self, cmd_args, elem):
+        r"""Handle ``\MDirectRouletteExercises`` command.
+
+        Remember points for next question.
+        """
+        filepath = join(environ["INNOCONV_MINTMOD_CURRENT_DIR"], cmd_args[0])
+        with open(filepath, "r") as input_file:
+            input_content = input_file.read()
+        content = parse_fragment(input_content, elem.doc.metadata["lang"].text)
+        div = pf.Div(classes=ELEMENT_CLASSES["MDIRECTROULETTEEXERCISES"])
+        div.content.extend(content)
+        return div
 
     ###########################################################################
     # Misc elements
