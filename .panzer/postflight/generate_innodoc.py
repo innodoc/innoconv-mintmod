@@ -367,7 +367,11 @@ class ExtractSectionTree:
         """Generate and return tree."""
         section_idx = 0
         for node in self.nodes:
-            if node["t"] == "Header" and node["c"][0] == self.level:
+            if (
+                node["t"] == "Header"
+                and node["c"][0] == self.level
+                and self.level <= MAX_LEVELS
+            ):
                 self.await_header = False
                 if "title" in self.section:
                     self.create_section()
@@ -403,16 +407,13 @@ class ExtractSectionTree:
 
     def create_section(self):
         """Save a section."""
-        if self.level <= MAX_LEVELS:
-            subsections, subcontent = ExtractSectionTree(
-                self.children, self.level + 1
-            ).get_tree()
-            if subsections:
-                self.section["children"] = subsections
-            if subcontent:
-                self.section["content"] = subcontent
-        elif self.children:
-            self.section["content"] = self.children
+        subsections, subcontent = ExtractSectionTree(
+            self.children, self.level + 1
+        ).get_tree()
+        if subsections:
+            self.section["children"] = subsections
+        if subcontent:
+            self.section["content"] = subcontent
         self.sections.append(self.section)
 
 
