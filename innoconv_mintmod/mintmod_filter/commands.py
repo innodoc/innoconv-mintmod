@@ -461,15 +461,11 @@ class Commands:
         )
 
     def handle_mgroupbutton(self, cmd_args, elem):
-        r"""Handle ``\MGroupButton`` command"""
-        if isinstance(elem, pf.Inline):
-            raise ValueError(
-                r"\MGroupButton should be block element!: {}".format(cmd_args)
-            )
+        r"""Handle ``\MGroupButton`` command.
 
-        text = pf.Plain(*destringify(cmd_args[0]))
-        div = pf.Div(text, classes=ELEMENT_CLASSES["MGROUPBUTTON"])
-        return div
+        Render empty as this button is displayed automatically in clients.
+        """
+        return []
 
     def handle_msetpoints(self, cmd_args, elem):
         r"""Handle ``\MSetPoints`` command.

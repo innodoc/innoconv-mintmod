@@ -187,7 +187,6 @@ ELEMENT_CLASSES = {
     "MEXERCISE": ["exercise"],
     "MEXERCISES": ["exercises"],
     "MDIRECTROULETTEEXERCISES": ["exercise-roulette"],
-    "MGROUPBUTTON": ["verify-input-button"],
     "MQUESTIONGROUP": ["question-group"],
     "MEXPERIMENT": ["experiment"],
     "MHINT": ["hint"],
