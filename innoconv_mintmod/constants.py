@@ -32,7 +32,6 @@ EXERCISE_CMDS_ENVS = (
     "MGroupButton",
     "MLQuestion",
     "MExerciseCollection",
-    "MQuestionGroup",
     "MLSpecialQuestion",
 )
 
@@ -187,7 +186,6 @@ ELEMENT_CLASSES = {
     "MEXERCISE": ["exercise"],
     "MEXERCISES": ["exercises"],
     "MDIRECTROULETTEEXERCISES": ["exercise-roulette"],
-    "MQUESTIONGROUP": ["question-group"],
     "MEXPERIMENT": ["experiment"],
     "MHINT": ["hint"],
     "MINFO": ["info"],
