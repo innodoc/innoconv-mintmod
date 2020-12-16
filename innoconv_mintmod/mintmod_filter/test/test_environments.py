@@ -47,8 +47,6 @@ class TestMxContent(unittest.TestCase):
             "Lorem ipsum", ["Nice title", "Short title", "STD"], self.elem
         )
 
-        self.assertIsInstance(ret, list)
-
         header = ret[0]
         self.assertIsInstance(header, pf.Header)
         self.assertEqual(pf.stringify(header), "Nice title")
@@ -266,7 +264,6 @@ class TestHtml(unittest.TestCase):
         doc.content.extend([pf.RawBlock(elem_content, format="latex")])
         elem = doc.content[0]  # this sets up elem.parent
         ret = self.environments.handle_html(html, [], elem)
-        self.assertIsInstance(ret, list)
         header = ret[0]
         self.assertIsInstance(header, pf.Header)
         self.assertEqual(header.content[0].text, "Suitable")

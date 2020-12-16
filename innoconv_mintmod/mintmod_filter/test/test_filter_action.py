@@ -73,7 +73,6 @@ class TestFilterAction(unittest.TestCase):
         )
         elem_env = self.doc.content[0]  # this sets up elem.parent
         ret = self._filter_elem([elem_env], elem_env)
-        self.assertIsInstance(ret, list)
         self.assertIsInstance(ret[0], pf.Header)
         self.assertIsInstance(ret[1], pf.Para)
 

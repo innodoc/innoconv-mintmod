@@ -515,7 +515,7 @@ class WriteSections:
         """Convert JSON section to markdown format using pandoc."""
         pandoc_cmd = [
             "pandoc",
-            "--atx-headers",
+            "--markdown-headings=atx",
             "--wrap=preserve",
             "--columns=999",
             "--standalone",
@@ -526,7 +526,7 @@ class WriteSections:
         if section_type is not None:
             meta["type"] = {"t": "MetaInlines", "c": [{"t": "Str", "c": section_type}]}
         section_json = json.dumps(
-            {"blocks": content, "pandoc-api-version": [1, 20], "meta": meta}
+            {"blocks": content, "pandoc-api-version": [1, 22], "meta": meta}
         ).encode(ENCODING)
         proc = Popen(pandoc_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         out, err = proc.communicate(input=section_json, timeout=self.PANDOC_TIMEOUT)

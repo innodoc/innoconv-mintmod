@@ -111,9 +111,9 @@ class TestParseFragment(unittest.TestCase):
         self.assertTrue(log_mock.called)
 
     def test_parse_fragment_empty(self):
-        """parse_fragment() returns [] if given empty document"""
+        """parse_fragment() returns empty list if given empty document"""
         ret = parse_fragment("", "en")
-        self.assertEqual(ret, [])
+        self.assertEqual(len(ret), 0)
 
     @patch("innoconv_mintmod.utils.which", return_value=None)
     def test_parse_fragment_not_in_path(self, mock_func):
@@ -141,28 +141,24 @@ class TestDestringify(unittest.TestCase):
             pf.Str("string."),
         ]
         ret = destringify(string)
-        self.assertIsInstance(ret, list)
         self._compare_list(ret, comp)
 
     def test_empty(self):
         """Test destringify with an empty string"""
         string = ""
         ret = destringify(string)
-        self.assertIsInstance(ret, list)
         self.assertListEqual(ret, [])
 
     def test_empty_whitespace(self):
         """Test destringify with an whitespace string"""
         string = "   "
         ret = destringify(string)
-        self.assertIsInstance(ret, list)
         self.assertListEqual(ret, [])
 
     def test_one_word(self):
         """Test destringify with one word"""
         string = "foobar"
         ret = destringify(string)
-        self.assertIsInstance(ret, list)
         self._compare_list(ret, [pf.Str("foobar")])
 
     def test_whitespace(self):
@@ -170,7 +166,6 @@ class TestDestringify(unittest.TestCase):
         string = "  foo bar  "
         comp = [pf.Str("foo"), pf.Space(), pf.Str("bar")]
         ret = destringify(string)
-        self.assertIsInstance(ret, list)
         self._compare_list(ret, comp)
 
     def _compare_list(self, l_1, l_2):

@@ -104,11 +104,15 @@ def parse_fragment(parse_string, lang, as_doc=False, from_format="latex+raw_tex"
     else:
         raise RuntimeError("Unable to parse panzer output: {}".format(err))
 
-    doc = json.loads(out, object_pairs_hook=from_json)
+    doc = json.loads(out, object_hook=from_json)
 
     if as_doc:
         return doc
-    return doc.content.list
+
+    if isinstance(doc.content, pf.ListContainer):
+        return list(doc.content)
+
+    return doc.content
 
 
 # pylint: disable=dangerous-default-value
