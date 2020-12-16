@@ -94,7 +94,7 @@ todo_include_todos = True
 # Make panflute docs linkable
 intersphinx_mapping = {
     "panflute": ("http://scorreia.com/software/panflute/", None),
-    "python": ("https://docs.python.org/3.7", None),
+    "python": ("https://docs.python.org/3.9", None),
 }
 
 # -- Options for HTML output ----------------------------------------------

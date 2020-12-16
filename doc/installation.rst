@@ -14,13 +14,13 @@ The only dependencies you have to provide yourself is Pandoc and the Python
 interpreter.
 
 All others can be installed into a
-`Virtual environment <https://docs.python.org/3.7/library/venv.html>`_.
+`Virtual environment <https://docs.python.org/3.9/library/venv.html>`_.
 
 Python interpreter
 ~~~~~~~~~~~~~~~~~~
 
 While other versions of Python might work fine, innoconv-mintmod was tested
-with **Python 3.7**. Make sure you have it installed.
+with **Python 3.9**. Make sure you have it installed.
 
 Pandoc
 ~~~~~~

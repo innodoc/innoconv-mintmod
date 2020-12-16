@@ -4,9 +4,8 @@
 
 Converter for interactive educational content.
 
-**This program converts mintmod source.**
-
-**If you don't know what mintmod is you probably don't need it.**
+**This program converts mintmod source. If you don't know what mintmod is you
+probably don't need it.**
 
 ## Quick installation
 
@@ -22,6 +21,8 @@ $ pip install --process-dependency-links -e git+https://gitlab.tubit.tu-berlin.d
 ```
 
 The ``innoconv-mintmod`` command is now available.
+
+`innoconv-mintmod` is developed and tested using Python 3.9.
 
 ## Documentation
 
