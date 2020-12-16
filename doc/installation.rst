@@ -25,9 +25,11 @@ with **Python 3.9**. Make sure you have it installed.
 Pandoc
 ~~~~~~
 
-You need to make sure to have a recent version of the pandoc binary available
-in ``PATH`` (**Pandoc 2.9.2.1** at the time of writing). There are `several ways
-on installing Pandoc <https://pandoc.org/installing.html>`_.
+You need to make sure to have a recent version of the pandoc binary available in
+``PATH`` (**Pandoc 2.11.x** at the time of writing). There are `several ways on
+installing Pandoc <https://pandoc.org/installing.html>`_.
+
+Older versions of Pandoc might not work.
 
 Virtual environment
 ~~~~~~~~~~~~~~~~~~~
