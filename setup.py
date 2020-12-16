@@ -127,7 +127,7 @@ def setup_package():
             ]
         },
         include_package_data=True,
-        install_requires=["panflute", "panzer", "python-slugify"],
+        install_requires=["panflute==2.0.5", "panzer", "python-slugify"],
         packages=["innoconv_mintmod"],
         keywords=["pandoc"],
         license=METADATA["license"],
