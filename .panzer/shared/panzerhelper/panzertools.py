@@ -21,3 +21,14 @@ def read_options():
     message_in = json.loads(stdin)
     options = message_in[0]["options"]
     return options
+
+
+def destringify(string):
+    """Takes a string and transforms it into list of Str and Space objects."""
+    ret = []
+    split = string.split()
+    for word in split:
+        ret.append({"t": "Str", "c": word})
+        if split.index(word) != len(split) - 1:
+            ret.append({"t": "Space"})
+    return ret

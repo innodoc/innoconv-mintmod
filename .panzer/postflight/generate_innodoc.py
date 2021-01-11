@@ -380,6 +380,11 @@ class ExtractSectionTree:
                 self.section["title"] = node["c"][2]
                 section_id = node["c"][1][0]
 
+                # short title
+                for name, val in node["c"][1][2]:
+                    if name == "short_title":
+                        self.section["short_title"] = val
+
                 # section type
                 if "exercises" in node["c"][1][1]:
                     self.section["type"] = "exercises"
@@ -495,8 +500,12 @@ class WriteSections:
                 section_type = section["type"]
             except KeyError:
                 section_type = None
+            try:
+                short_title = section["short_title"]
+            except KeyError:
+                short_title = None
             output = self._convert_section_to_markdown(
-                content, section["title"], section_type
+                content, section["title"], short_title, section_type
             )
             with open(filepath, "w") as sfile:
                 sfile.write(output)
@@ -511,7 +520,7 @@ class WriteSections:
         except KeyError:
             pass
 
-    def _convert_section_to_markdown(self, content, title, section_type):
+    def _convert_section_to_markdown(self, content, title, short_title, section_type):
         """Convert JSON section to markdown format using pandoc."""
         pandoc_cmd = [
             "pandoc",
@@ -523,6 +532,11 @@ class WriteSections:
             "--to=markdown+yaml_metadata_block",
         ]
         meta = {"title": {"t": "MetaInlines", "c": title}}
+        if short_title is not None:
+            meta["short_title"] = {
+                "t": "MetaInlines",
+                "c": panzertools.destringify(short_title),
+            }
         if section_type is not None:
             meta["type"] = {"t": "MetaInlines", "c": [{"t": "Str", "c": section_type}]}
         section_json = json.dumps(

@@ -173,7 +173,9 @@ def create_content_box(elem_content, elem_classes, lang):
     return div
 
 
-def create_header(title_str, doc, level=0, parse_text=False, identifier=""):
+def create_header(
+    title_str, doc, level=0, parse_text=False, identifier="", short_title=None
+):
     """
     Create a header element.
 
@@ -183,11 +185,20 @@ def create_header(title_str, doc, level=0, parse_text=False, identifier=""):
     if not isinstance(doc, pf.Doc):
         raise ValueError("create_header without Doc element")
 
+    attributes = {}
+    if short_title == title_str:
+        short_title = None
+    if short_title is not None:
+        # Attach short title as attribute to be picked up later on by generate_innodoc
+        attributes["short_title"] = short_title
+
     if parse_text:
         title = parse_fragment(title_str, doc.metadata["lang"].text)[0].content
     else:
         title = destringify(title_str)
-    header = pf.Header(*title, level=level, identifier=identifier)
+    header = pf.Header(
+        *title, level=level, identifier=identifier, attributes=attributes
+    )
     remember(doc, "label", header)
     return header
 

@@ -53,7 +53,9 @@ class Environments:
         # special case: Skip header creation for some weird (meta?) caption in
         # entrance test.
         if env_args[0] != "Restart" and env_args[0] != "Neustart":
-            header = create_header(env_args[0], elem.doc, level=3)
+            header = create_header(
+                env_args[0], elem.doc, level=3, short_title=env_args[1]
+            )
             identifier = extract_identifier(content)
             if identifier:
                 header.identifier = identifier
