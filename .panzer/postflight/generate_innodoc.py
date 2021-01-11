@@ -140,12 +140,16 @@ class CreateMapOfIds:
             self._handle_node(sub_node, section_path)
 
     def _handle_table(self, node, section_path):
-        for headcol in node["c"][3]:
-            for sub_node in headcol:
+        try:
+            headcols = node["c"][3][1][0][1]
+        except IndexError:
+            headcols = []
+        for headcol in headcols:
+            for sub_node in headcol[4]:
                 self._handle_node(sub_node, section_path)
-        for row in node["c"][4]:
-            for col in row:
-                for sub_node in col:
+        for row in node["c"][4][0][3]:
+            for col in row[1]:
+                for sub_node in col[4]:
                     self._handle_node(sub_node, section_path)
 
     def _handle_para(self, node, section_path):
@@ -249,12 +253,16 @@ class PostprocessLinks:
                     self._handle_node(term_1, section)
 
     def _handle_table(self, node, section):
-        for headcol in node["c"][3]:
-            for sub_node in headcol:
+        try:
+            headcols = node["c"][3][1][0][1]
+        except IndexError:
+            headcols = []
+        for headcol in headcols:
+            for sub_node in headcol[4]:
                 self._handle_node(sub_node, section)
-        for row in node["c"][4]:
-            for col in row:
-                for sub_node in col:
+        for row in node["c"][4][0][3]:
+            for col in row[1]:
+                for sub_node in col[4]:
                     self._handle_node(sub_node, section)
 
     def _handle_quoted(self, node, section):
